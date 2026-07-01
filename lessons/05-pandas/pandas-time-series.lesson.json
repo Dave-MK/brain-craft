@@ -1,0 +1,137 @@
+{
+  "id": "pandas-time-series",
+  "title": "Time Series in pandas: Resampling and Rolling, for Real",
+  "skillFolder": "05-pandas",
+  "missionId": "M2",
+  "concept": "Time-Series Operations (datetime index, resample, rolling)",
+  "knowledgeGraphNodeId": "pandas.time-series",
+  "difficulty": "foundational",
+  "dependencies": ["pandas.filtering-aggregation"],
+  "learningObjectives": [
+    "Convert a timestamp column into a proper DatetimeIndex",
+    "Resample irregular or high-frequency readings into a fixed interval (e.g. hourly averages from per-minute readings)",
+    "Compute a rolling window statistic using .rolling(), the pandas equivalent of the SQL window function lesson",
+    "Choose the correct resampling aggregation (mean vs. sum vs. last) for a given kind of reading"
+  ],
+  "whyItMatters": "SQL's window functions computed a rolling average one query at a time. pandas is where that same rolling/resampling logic becomes fast, flexible, and directly chainable into the feature engineering Mission 3's forecasting models need — resampling per-minute readings into clean hourly features is a required step before any model can use them.",
+  "capstoneContribution": "The Digital Twin's time-series feature layer — hourly-resampled, rolling-averaged demand and weather data, in the exact shape scikit-learn's forecasting models expect as input in Mission 3.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Irregular per-minute readings need to become clean, regular hourly features.",
+      "content": "Your readings arrive every minute, irregularly, but the forecasting models in Mission 3 need clean, regularly-spaced hourly features — not a raw per-minute stream.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This continues the SQL window-functions lesson's motivation, now as a reusable Python object.",
+      "content": "This is the direct continuation of the SQL window-functions lesson's motivation: you need the trend, not just a single summary number, but now as an actual reusable Python object you can pass straight into a model instead of a one-off query result.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "resample() buckets time into fixed intervals; rolling() computes a sliding-window statistic.",
+      "content": "`pd.to_datetime(df['timestamp'])` converts a string column into real datetime values; setting it as the index (`df.set_index('timestamp')`) unlocks time-aware operations. `df.resample('1h').mean()` groups all readings within each hour and aggregates them — `.mean()` for something like temperature, `.sum()` for something like energy consumed, `.last()` for a point-in-time value like current price. `df['demand_kw'].rolling(window=3).mean()` computes a rolling 3-period average, the direct pandas equivalent of the SQL `OVER (ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)` window function.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "Irregular points snap into hourly buckets under resample; rolling reuses the SQL sliding-window visual.",
+      "content": "Irregular per-minute points snap into regular hourly buckets under `resample()`, with a separate rolling-window diagram reusing the sliding-window visual from the SQL window-functions lesson, now applied directly to a pandas Series.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Adjust the resample interval and rolling window size on a live noisy series.",
+      "content": "Adjust the resample interval (15min/1h/1d) and the rolling window size on a live noisy demand series and watch both the resampled and rolling-average lines redraw.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: convert to datetime, resample, and compute a rolling average.",
+      "content": "```python\ndf[\"timestamp\"] = pd.to_datetime(df[\"timestamp\"])\ndf = df.set_index(\"timestamp\")\n\nhourly = df[\"demand_kw\"].resample(\"1h\").mean()\nrolling_avg = df[\"demand_kw\"].rolling(window=3).mean()\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Resample weather data with the correct aggregation per column, unaided.",
+      "content": "Resample a provided per-minute weather DataFrame into hourly averages for temperature and hourly sums for precipitation, choosing the correct aggregation for each column.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a resample using the wrong aggregation for a temperature column.",
+      "content": "Code uses `.sum()` to resample a temperature column into hourly values, producing physically meaningless summed-temperature numbers instead of an hourly average. Identify why the aggregation choice was wrong and fix it.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "mean() vs. sum() is a decision about meaning, not just syntax.",
+      "content": "Why is choosing `.mean()` vs. `.sum()` for a resample not just a syntax choice, but a decision about what the resulting number is even supposed to mean?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain how resample and the SQL rolling-average lesson relate but differ.",
+      "content": "Explain to someone why `resample('1h').mean()` on demand data and the SQL window-functions lesson's rolling average are solving two related but genuinely different problems.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Build the hourly-resampled, rolling-averaged features Mission 3 will consume.",
+      "content": "Build the hourly-resampled, rolling-averaged demand and weather features that Mission 3's first forecasting lesson will directly consume.",
+      "estimatedMinutes": 14
+    },
+    "portfolioEvidence": {
+      "summary": "This is the exact feature shape Mission 3's forecasting models expect.",
+      "content": "This is the exact feature shape scikit-learn's forecasting models will expect as input starting in Mission 3.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-pandas-time-series-resample-rolling",
+      "title": "Resample & Rolling",
+      "description": "Sandboxed exercise resampling multi-column weather data with per-column-appropriate aggregations and computing a rolling average, including a deliberately wrong aggregation to fix.",
+      "starterCodePath": "labs/05-pandas/resample-rolling/starter.py",
+      "testCasesPath": "labs/05-pandas/resample-rolling/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "resample-rolling-visualizer",
+      "title": "Resample & Rolling Visualizer",
+      "description": "Adjustable resample interval and rolling window size applied live to a noisy demand series, redrawing both derived lines in real time."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-pandas-time-series-1",
+      "front": "Why would you use .sum() instead of .mean() when resampling per-minute energy consumption into hourly values?",
+      "back": "Energy consumed is additive over time — the hourly total is the sum of the per-minute amounts, not their average, which would understate the actual energy used in that hour.",
+      "conceptNodeId": "pandas.time-series"
+    },
+    {
+      "id": "fc-pandas-time-series-2",
+      "front": "What's the pandas equivalent of the SQL rolling-average window function from the SQL skill folder?",
+      "back": "Series.rolling(window=n).mean() — it computes a rolling average over the last n rows, per row, without collapsing the DataFrame, just like the SQL OVER (ROWS BETWEEN ...) clause.",
+      "conceptNodeId": "pandas.time-series"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly identifies and fixes the wrong aggregation choice for a resampled column",
+      "Chooses mean/sum/last appropriately per column based on what the underlying quantity actually represents",
+      "Rolling average computation matches a hand-verified expected result for a small sample"
+    ]
+  },
+  "references": [
+    {
+      "title": "pandas User Guide — Time series / date functionality: Resampling",
+      "url": "https://pandas.pydata.org/docs/user_guide/timeseries.html#resampling",
+      "type": "officialDocs",
+      "versionOrDate": "pandas 2.2",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "pandas API Reference — DataFrame.rolling",
+      "url": "https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rolling.html",
+      "type": "officialDocs",
+      "versionOrDate": "pandas 2.2",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

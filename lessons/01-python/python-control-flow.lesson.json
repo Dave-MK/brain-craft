@@ -1,0 +1,137 @@
+{
+  "id": "python-control-flow",
+  "title": "Control Flow: Teaching Code to Decide",
+  "skillFolder": "01-python",
+  "missionId": "M1",
+  "concept": "Control Flow (if/elif/else)",
+  "knowledgeGraphNodeId": "python.control-flow",
+  "difficulty": "introductory",
+  "dependencies": ["python.variables"],
+  "learningObjectives": [
+    "Write if/elif/else branches that choose behavior based on a stored value",
+    "Use comparison and boolean operators to express real thresholds, e.g. 'is demand above a safe limit'",
+    "Avoid the classic boundary mistake of using > when a limit should be inclusive (>=)",
+    "Combine multiple conditions with and/or without producing an unreadable one-liner"
+  ],
+  "whyItMatters": "The AI Energy OS constantly has to decide things: is this demand reading above a safe threshold, is the battery too low to discharge, is a forecast within a range the model trusts. Control flow is the mechanism for every one of those decisions, long before any ML model exists to make them for you.",
+  "capstoneContribution": "Digital Twin threshold logic — the first branch of the overload/safety checks the Grid Copilot dashboard will later rely on.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A stored demand reading needs to trigger different behavior depending on its value.",
+      "content": "Your `demand_kw` variable (from the Variables lesson) holds `4821`. The line is only rated to `5000` kW. Right now your code has no way to notice it's getting close, let alone react differently depending on how close.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Every 'smart' decision the platform ever makes starts as a rule you write by hand first.",
+      "content": "Long before any model predicts anything, the system needs simple rules: is this value safe, high, or low. Control flow is how you express those rules today, and it's also the scaffolding every later mission's ML/RL decision-making eventually replaces or augments — you can't skip straight to 'smart' without first being able to write 'correct.'",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "if/elif/else runs exactly one branch, chosen by the first true condition.",
+      "content": "`if condition: ... elif condition: ... else: ...` executes exactly one branch — the first one whose condition is true, top to bottom — and skips the rest even if a later condition would also be true. Conditions are boolean expressions built from comparisons (`<`, `>`, `==`, `!=`, `<=`, `>=`) and boolean operators (`and`, `or`, `not`).",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "A decision diamond routes the demand value to exactly one of three labeled paths.",
+      "content": "The diagram shows the demand value flowing into a decision diamond ('> 4500?'), branching to a WARNING path or a NORMAL path, then merging back into the rest of the program — reinforcing visually that only one path is ever taken per run, never both.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Drag demand_kw along a slider and watch the classification label update live.",
+      "content": "A slider lets you drag `demand_kw` between 0 and 6000 and watch a NORMAL / WARNING / OVERLOAD label update instantly as your threshold code runs against it, including right at the boundary values.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: classify a demand reading against two thresholds.",
+      "content": "```python\ndemand_kw = 4821\nsafe_limit_kw = 5000\nwarning_threshold_kw = 4500\n\nif demand_kw >= safe_limit_kw:\n    print(\"OVERLOAD\")\nelif demand_kw > warning_threshold_kw:\n    print(\"WARNING\")\nelse:\n    print(\"NORMAL\")\n```\nRun this, then try `demand_kw = 5000` exactly and confirm it prints `OVERLOAD` — notice the first condition uses `>=`, not `>`.",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Classify a battery charge level into three bands without a function yet.",
+      "content": "Write a script that stores `battery_soc_percent` (0-100) and prints `CRITICAL` if below 10, `LOW` if below 25, else `OK`. Don't use a function — that's next lesson.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Fix a boundary bug where a reading exactly at the limit slips through as safe.",
+      "content": "```python\nif demand_kw > safe_limit_kw:\n    print(\"OVERLOAD\")\n```\nThe spec says a reading *at or above* `5000` counts as overload, but this code lets `demand_kw = 5000` fall through to a lower branch. Find the operator that's wrong and fix it.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Boundary operators matter more than they look.",
+      "content": "Where else in the AI Energy OS will a `>` vs `>=` mistake matter more than it seems right now — think about safety limits, not just demand.",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain single-branch execution to a junior engineer.",
+      "content": "Explain why only one branch of an if/elif/else chain ever runs, even if multiple conditions would technically be true, to someone who's never seen the construct before.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Add a classification step to the sensor-intake mini project.",
+      "content": "Extend the sensor-intake mini project from the Variables lesson: after computing `demand_mw`, classify the reading into NORMAL/WARNING/OVERLOAD and print the classification alongside the existing status line.",
+      "estimatedMinutes": 12
+    },
+    "portfolioEvidence": {
+      "summary": "This threshold check becomes the first safety guard in the ingestion path.",
+      "content": "This classification step becomes the first safety guard in the Digital Twin's ingestion path, sitting right after the variable assignments committed in the Variables lesson.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-python-control-flow-threshold",
+      "title": "Threshold Classifier",
+      "description": "Sandboxed exercise providing a set of boundary-case demand readings (including values exactly at each threshold) that the learner's classifier must handle correctly.",
+      "starterCodePath": "labs/01-python/threshold-classifier/starter.py",
+      "testCasesPath": "labs/01-python/threshold-classifier/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "threshold-branch-visualizer",
+      "title": "Threshold Branch Visualizer",
+      "description": "Interactive slider showing which if/elif/else branch fires as a demand value changes, including at exact boundary values."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-python-control-flow-1",
+      "front": "In an if/elif/else chain, how many branches execute at most?",
+      "back": "Exactly one — Python stops at the first true condition and skips the rest, even if a later condition would also be true.",
+      "conceptNodeId": "python.control-flow"
+    },
+    {
+      "id": "fc-python-control-flow-2",
+      "front": "Why use >= instead of > when checking a safety limit like 'at or above 5000 kW is overload'?",
+      "back": "Because > would let a reading exactly equal to the limit slip through as safe, when the specification says the limit itself already counts as unsafe.",
+      "conceptNodeId": "python.control-flow"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly identifies the boundary operator bug (> vs >=) and explains why it matters, not just that the fix works",
+      "Fixed classifier correctly handles values exactly at each threshold, not just clearly-inside-a-band values",
+      "Independent coding task uses if/elif/else correctly without redundant or unreachable branches"
+    ]
+  },
+  "references": [
+    {
+      "title": "Python Language Reference — The if statement",
+      "url": "https://docs.python.org/3/reference/compound_stmts.html#the-if-statement",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Python Language Reference — Comparisons",
+      "url": "https://docs.python.org/3/reference/expressions.html#comparisons",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

@@ -1,0 +1,137 @@
+{
+  "id": "rl-battery-scheduler",
+  "title": "The Battery Scheduler: Mission 5's Explainable Decision-Maker",
+  "skillFolder": "08-reinforcement-learning",
+  "missionId": "M5",
+  "concept": "Final Battery/EV Scheduling Agent with Explainability (capstone synthesis)",
+  "knowledgeGraphNodeId": "rl.battery-scheduler",
+  "difficulty": "intermediate",
+  "dependencies": ["rl.training-evaluation-safety"],
+  "learningObjectives": [
+    "Combine MDP design, reward design, a chosen RL algorithm, and safety evaluation into one deployable-shaped battery scheduler",
+    "Produce a plain-English rationale for any given recommended action, not just the action itself",
+    "Quantify the scheduler's decisions in terms of cost, emissions, and stability trade-offs, as the Grid Copilot vision requires",
+    "Decide, honestly, whether this agent is ready for decision-support use and what would need to change if not"
+  ],
+  "whyItMatters": "Everything in this skill folder — the MDP, the reward, the algorithm, the safety harness — exists to produce exactly the 'AI Grid Copilot' described in the original mission vision: something that monitors signals, recommends an action, explains why, and quantifies the trade-offs, not a black box that just outputs a number.",
+  "capstoneContribution": "The Digital Twin's actual battery/EV scheduling module — the first piece of the AI Energy OS that doesn't just predict or classify, but recommends and explains a decision, feeding directly into the eventual dashboard described in the capstone architecture.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "The agent outputs an action with no explanation anyone could use to trust it.",
+      "content": "You have a trained, safety-evaluated RL agent, but right now it only outputs an action — 'discharge' — with no explanation a grid operator (or the AI Tutor evaluating your work) could use to decide whether to trust that specific recommendation.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is the actual Grid Copilot vision from the original mission conversation.",
+      "content": "This is the actual product vision from the very first conversation this curriculum was built from: an AI Grid Copilot that explains its reasoning and quantifies trade-offs, earning trust gradually rather than demanding it upfront. An agent that can only say 'discharge' without saying why hasn't met that bar, no matter how good its training reward looks.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Explanations must surface checkable quantities, not just an assertion, mirroring Mission 4's honest-verdict discipline.",
+      "content": "Producing an explanation for an RL agent's action means surfacing the actual quantities that drove the decision: what were the current cost, emissions, and safety-margin readings, what would each candidate action's estimated near-term cost/emissions/safety impact have been (using the Q-values or predicted value estimates as a numeric basis), and why does the chosen action's trade-off profile beat the alternatives given the reward weights from the design lesson. This is fundamentally the same discipline as the honest-verdict lesson in Mission 4: a claim ('discharge is the right call right now') needs a specific, checkable basis, not just an assertion — and the basis here comes directly from the same reward decomposition (cost, emissions, overload risk) established two lessons ago.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "The decision pipeline flows to a chosen action alongside a generated cost/emissions/safety explanation.",
+      "content": "The final scheduler's decision pipeline is shown: state in, candidate actions evaluated against the decomposed reward, chosen action out, alongside a generated explanation panel breaking down the cost/emissions/safety trade-off for the decision actually made.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Step through live scenarios and judge whether each generated explanation is justified.",
+      "content": "Step through several live scenarios with the finished agent, each producing a recommended action alongside a generated explanation panel quantifying the cost/emissions/safety trade-off, and judge whether the explanation actually justifies the recommendation.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: generate a quantified, checkable explanation for a recommended action.",
+      "content": "```python\ndef explain_action(state, chosen_action, q_values, weights):\n    return {\n        \"recommended_action\": chosen_action,\n        \"estimated_cost_impact\": q_values[chosen_action][\"cost\"],\n        \"estimated_emissions_impact\": q_values[chosen_action][\"emissions\"],\n        \"safety_margin_after_action\": q_values[chosen_action][\"resulting_soc\"],\n        \"rationale\": (\n            f\"Chosen because it has the best combined score \"\n            f\"({weights['emissions']}x emissions weight, {weights['overload']}x safety weight) \"\n            f\"among all candidate actions in this state.\"\n        ),\n    }\n```",
+      "estimatedMinutes": 10
+    },
+    "independentCoding": {
+      "summary": "Generate explanations across several states and critically assess one.",
+      "content": "Generate explanations for your agent's recommendations across 5 different states, and for at least one, argue in writing whether the explanation genuinely justifies the action or reveals a case where the agent's reasoning seems questionable.",
+      "estimatedMinutes": 15
+    },
+    "debugging": {
+      "summary": "Fix an explanation missing the concrete per-objective quantities.",
+      "content": "An explanation reports the reward weights used but not the actual per-objective quantities (cost, emissions, safety) for the chosen action, making the explanation unverifiable even though it looks detailed. Identify what's missing and add the concrete numbers.",
+      "estimatedMinutes": 7
+    },
+    "reflection": {
+      "summary": "A detailed-looking explanation isn't the same as a checkable one.",
+      "content": "What's the difference between an explanation that looks detailed and one that's actually checkable, and why does only the second kind earn real trust?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Walk through the full RL skill folder's pipeline as a synthesis.",
+      "content": "As the synthesis of Mission 5's reinforcement learning skill folder: walk someone through your finished battery scheduler's full pipeline, from MDP definition through reward design, training, safety evaluation, to a specific explained recommendation.",
+      "estimatedMinutes": 6
+    },
+    "miniProject": {
+      "summary": "Deliver the final battery-scheduling module with an honest readiness assessment.",
+      "content": "Deliver the Digital Twin's final battery-scheduling module: a trained, safety-evaluated agent that produces an explained, quantified recommendation for any given state, plus an honest assessment of whether it's ready for decision-support use and what's needed if not.",
+      "estimatedMinutes": 25
+    },
+    "portfolioEvidence": {
+      "summary": "This is the literal Grid Copilot behavior from the original mission vision, now built.",
+      "content": "This is the first piece of the AI Energy OS that recommends and explains a real decision — the literal Grid Copilot behavior described in the mission's original vision, now actually built.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": true,
+  "labs": [
+    {
+      "id": "lab-rl-battery-scheduler-explainable-agent",
+      "title": "Explainable Agent",
+      "description": "Sandboxed exercise producing a fully explainable, quantified recommendation pipeline for a trained battery-scheduling agent, requiring a fix for a planted unverifiable-explanation bug.",
+      "starterCodePath": "labs/08-reinforcement-learning/explainable-agent/starter.py",
+      "testCasesPath": "labs/08-reinforcement-learning/explainable-agent/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "explainable-scheduler-decision-visualizer",
+      "title": "Explainable Scheduler Decision Visualizer",
+      "description": "Live decision pipeline showing candidate actions evaluated against the decomposed reward, with a generated, quantified explanation for the chosen action."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-rl-battery-scheduler-1",
+      "front": "What makes an RL agent's explanation 'checkable' rather than just detailed-looking?",
+      "back": "It surfaces the actual concrete per-objective quantities (cost, emissions, safety margin) that drove the decision, not just the weights or a generic-sounding rationale sentence — someone else could verify the numbers add up to the stated conclusion.",
+      "conceptNodeId": "rl.battery-scheduler"
+    },
+    {
+      "id": "fc-rl-battery-scheduler-2",
+      "front": "What does the finished battery scheduler contribute to the AI Energy OS that Missions 3 and 4's forecasters didn't?",
+      "back": "It's the first component that recommends and explains an actual decision (what to do), rather than only predicting a value or classifying a condition — the literal 'Act' layer of the original mission vision.",
+      "conceptNodeId": "rl.battery-scheduler"
+    }
+  ],
+  "assessment": {
+    "primaryType": "oralExplanation",
+    "rubric": [
+      "Generated explanations include concrete, checkable per-objective quantities, not just weights or vague rationale",
+      "At least one explanation is critically assessed rather than accepted at face value",
+      "Final readiness assessment is honest and specific about what would need to change if the agent isn't yet ready"
+    ]
+  },
+  "references": [
+    {
+      "title": "DeepMind — Specification gaming: the flip side of AI ingenuity",
+      "url": "https://www.deepmind.com/blog/specification-gaming-the-flip-side-of-ai-ingenuity",
+      "type": "other",
+      "versionOrDate": "DeepMind, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Interpretable Machine Learning",
+      "url": "https://christophm.github.io/interpretable-ml-book/",
+      "type": "other",
+      "versionOrDate": "2nd Edition, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

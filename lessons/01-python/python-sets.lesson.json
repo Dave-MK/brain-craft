@@ -1,0 +1,130 @@
+{
+  "id": "python-sets",
+  "title": "Sets: Who's Actually Reporting?",
+  "skillFolder": "01-python",
+  "missionId": "M1",
+  "concept": "Sets",
+  "knowledgeGraphNodeId": "python.sets",
+  "difficulty": "introductory",
+  "dependencies": ["python.lists"],
+  "learningObjectives": [
+    "Create a set and explain how it differs from a list (uniqueness, unordered)",
+    "Use set operations (union, intersection, difference) to compare groups of sensor sources",
+    "Deduplicate a list of readings using a set without writing manual duplicate-checking logic",
+    "Recognize when a set is the wrong choice, e.g. when order or duplicate counts matter"
+  ],
+  "whyItMatters": "The Digital Twin's data feed reports the same source ('substation-12') on every reading, and you'll eventually need to know things like 'which substations reported today' or 'which sensors are common to both the demand feed and the price feed' — a deduplication and comparison problem sets solve directly, without hand-rolled nested loops.",
+  "capstoneContribution": "The Digital Twin's active-source tracker — knowing which sensors/substations are currently reporting, and comparing coverage between two data feeds (e.g. weather stations vs. demand meters).",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Duplicate source names are piling up and you only care about distinct ones.",
+      "content": "Your growing list of readings each include a `source` field, and duplicates are piling up as the same substation reports every hour. You need to know how many *distinct* substations you've heard from, not how many readings you've received.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "'How many unique X' and 'what's common to A and B' are recurring questions, not one-off puzzles.",
+      "content": "Every optimisation and monitoring feature later needs to answer 'how many unique X' or 'which items are in both A and B.' Writing that by hand with a list and nested loops gets slow and error-prone as data grows; sets answer it directly.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Sets are unordered and unique; union/intersection/difference mirror set theory.",
+      "content": "A set is an unordered collection of unique values: `sources = {\"substation-12\", \"substation-7\"}`. Adding a duplicate has no effect. Set operations mirror mathematical set theory: `a | b` (union), `a & b` (intersection), `a - b` (difference). Converting a list to a set (`set(readings_list)`) is the standard way to deduplicate, but you lose ordering and duplicate-count information in the process.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "A Venn diagram highlights the region each set operation corresponds to.",
+      "content": "Overlapping circles (a Venn diagram) represent two sets of substation IDs — one from the demand feed, one from the weather feed — with the intersection and difference regions highlighted live as the corresponding operations run.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Drag source ID tags into overlapping circles and run set operations against them.",
+      "content": "Drag substation ID tags into two overlapping circles (a live Venn diagram), then run `&`, `|`, `-` and see exactly which region of the diagram the result corresponds to.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: build sets, deduplicate, and compare two feeds' sources.",
+      "content": "```python\ndemand_sources = {\"substation-12\", \"substation-7\", \"substation-12\"}\nprint(demand_sources)  # duplicate silently dropped\n\nweather_sources = {\"substation-12\", \"substation-3\"}\nprint(demand_sources & weather_sources)  # common to both\nprint(demand_sources - weather_sources)  # only in demand feed\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Compare two source lists using set operations, unaided.",
+      "content": "Given two lists of source IDs (one from a battery feed, one from an EV-charger feed), convert both to sets and print which sources report to both feeds and which report only to the EV-charger feed.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Fix code that tries to index a set like a list.",
+      "content": "```python\nsources = {\"substation-12\", \"substation-7\"}\nprint(sources[0])\n```\nThis raises a `TypeError` because sets are unordered and don't support indexing. Explain why the code shouldn't need positional access here at all, and rewrite it to get a needed value correctly.",
+      "estimatedMinutes": 5
+    },
+    "reflection": {
+      "summary": "Deduplication via set() throws information away.",
+      "content": "You just deduplicated readings by converting a list to a set and back. What information did that conversion throw away, and would that matter for a use case like 'how many times did substation-12 report today'?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why {'a','a','b'} and ['a','a','b'] behave differently.",
+      "content": "Explain to someone why `{\"a\", \"a\", \"b\"}` and `[\"a\", \"a\", \"b\"]` give different results when you ask for their length.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Track distinct sources across the rolling window.",
+      "content": "Extend the sensor-intake mini project: track the set of distinct sources seen across the rolling window, and print it alongside the existing report.",
+      "estimatedMinutes": 10
+    },
+    "portfolioEvidence": {
+      "summary": "This becomes the Digital Twin's first coverage-monitoring feature.",
+      "content": "This source-tracking set becomes the Digital Twin's first coverage-monitoring feature — knowing which sensors are actually reporting.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-python-sets-source-tracker",
+      "title": "Source Tracker",
+      "description": "Sandboxed exercise comparing source coverage across two simulated data feeds using set operations, including a deliberate list-indexing-on-a-set bug to fix.",
+      "starterCodePath": "labs/01-python/source-tracker/starter.py",
+      "testCasesPath": "labs/01-python/source-tracker/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "set-venn-visualizer",
+      "title": "Set Venn Visualizer",
+      "description": "Interactive Venn diagram showing union/intersection/difference regions as the learner edits set expressions."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-python-sets-1",
+      "front": "What happens when you .add() a value to a set that's already in it?",
+      "back": "Nothing changes — sets only ever contain unique values, so adding a duplicate is a no-op.",
+      "conceptNodeId": "python.sets"
+    },
+    {
+      "id": "fc-python-sets-2",
+      "front": "What does demand_sources & weather_sources compute?",
+      "back": "The intersection — the set of values present in both demand_sources and weather_sources.",
+      "conceptNodeId": "python.sets"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly explains why sets don't support positional indexing, not just that it raises an error",
+      "Set-comparison solution uses the correct operation (union/intersection/difference) for each stated question rather than reimplementing it with loops",
+      "Correctly identifies what information is lost when deduplicating via set() (order, duplicate counts)"
+    ]
+  },
+  "references": [
+    {
+      "title": "Python Tutorial — Sets",
+      "url": "https://docs.python.org/3/tutorial/datastructures.html#sets",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

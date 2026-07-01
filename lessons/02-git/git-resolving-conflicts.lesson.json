@@ -1,0 +1,130 @@
+{
+  "id": "git-resolving-conflicts",
+  "title": "Merge Conflicts: When Two Changes Disagree",
+  "skillFolder": "02-git",
+  "missionId": "M1",
+  "concept": "Resolving Merge Conflicts",
+  "knowledgeGraphNodeId": "git.resolving-conflicts",
+  "difficulty": "foundational",
+  "dependencies": ["git.merging"],
+  "learningObjectives": [
+    "Recognize what actually causes a merge conflict, rather than treating it as a mysterious error",
+    "Read Git's conflict markers correctly and identify what each section represents",
+    "Resolve a conflict deliberately, choosing the correct combination of both changes rather than blindly picking one side",
+    "Complete a merge after resolving conflicts and verify the result is actually correct by re-testing"
+  ],
+  "whyItMatters": "You and a future collaborator (or you, on two different branches) will eventually both change the same line of the same file — say, the safe_limit_kw default — differently. Git can't guess which change is right; panicking or discarding one side blindly is how real, validated work gets silently lost.",
+  "capstoneContribution": "The discipline that keeps the AI Energy OS's shared logic (thresholds, reward functions, shared utilities) correct even when two lines of work touch the same code at the same time.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Two branches changed the same setting differently, for different reasons.",
+      "content": "Two branches both changed `classification.py`'s `safe_limit_kw` default to different values, for different reasons, and now you're trying to merge them.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Conflicts are the normal cost of more than one thing changing at once.",
+      "content": "This is not a rare edge case — it's the normal cost of more than one thing changing at once, which is true of every real codebase past a certain size. Handling it calmly and correctly, rather than panicking or guessing, is a core engineering skill, not an advanced one.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Conflict markers show both versions; resolving means combining correctly, not just picking one.",
+      "content": "When Git can't automatically reconcile two changes to the same lines, it marks the file with conflict markers: `<<<<<<< HEAD` (your current branch's version), `=======` (the divider), and `>>>>>>> branch-name` (the incoming branch's version). Resolving a conflict means editing the file to keep the correct combination — not necessarily one side wholesale — removing the conflict markers entirely, then `git add`-ing the resolved file and completing the merge with `git commit`. Skipping re-testing after a conflict resolution is how a syntactically resolved but logically wrong merge slips through.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "One line diverges into two versions, then literal conflict markers, then one correct resolved line.",
+      "content": "The same line of a file diverges into two versions on two branches, then the conflict markers appear as literal text in the file, then the resolved single correct version replaces all three.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Edit a file with live conflict markers to produce a behaviorally correct resolution.",
+      "content": "A file with live conflict markers from two simulated branches must be edited directly in the sandbox to produce the correct resolved version, with immediate feedback on whether the resolution is behaviorally correct, not just marker-free.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: hit a conflict, read the markers, and resolve deliberately.",
+      "content": "```bash\ngit merge new-thresholds\n# Auto-merging classification.py\n# CONFLICT (content): Merge conflict in classification.py\n```\n```python\n<<<<<<< HEAD\nsafe_limit_kw = 5200\n=======\nsafe_limit_kw = 4900\n>>>>>>> new-thresholds\n```\nEdit to the correct resolved value, remove all markers, then:\n```bash\ngit add classification.py\ngit commit\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Resolve a two-sided conflict where both changes are legitimate and must be combined.",
+      "content": "Resolve a provided two-sided conflict in a reporting function where one branch added a new field and another branch reformatted the same function's output — both changes are legitimate and need to be combined, not chosen between.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Find a leftover conflict marker that broke the file's syntax.",
+      "content": "A learner resolved a conflict but left a leftover `=======` marker line in the file, which now breaks it syntactically. Find and remove the leftover marker, then confirm the file is valid.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Picking one side wholesale risks silently discarding real work.",
+      "content": "What's the risk of resolving a conflict by just picking one side entirely, without reading what the other side actually changed?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain the three parts of a conflict marker to someone seeing one for the first time.",
+      "content": "Explain the three parts of a Git conflict marker block to someone who's about to see one for the first time and is worried they've broken something.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Deliberately create, resolve, and re-verify a real conflict in your own package.",
+      "content": "Deliberately create a real two-branch conflict in your own `digital_twin/` package (change the same constant differently on two branches), then resolve it correctly and verify the resolved code still passes your existing classification tests.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This proves the project can survive more than one line of work touching the same code.",
+      "content": "This is the first real conflict resolution in the Digital Twin's history — proof the project can survive more than one line of work touching the same code.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-git-conflicts-resolve-and-verify",
+      "title": "Resolve and Verify",
+      "description": "Sandboxed exercise presenting a real two-sided merge conflict; the learner must resolve it correctly, remove all markers, and pass the existing test suite afterward — not just achieve a marker-free file.",
+      "starterCodePath": "labs/02-git/resolve-and-verify/starter/",
+      "testCasesPath": "labs/02-git/resolve-and-verify/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "conflict-marker-editor",
+      "title": "Conflict Marker Editor",
+      "description": "Interactive file editor presenting live conflict markers from two simulated branches, with correctness feedback on the resolved result."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-git-resolving-conflicts-1",
+      "front": "What do the three sections of a Git conflict marker block represent?",
+      "back": "<<<<<<< HEAD marks the start of your current branch's version, ======= divides it from the incoming version, and >>>>>>> branch-name marks the end of the incoming branch's version.",
+      "conceptNodeId": "git.resolving-conflicts"
+    },
+    {
+      "id": "fc-git-resolving-conflicts-2",
+      "front": "Why should you re-test your code after resolving a merge conflict, even once the markers are gone?",
+      "back": "Removing the markers only makes the file syntactically valid again — it doesn't guarantee the combined logic is actually correct. Re-testing catches a resolution that looks clean but behaves wrong.",
+      "conceptNodeId": "git.resolving-conflicts"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Resolved conflict correctly combines both sides' legitimate intent rather than discarding one wholesale",
+      "No leftover conflict markers remain in the resolved file",
+      "Learner re-tests the resolved code and can explain why that step isn't optional"
+    ]
+  },
+  "references": [
+    {
+      "title": "Git Reference — git-merge: How to resolve conflicts",
+      "url": "https://git-scm.com/docs/git-merge#_how_to_resolve_conflicts",
+      "type": "officialDocs",
+      "versionOrDate": "Git 2.44",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

@@ -1,0 +1,137 @@
+{
+  "id": "pandas-dataframes-basics",
+  "title": "DataFrames: pandas Picks Up Where SQL Left Off",
+  "skillFolder": "05-pandas",
+  "missionId": "M2",
+  "concept": "DataFrames (creation, indexing, selection)",
+  "knowledgeGraphNodeId": "pandas.dataframes-basics",
+  "difficulty": "introductory",
+  "dependencies": ["sql.aggregation"],
+  "learningObjectives": [
+    "Load a SQL query result or CSV into a pandas DataFrame",
+    "Select columns and rows using label-based (.loc) and position-based (.iloc) indexing",
+    "Explain the relationship between a DataFrame, its index, and the Series that make up its columns",
+    "Convert between a list of dictionaries and a DataFrame in both directions"
+  ],
+  "whyItMatters": "SQL answers a query and hands back rows; pandas is where you actually explore, reshape, and combine that data in Python before it becomes a machine learning feature. Every one of Mission 3's forecasting lessons assumes the data already lives in a DataFrame, not a raw SQL result set.",
+  "capstoneContribution": "The Digital Twin's analysis layer — the DataFrame that sits between 'query the database' and 'feed a model,' where the actual feature engineering for Mission 3 will happen.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "SQL rows alone don't let you reshape or compute new columns easily.",
+      "content": "Your daily summary SQL query returns rows you can print, but you can't easily do things like 'compute a new column from two existing ones' or 'filter and then plot' without leaving SQL and writing Python by hand row by row — exactly the manual work Mission 1's lists and loops already showed doesn't scale.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Every Mission 3 forecasting technique expects a DataFrame, not raw rows.",
+      "content": "pandas is the tool that sits between a database and a machine learning model — every forecasting technique in Mission 3 expects a DataFrame as input, not raw SQL rows or a Python list of dictionaries.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "A DataFrame is a table of Series, selectable by label (.loc) or position (.iloc).",
+      "content": "A `DataFrame` is a table: rows indexed by an `Index`, columns each stored as a `Series`. `pd.DataFrame(list_of_dicts)` builds one directly from the exact list-of-dictionaries shape used throughout Mission 1's ingestion pipeline. `.loc[row_label, column_label]` selects by label; `.iloc[row_position, column_position]` selects by integer position — mixing the two up is a common source of subtly wrong selections. `df['demand_kw']` returns a single column as a Series; `df[['demand_kw', 'source']]` returns a DataFrame with just those columns.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "A DataFrame is a grid with a labeled index and columns; .loc and .iloc select the same cells two ways.",
+      "content": "A DataFrame appears as a grid with a labeled index down the left and labeled columns across the top, with .loc highlighting a label-based selection and .iloc highlighting the equivalent position-based selection on the same cells.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Click cells and see the matching .loc and .iloc expressions side by side.",
+      "content": "Click cells in a live DataFrame grid and see the exact `.loc` and `.iloc` expression that would select them, side by side.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: build a DataFrame from records and select with .loc/.iloc.",
+      "content": "```python\nimport pandas as pd\n\nreadings = [\n    {\"timestamp\": \"2026-07-01T09:00\", \"demand_kw\": 4821, \"source\": \"substation-12\"},\n    {\"timestamp\": \"2026-07-01T10:00\", \"demand_kw\": 4790, \"source\": \"substation-12\"},\n]\ndf = pd.DataFrame(readings)\n\nprint(df.loc[0, \"demand_kw\"])\nprint(df.iloc[0, 1])\nprint(df[[\"timestamp\", \"demand_kw\"]])\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Build a DataFrame from battery readings and select a Series and a sub-DataFrame.",
+      "content": "Given a small list of dictionaries representing battery readings, build a DataFrame, then select the `soc_percent` column alone as a Series and the first two rows as a DataFrame using `.iloc`.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Fix incorrect row selection caused by mixing .loc and .iloc on a non-default index.",
+      "content": "`df.loc[0]` is used to get 'the first row,' but the DataFrame's index isn't plain integers `0,1,2,...`, so it silently selects the wrong row or raises a `KeyError`. Fix by using the correct accessor for the actual index type.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": ".loc and .iloc diverge once the index isn't default integers.",
+      "content": "Why did `.loc` and `.iloc` give different results once the DataFrame's index was no longer plain 0,1,2,...?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain the difference between a Series and a one-column DataFrame.",
+      "content": "Explain to someone the difference between `df['demand_kw']` (a Series) and `df[['demand_kw']]` (a DataFrame with one column), and why that distinction actually matters for what methods you can call next.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Rebuild the Mission 1 rolling window as a DataFrame.",
+      "content": "Load your Mission 1 sensor-intake mini project's rolling window into a DataFrame instead of a list of dictionaries, and reproduce the same min/max/most-recent report using DataFrame selection instead of manual loops.",
+      "estimatedMinutes": 12
+    },
+    "portfolioEvidence": {
+      "summary": "This is the shape all of Mission 3's forecasting work will build on.",
+      "content": "This DataFrame-based rolling window replaces the manual list-of-dictionaries version from Mission 1 — the shape all of Mission 3's forecasting work will build on.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-pandas-dataframes-basics-loc-iloc",
+      "title": "loc & iloc",
+      "description": "Sandboxed exercise requiring correct label-based and position-based selection on a DataFrame with a non-default index, including a deliberate loc/iloc mix-up to diagnose.",
+      "starterCodePath": "labs/05-pandas/loc-iloc/starter.py",
+      "testCasesPath": "labs/05-pandas/loc-iloc/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "dataframe-selection-visualizer",
+      "title": "DataFrame Selection Visualizer",
+      "description": "Clickable DataFrame grid showing the matching .loc and .iloc expression for any selected cell or range."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-pandas-dataframes-basics-1",
+      "front": "What's the difference between .loc and .iloc?",
+      "back": ".loc selects by label (the index/column names), while .iloc selects by integer position, regardless of what the labels actually are.",
+      "conceptNodeId": "pandas.dataframes-basics"
+    },
+    {
+      "id": "fc-pandas-dataframes-basics-2",
+      "front": "What type of object does df['demand_kw'] return, versus df[['demand_kw']]?",
+      "back": "df['demand_kw'] returns a Series (one-dimensional). df[['demand_kw']] returns a DataFrame containing just that one column (two-dimensional).",
+      "conceptNodeId": "pandas.dataframes-basics"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly diagnoses and fixes a .loc/.iloc mix-up caused by a non-default index",
+      "Correctly distinguishes Series-returning vs. DataFrame-returning selection syntax",
+      "Mini-project reproduces the Mission 1 report's results exactly using DataFrame operations"
+    ]
+  },
+  "references": [
+    {
+      "title": "pandas User Guide — Intro to data structures: DataFrame",
+      "url": "https://pandas.pydata.org/docs/user_guide/dsintro.html#dataframe",
+      "type": "officialDocs",
+      "versionOrDate": "pandas 2.2",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "pandas User Guide — Indexing and selecting data",
+      "url": "https://pandas.pydata.org/docs/user_guide/indexing.html",
+      "type": "officialDocs",
+      "versionOrDate": "pandas 2.2",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

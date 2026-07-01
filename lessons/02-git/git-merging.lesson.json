@@ -1,0 +1,130 @@
+{
+  "id": "git-merging",
+  "title": "Merging: Bringing a Branch's Work Back Home",
+  "skillFolder": "02-git",
+  "missionId": "M1",
+  "concept": "Merging",
+  "knowledgeGraphNodeId": "git.merging",
+  "difficulty": "introductory",
+  "dependencies": ["git.branches"],
+  "learningObjectives": [
+    "Merge a finished branch back into main",
+    "Distinguish a fast-forward merge from a merge commit, and explain why the distinction exists",
+    "Read a merge commit's history correctly using git log --graph",
+    "Decide when a branch's work is actually ready to merge versus needs more testing first"
+  ],
+  "whyItMatters": "Your threshold experiment worked. It needs to actually reach main so the rest of the Digital Twin benefits from it — an experiment that stays isolated forever provides no value.",
+  "capstoneContribution": "The mechanism by which every validated improvement — a better forecasting model, a safer battery policy — actually lands in the AI Energy OS's trusted main line, rather than staying stranded on an experimental branch forever.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A validated change exists only on a branch main hasn't benefited from at all.",
+      "content": "Your `new-thresholds` branch has a change you've validated and want. It currently only exists on that branch — main hasn't benefited from it at all.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "An isolated experiment provides zero value until it's merged.",
+      "content": "An experiment that stays isolated forever provides zero value. Merging is the step that turns 'I tried something on a branch' into 'the project actually improved.'",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "A fast-forward merge just moves main's pointer; a merge commit joins two diverged lines.",
+      "content": "`git merge new-thresholds` while on main integrates that branch's commits into main. If main hasn't moved since the branch was created, Git performs a fast-forward merge — simply moving main's pointer forward, since no real merge is needed. If main has moved (other commits happened on main meanwhile), Git creates a merge commit with two parents, recording that two lines of history came together. `git log --graph --oneline` visualizes this history, including merge commits, as an actual graph rather than a flat list.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "Fast-forward slides a pointer forward; a merge commit joins two diverging lines with two parent arrows.",
+      "content": "A fast-forward merge (main's pointer simply slides forward to where the branch already is) is contrasted against a merge commit (two diverging lines rejoin at a new commit with two parent arrows).",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Merge in two scenarios and watch the resulting graph differ.",
+      "content": "Merge a branch in two different scenarios — one where main hasn't moved (fast-forward) and one where it has (merge commit) — and watch the resulting commit graph differ between the two.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: merge a validated branch back into main.",
+      "content": "```bash\ngit switch main\ngit merge new-thresholds\ngit log --graph --oneline\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Merge your own branch and identify which merge type occurred.",
+      "content": "Merge your own experimental branch from the previous lesson back into main, then use `git log --graph` to confirm whether Git performed a fast-forward or created a merge commit, and explain which one happened and why.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Diagnose an unexpected merge outcome by checking whether main had moved.",
+      "content": "A learner expected a merge commit but got a fast-forward instead, and is confused why. Walk through checking whether main had moved since the branch was created to explain the actual outcome.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Fast-forward is preferred when history doesn't need to record a real join.",
+      "content": "Why does Git prefer a fast-forward merge when it's possible, rather than always creating a merge commit?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain fast-forward vs. merge commit using your own repository's graph.",
+      "content": "Explain to someone the difference between a fast-forward merge and a merge commit, using the actual `git log --graph` output from your own repository as the example.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Merge every validated branch into a clean, explainable main history.",
+      "content": "Merge every validated experimental branch you've created so far back into main, ending with a clean `git log --graph` history you can explain commit by commit.",
+      "estimatedMinutes": 12
+    },
+    "portfolioEvidence": {
+      "summary": "main's history is now a real record of validated, integrated improvements.",
+      "content": "Your main branch's history is now the actual record of which Digital Twin improvements have been validated and integrated, as opposed to just attempted.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-git-merging-integrate-branch",
+      "title": "Integrate the Branch",
+      "description": "Sandboxed exercise providing two scenarios (main unchanged vs. main advanced) requiring the learner to merge correctly and correctly identify which merge type Git performed in each.",
+      "starterCodePath": "labs/02-git/integrate-branch/starter/",
+      "testCasesPath": "labs/02-git/integrate-branch/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "merge-type-visualizer",
+      "title": "Merge Type Visualizer",
+      "description": "Side-by-side animation contrasting a fast-forward merge against a merge commit as the same branch is merged under different main-history conditions."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-git-merging-1",
+      "front": "What determines whether git merge produces a fast-forward or a merge commit?",
+      "back": "Whether main has moved since the branch was created. If main is unchanged, Git simply fast-forwards its pointer; if main has new commits, Git creates a merge commit joining both histories.",
+      "conceptNodeId": "git.merging"
+    },
+    {
+      "id": "fc-git-merging-2",
+      "front": "How many parent commits does a merge commit have, and what does that represent?",
+      "back": "Two — one from each branch being joined, recording that two independent lines of history came together at that point.",
+      "conceptNodeId": "git.merging"
+    }
+  ],
+  "assessment": {
+    "primaryType": "codeReview",
+    "rubric": [
+      "Correctly identifies whether a given merge was a fast-forward or a merge commit, and explains why",
+      "Merged history is clean and reflects only intended, validated changes",
+      "Can read and narrate a git log --graph output commit by commit"
+    ]
+  },
+  "references": [
+    {
+      "title": "Pro Git — Git Branching: Basic Branching and Merging",
+      "url": "https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging",
+      "type": "officialDocs",
+      "versionOrDate": "Pro Git 2nd Edition",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

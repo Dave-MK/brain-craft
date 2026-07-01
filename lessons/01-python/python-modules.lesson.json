@@ -1,0 +1,137 @@
+{
+  "id": "python-modules",
+  "title": "Modules & Packages: One Script Becomes a Codebase",
+  "skillFolder": "01-python",
+  "missionId": "M1",
+  "concept": "Modules & Packages",
+  "knowledgeGraphNodeId": "python.modules",
+  "difficulty": "foundational",
+  "dependencies": ["python.functions"],
+  "learningObjectives": [
+    "Split a growing single script into multiple files organized by responsibility",
+    "Import functions/values from one module into another with import and from ... import",
+    "Structure a small package with an __init__.py well enough to explain what it's for",
+    "Recognize a circular import and refactor around it"
+  ],
+  "whyItMatters": "The sensor-intake script has grown across several lessons into ingestion, classification, deduplication, and error-handling logic all crammed into one file. Every later mission adds an entire new area of functionality (forecasting, RL, routing) — none of it will fit in one file, and the Digital Twin's actual codebase needs a real project structure, not one growing script.",
+  "capstoneContribution": "The first real package structure for the Digital Twin's codebase — separating ingestion, classification, and reporting into their own modules that the rest of the AI Energy OS imports from.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "One file now holds every concept from this mission at once.",
+      "content": "`sensor_intake.py` now contains variable assignments, threshold classification, loops, a `classify_demand()` function, set-based source tracking, and error-handled file loading — all in one file that's becoming hard to navigate.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "A 200-line file won't survive forecasting, optimisation, and routing code arriving on top of it.",
+      "content": "A single file was fine for one mission's worth of learning. It will not survive the addition of forecasting, optimisation, and routing code from later missions. Splitting code into modules by responsibility is what keeps a growing codebase navigable.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "A module is a .py file; a package is a directory of modules grouped by an __init__.py.",
+      "content": "A module is just a `.py` file; `import ingestion` gives access to everything in `ingestion.py` via `ingestion.classify_demand(...)`. `from ingestion import classify_demand` imports a specific name directly. A package is a directory containing an `__init__.py` file (even if empty) that groups related modules, importable as `from digital_twin.ingestion import classify_demand`. Circular imports — module A importing from module B while B imports from A — cause import errors and usually mean shared logic belongs in a third module both can depend on.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "One file splits into three module files inside a package folder, with import arrows between them.",
+      "content": "The single `sensor_intake.py` file splits into three separate file icons — `ingestion.py`, `classification.py`, `reporting.py` — inside a `digital_twin/` package folder, with arrows showing which files import from which.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Drag functions into separate module icons and watch import arrows redraw, flagging circular imports.",
+      "content": "Drag functions from one giant file-icon into three separate module icons in a package folder; the visualizer redraws the import arrows live as functions move, flagging in red if a circular import would result.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: split classification into its own module and import it from main.",
+      "content": "```python\n# classification.py\ndef classify_demand(reading_kw, safe_limit_kw=5000, warning_kw=4500):\n    if reading_kw >= safe_limit_kw:\n        return \"OVERLOAD\"\n    elif reading_kw > warning_kw:\n        return \"WARNING\"\n    return \"NORMAL\"\n\n# main.py\nfrom classification import classify_demand\n\nreadings_kw = [4821, 4790, 5100]\nfor reading in readings_kw:\n    print(classify_demand(reading))\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Split your own sensor-intake script into at least two correctly-importing files.",
+      "content": "Split your own sensor-intake script into at least two files — one holding the classification function(s), one holding the main loop that uses them — and get it running correctly with the right import statements.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Resolve a circular import between two modules.",
+      "content": "`a.py` imports from `b.py`, and `b.py` imports from `a.py`, causing an import error. Identify the cycle and refactor the shared piece both files actually need into a third module they can both depend on instead.",
+      "estimatedMinutes": 7
+    },
+    "reflection": {
+      "summary": "Moving code into its own module changes how reusable it is.",
+      "content": "Now that `classify_demand()` lives in its own file, what would it take for a teammate to reuse it in a completely different script without copying and pasting it?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain when to use import vs. from ... import.",
+      "content": "Explain the difference between `import ingestion` and `from ingestion import classify_demand` to someone deciding which one to use in a new script.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Split the accumulated project into a small digital_twin/ package.",
+      "content": "Fully split the accumulated sensor-intake project into a small `digital_twin/` package with at least an ingestion module and a classification module, wired together with correct imports.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This is the shape the rest of the AI Energy OS's code will be organized in.",
+      "content": "This is the first real package structure of the Digital Twin's codebase — the shape the rest of the AI Energy OS's code will be organized in from here on.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-python-modules-package-split",
+      "title": "Package Split",
+      "description": "Sandboxed exercise providing a single monolithic script that the learner must split into a correctly importing multi-module package, including detecting and resolving a planted circular import.",
+      "starterCodePath": "labs/01-python/package-split/starter.py",
+      "testCasesPath": "labs/01-python/package-split/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "module-split-visualizer",
+      "title": "Module Split Visualizer",
+      "description": "Drag-and-drop visualizer splitting a monolithic file into module icons within a package folder, live-flagging circular imports."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-python-modules-1",
+      "front": "What causes a circular import, and what's the usual fix?",
+      "back": "Module A importing from module B while B also imports from A. The usual fix is moving the shared logic both modules actually need into a third module that both can depend on independently.",
+      "conceptNodeId": "python.modules"
+    },
+    {
+      "id": "fc-python-modules-2",
+      "front": "What file marks a directory as a Python package?",
+      "back": "An __init__.py file (which can be empty) inside the directory.",
+      "conceptNodeId": "python.modules"
+    }
+  ],
+  "assessment": {
+    "primaryType": "architectureDesign",
+    "rubric": [
+      "Module boundaries are drawn by responsibility (ingestion vs. classification vs. reporting), not arbitrarily",
+      "No circular imports remain in the final package structure",
+      "Import statements use the more specific from-import form where only a few names are needed, rather than importing entire modules unnecessarily"
+    ]
+  },
+  "references": [
+    {
+      "title": "Python Tutorial — Modules",
+      "url": "https://docs.python.org/3/tutorial/modules.html",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Python Tutorial — Packages",
+      "url": "https://docs.python.org/3/tutorial/modules.html#packages",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

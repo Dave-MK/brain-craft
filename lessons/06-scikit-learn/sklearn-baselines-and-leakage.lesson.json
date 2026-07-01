@@ -1,0 +1,137 @@
+{
+  "id": "sklearn-baselines-and-leakage",
+  "title": "Baselines & Leakage: The Two Ways to Fool Yourself",
+  "skillFolder": "06-scikit-learn",
+  "missionId": "M3",
+  "concept": "Naive Baselines and Time-Series Data Leakage",
+  "knowledgeGraphNodeId": "sklearn.baselines-and-leakage",
+  "difficulty": "foundational",
+  "dependencies": ["sklearn.regression-basics"],
+  "learningObjectives": [
+    "Construct a naive baseline forecast (e.g. 'tomorrow equals today') and explain why it's a required comparison point",
+    "Explain what data leakage means in a time-series context specifically",
+    "Recognize why randomly shuffling time-series data before a train/test split leaks future information into training",
+    "Correctly split time-series data chronologically instead of randomly"
+  ],
+  "whyItMatters": "A good-looking R² score means nothing on its own — if a naive 'assume tomorrow looks like today' baseline scores nearly as well, your model added no real value, and if your split let the model peek at future data during training, its impressive score is simply fake.",
+  "capstoneContribution": "The Digital Twin's baseline-comparison discipline — no forecasting model is considered validated in this mission until it's been shown to beat the naive baseline on a properly time-ordered split, not just to have 'a good score.'",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A shuffled split let 'test' rows come chronologically before some 'training' rows.",
+      "content": "Your linear regression from the last lesson scored reasonably well — but you used `shuffle=True` by habit, mixing readings from across the whole year randomly into train and test, which means some 'test' rows are actually from days chronologically before some 'training' rows.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "A shuffled split can let a model implicitly see the future relative to its test data.",
+      "content": "This is one of the most common, most dangerous mistakes in time-series machine learning: a shuffled split can let the model implicitly learn from data that would be in the future relative to a point you're supposedly testing on, producing scores that look great and are completely untrustworthy.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "A naive baseline is a required comparison point; chronological splitting prevents leakage.",
+      "content": "A naive baseline forecast — 'tomorrow's demand equals today's demand,' or 'this hour equals the same hour yesterday' — requires no model at all, and any real forecasting model must be shown to outperform it to justify its added complexity; a model that ties or loses to the naive baseline has added nothing. Data leakage occurs when information that wouldn't actually be available at prediction time sneaks into training — for time series, `train_test_split(X, y, shuffle=True)` (the default) is a leakage bug by itself, since it lets some training examples come from dates after some test examples, meaning the model can partially 'see the future' relative to what it's being tested on. The fix is a chronological split: everything before a cutoff date is training, everything after is test, with `shuffle=False`, exactly matching how the model would actually be deployed.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "A shuffled split scatters train/test across dates; a chronological split cleanly separates them.",
+      "content": "A timeline of readings shows a shuffled split scattering train/test labels randomly across dates, contrasted with a chronological split cleanly separating an earlier block (train) from a later block (test).",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Toggle between shuffled and chronological splits and see which dates get relabeled.",
+      "content": "Toggle between shuffled and chronological train/test splits on a live timeline visualization and watch which specific dates get relabeled as train vs. test.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: compute a naive baseline and compare it against a properly split model.",
+      "content": "```python\nfrom sklearn.metrics import mean_absolute_error\n\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)\n\nnaive_baseline = y_test.shift(1).bfill()\nbaseline_mae = mean_absolute_error(y_test, naive_baseline)\n\nmodel_mae = mean_absolute_error(y_test, model.predict(X_test))\nprint(f\"Baseline MAE: {baseline_mae}, Model MAE: {model_mae}\")\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Compute a same-hour-yesterday baseline and compare it against your model.",
+      "content": "Compute a naive baseline for `solar_output_kw` predicting each hour as equal to the same hour the previous day, and compare its MAE against your fitted model's MAE from the previous lesson.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a shuffled split on time-series data.",
+      "content": "Code still uses `train_test_split(X, y, shuffle=True)` for a time-series dataset. Explain specifically what leaks and fix by switching to a chronological split.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Barely beating the baseline tells you something important about added complexity.",
+      "content": "If your model's test score barely beats the naive baseline, what does that actually tell you about whether the model is worth the added complexity?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why shuffling is fine elsewhere but wrong for time series.",
+      "content": "Explain to someone why shuffling before splitting is fine for many machine learning problems but specifically wrong for time series, using the 'model sees the future' framing.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Redo the demand model with a correct split and an honest baseline comparison.",
+      "content": "Redo the previous lesson's demand model using a correct chronological split, compute the naive baseline's MAE on the same test set, and report honestly whether your model actually beats it.",
+      "estimatedMinutes": 14
+    },
+    "portfolioEvidence": {
+      "summary": "This is the first honestly-validated number in the Digital Twin's forecasting work.",
+      "content": "This baseline-comparison result is the first honestly-validated number in the Digital Twin's forecasting work — everything after this must clear this same bar.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-sklearn-baselines-leakage-chronological-split",
+      "title": "Chronological Split",
+      "description": "Sandboxed exercise requiring a naive baseline computation and a correctly chronological train/test split, with a planted shuffled-split leakage bug to identify and fix.",
+      "starterCodePath": "labs/06-scikit-learn/chronological-split/starter.py",
+      "testCasesPath": "labs/06-scikit-learn/chronological-split/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "shuffled-vs-chronological-split-visualizer",
+      "title": "Shuffled vs. Chronological Split Visualizer",
+      "description": "Toggle between shuffled and chronological train/test splits on a timeline, highlighting exactly which dates change label."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-sklearn-baselines-leakage-1",
+      "front": "Why is train_test_split(X, y, shuffle=True) a leakage bug for time-series data?",
+      "back": "It can place training examples from dates chronologically after some test examples, letting the model implicitly benefit from information that wouldn't actually be available at the time it's supposedly being tested.",
+      "conceptNodeId": "sklearn.baselines-and-leakage"
+    },
+    {
+      "id": "fc-sklearn-baselines-leakage-2",
+      "front": "Why must every forecasting model be compared against a naive baseline?",
+      "back": "A model that doesn't outperform a trivial baseline like 'tomorrow equals today' hasn't actually added predictive value, no matter how sophisticated it is or how reasonable its raw error score looks in isolation.",
+      "conceptNodeId": "sklearn.baselines-and-leakage"
+    }
+  ],
+  "assessment": {
+    "primaryType": "codeReview",
+    "rubric": [
+      "Correctly identifies shuffled splitting as a leakage bug specific to time-series data, not a generic mistake",
+      "Naive baseline is computed correctly and compared against the model using the same test set and metric",
+      "Reports honestly whether the model actually beats the baseline, rather than only reporting the model's own score"
+    ]
+  },
+  "references": [
+    {
+      "title": "scikit-learn — Common pitfalls: Data leakage",
+      "url": "https://scikit-learn.org/stable/common_pitfalls.html#data-leakage",
+      "type": "officialDocs",
+      "versionOrDate": "scikit-learn 1.5",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "scikit-learn — TimeSeriesSplit",
+      "url": "https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html",
+      "type": "officialDocs",
+      "versionOrDate": "scikit-learn 1.5",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

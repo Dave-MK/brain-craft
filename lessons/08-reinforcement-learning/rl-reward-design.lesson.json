@@ -1,0 +1,137 @@
+{
+  "id": "rl-reward-design",
+  "title": "Reward Design: The Modeling Decision That Decides Everything",
+  "skillFolder": "08-reinforcement-learning",
+  "missionId": "M5",
+  "concept": "Reward Function Design",
+  "knowledgeGraphNodeId": "rl.reward-design",
+  "difficulty": "foundational",
+  "dependencies": ["rl.mdp-fundamentals"],
+  "learningObjectives": [
+    "Explain why reward design is a modeling decision, not an algorithmic detail",
+    "Combine multiple competing objectives (cost, emissions, overload risk) into a single scalar reward with justified weights",
+    "Recognize a reward function that would produce unintended 'reward hacking' behavior before training reveals it",
+    "Iterate on a reward function based on observed agent behavior rather than just intuition upfront"
+  ],
+  "whyItMatters": "The MDP you defined last lesson has a reward function, but a careless one — an RL agent will optimize exactly what you told it to, including any unintended shortcut your reward accidentally permits, and that 'accidentally permits' gap is where most real-world RL projects actually fail.",
+  "capstoneContribution": "The Digital Twin's actual reward function for battery scheduling — the single most consequential design decision in this entire skill folder, since every algorithm downstream will optimize exactly what this function rewards, nothing more and nothing less.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A cost-only reward ignores emissions and safety, producing the wrong kind of 'optimal'.",
+      "content": "Your reward function from the last lesson only accounts for cost. A real grid operator also cares about emissions and never wants the battery pushed into an unsafe state — and a reward that ignores those will train an agent that's technically 'optimal' by a definition nobody actually wanted.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "No algorithmic sophistication later fixes a reward rewarding the wrong behavior.",
+      "content": "This is the single highest-leverage decision in reinforcement learning: an agent trained against the wrong reward will confidently, efficiently optimize for the wrong thing, and no amount of algorithmic sophistication in later lessons fixes a reward function that's rewarding the wrong behavior.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Weighted sums combine objectives; reward hacking exploits gaps between reward and true intent.",
+      "content": "Combining multiple objectives into one scalar reward typically means a weighted sum: `reward = -cost - w1 * emissions - w2 * overload_penalty`, where the weights (`w1`, `w2`) encode relative priority and require deliberate, documented justification, not arbitrary numbers. 'Reward hacking' is when an agent finds a way to maximize reward that technically satisfies the reward function but violates the actual intent — e.g. an agent that discovers it can avoid an overload penalty by simply never discharging the battery at all, technically 'safe' but useless. Reward design is inherently iterative: you define a reward, train an agent, observe its actual behavior, and revise the reward if the behavior reveals a gap your original definition didn't anticipate — this loop, not a single upfront definition, is the realistic process.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "Weighted objective meters combine into one reward; a hacked path branches off exploiting a loophole.",
+      "content": "Three separate objective meters (cost, emissions, overload risk) feed into weighted arrows that combine into a single reward number, with an example of a 'hacked' reward path branching off showing an agent exploiting an unintended loophole.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Adjust objective weights and watch a pre-trained agent's behavior shift, including discovering a hack.",
+      "content": "Adjust the weights on cost/emissions/overload-penalty and watch a pre-trained agent's simulated behavior shift accordingly, including deliberately discovering a reward-hacking exploit at an extreme weight setting.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: combine three objectives into one weighted reward.",
+      "content": "```python\ndef compute_reward(state, action_result, weights):\n    cost_term = -action_result[\"cost\"]\n    emissions_term = -weights[\"emissions\"] * action_result[\"emissions_kg\"]\n    overload_term = -weights[\"overload\"] * action_result[\"overload_penalty\"]\n    return cost_term + emissions_term + overload_term\n\nreward = compute_reward(state, action_result, weights={\"emissions\": 0.5, \"overload\": 10.0})\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Design and sanity-check your own weighted reward for a stated priority.",
+      "content": "Design and justify your own weights for a three-objective reward (cost, emissions, overload risk) for a scenario where the grid operator has explicitly stated emissions matter twice as much as raw cost, and test it against a few hand-constructed scenarios to sanity-check the resulting reward values.",
+      "estimatedMinutes": 14
+    },
+    "debugging": {
+      "summary": "Fix a reward where the overload penalty is too small relative to potential savings.",
+      "content": "A reward's overload penalty is smaller in magnitude than the potential cost savings from risky behavior, meaning a rational agent would learn to accept occasional overloads to save money. Identify the magnitude mismatch and fix the weighting.",
+      "estimatedMinutes": 7
+    },
+    "reflection": {
+      "summary": "A weight that permits unsafe behavior is a reward-design bug, not a code bug.",
+      "content": "If your first reward function's weights turned out to permit occasional overloads because the penalty was too small, is that a bug in the code, or a bug in the reward design itself?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain 'reward hacking' with a concrete example.",
+      "content": "Explain to someone what 'reward hacking' means, using a concrete example of a reward an agent could technically satisfy while violating the actual intent.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Finalize the battery-scheduling reward function with documented iteration.",
+      "content": "Finalize the Digital Twin's battery-scheduling reward function combining cost, emissions, and a hard safety constraint, with a written justification for every weight chosen and at least one documented iteration where you revised a weight after spotting a potential exploit.",
+      "estimatedMinutes": 16
+    },
+    "portfolioEvidence": {
+      "summary": "This is the actual specification of 'good behavior' every algorithm will optimize.",
+      "content": "This reward function is the actual specification of 'good behavior' every RL algorithm in the rest of this skill folder will be trained to satisfy.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-rl-reward-design-multi-objective-reward",
+      "title": "Multi-Objective Reward",
+      "description": "Sandboxed exercise designing and stress-testing a weighted multi-objective reward function, requiring identification of a planted magnitude-mismatch reward-hacking vulnerability.",
+      "starterCodePath": "labs/08-reinforcement-learning/multi-objective-reward/starter.py",
+      "testCasesPath": "labs/08-reinforcement-learning/multi-objective-reward/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "reward-weight-hacking-visualizer",
+      "title": "Reward Weight & Hacking Visualizer",
+      "description": "Adjustable objective-weight sliders showing a pre-trained agent's behavior shift, including a discoverable reward-hacking exploit at extreme settings."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-rl-reward-design-1",
+      "front": "What is 'reward hacking'?",
+      "back": "When an agent finds a way to maximize the reward function that technically satisfies it but violates the actual intent behind it — e.g. avoiding a penalty by never taking the risky action type at all, rather than actually managing the risk well.",
+      "conceptNodeId": "rl.reward-design"
+    },
+    {
+      "id": "fc-rl-reward-design-2",
+      "front": "Why is reward design inherently iterative rather than a one-time upfront definition?",
+      "back": "You typically can't anticipate every gap between the reward function and the true intent in advance — training an agent and observing its actual behavior reveals exploits or omissions you revise the reward to close.",
+      "conceptNodeId": "rl.reward-design"
+    }
+  ],
+  "assessment": {
+    "primaryType": "architectureDesign",
+    "rubric": [
+      "Every weight in the final reward function is justified with a specific, stated reason, not an arbitrary number",
+      "Correctly identifies at least one plausible reward-hacking vulnerability and revises the reward to close it",
+      "Documents at least one iteration where observed or hypothesized agent behavior led to a reward revision"
+    ]
+  },
+  "references": [
+    {
+      "title": "Gymnasium — Basic Usage",
+      "url": "https://gymnasium.farama.org/introduction/basic_usage/",
+      "type": "officialDocs",
+      "versionOrDate": "Gymnasium, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "DeepMind — Specification gaming: the flip side of AI ingenuity",
+      "url": "https://www.deepmind.com/blog/specification-gaming-the-flip-side-of-ai-ingenuity",
+      "type": "other",
+      "versionOrDate": "DeepMind, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

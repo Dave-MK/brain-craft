@@ -1,0 +1,130 @@
+{
+  "id": "sql-select-where",
+  "title": "SELECT & WHERE: Asking the Database a Question",
+  "skillFolder": "03-sql",
+  "missionId": "M2",
+  "concept": "SELECT and WHERE",
+  "knowledgeGraphNodeId": "sql.select-where",
+  "difficulty": "introductory",
+  "dependencies": ["python.files-io"],
+  "learningObjectives": [
+    "Write a SELECT statement to retrieve specific columns instead of an entire table",
+    "Filter rows with WHERE using comparison and boolean operators",
+    "Sort results with ORDER BY and limit them with LIMIT",
+    "Explain why querying a database scales better than loading an entire CSV into memory just to filter it"
+  ],
+  "whyItMatters": "The CSV loader you built in Python loads an entire file into memory just to find a handful of matching rows. The Digital Twin's dataset will grow into millions of readings — a real database lets you ask for exactly the rows you need without ever loading the rest.",
+  "capstoneContribution": "The Digital Twin's first real query layer against a proper readings table — replacing 'load the whole CSV and filter in Python' with 'ask the database for exactly what's needed.'",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Loading an entire file just to filter it won't scale to real grid data.",
+      "content": "Your Python script loads an entire CSV file into a list just to find the readings above 5000 kW. That works for a thousand rows. It will not work for a year of every-minute readings across a real grid.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Databases let the database do the filtering, not your loop.",
+      "content": "This is exactly why databases exist: asking a specific, precise question ('give me only the OVERLOAD readings from July') should not require loading everything else into memory first. This is the first lesson where the database does the filtering instead of your Python loop doing it.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "SELECT chooses columns, WHERE filters rows, ORDER BY sorts, LIMIT caps the result.",
+      "content": "`SELECT column1, column2 FROM table_name WHERE condition;` retrieves only the specified columns, for only rows matching the condition. `WHERE demand_kw >= 5000` filters exactly like the `if` conditions from Mission 1, but the database applies it to every row without your code ever seeing the rows that don't match. `ORDER BY column DESC` sorts results; `LIMIT n` caps how many rows come back — useful for 'the 10 highest readings' instead of every matching row.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "WHERE acts as a filter/sieve; ORDER BY and LIMIT further trim and sort what comes through.",
+      "content": "A full table of rows flows through WHERE acting like a filter/sieve that only lets matching rows through to the result set, with ORDER BY and LIMIT further trimming and sorting what comes out the other side.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Edit a live query and watch matching rows highlight in real time.",
+      "content": "Edit a SELECT/WHERE query against a live sample readings table and watch the result-set rows highlight/filter in real time as the WHERE condition changes.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: select, filter, sort, and limit against a readings table.",
+      "content": "```sql\nSELECT timestamp, demand_kw, source\nFROM readings\nWHERE demand_kw >= 5000\nORDER BY demand_kw DESC\nLIMIT 10;\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Query the 5 lowest solar readings after a given timestamp, unaided.",
+      "content": "Write a query against the same readings table that returns the 5 lowest `solar_output_kw` readings recorded after a given timestamp.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Fix a boundary bug in a WHERE clause, echoing the Mission 1 if-statement lesson.",
+      "content": "A query using `WHERE demand_kw > 5000` is missing a row where `demand_kw` is exactly `5000`, which the spec says should count as OVERLOAD. Fix the operator.",
+      "estimatedMinutes": 5
+    },
+    "reflection": {
+      "summary": "The same boundary-operator mistake keeps showing up across different tools.",
+      "content": "You've now hit this exact boundary-operator mistake twice — once in Python's if statements, once in SQL's WHERE. Why does the same category of mistake keep showing up across completely different tools?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why database-side filtering beats loading everything and filtering in code.",
+      "content": "Explain to someone why `SELECT * FROM readings` followed by filtering in your own code is worse than filtering with WHERE, for a table with millions of rows.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Write three real queries against a seeded readings table.",
+      "content": "Given a seeded readings table (loaded from the CSV you worked with in Mission 1's Files & I/O lesson), write three queries: highest demand reading, all OVERLOAD-range readings from a specific source, and the lowest 5 solar readings.",
+      "estimatedMinutes": 12
+    },
+    "portfolioEvidence": {
+      "summary": "These queries are the Digital Twin's first direct interface to its stored data.",
+      "content": "These three queries are the Digital Twin's first real, direct interface to its stored data — the foundation every later reporting and forecasting feature will query through.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-sql-select-where-basic-queries",
+      "title": "Basic Queries",
+      "description": "Sandboxed exercise against a seeded readings table requiring correct SELECT/WHERE/ORDER BY/LIMIT usage, including boundary-value test cases.",
+      "starterCodePath": "labs/03-sql/basic-queries/starter.sql",
+      "testCasesPath": "labs/03-sql/basic-queries/test_cases.sql"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "where-filter-visualizer",
+      "title": "WHERE Filter Visualizer",
+      "description": "Live table showing rows highlighting/filtering in real time as a WHERE condition is edited."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-sql-select-where-1",
+      "front": "Why is 'SELECT * FROM readings' and filtering in Python worse than 'SELECT ... WHERE ...' for a huge table?",
+      "back": "The WHERE version lets the database apply the filter internally and only send back matching rows, avoiding loading and transferring every row just to discard most of them in application code.",
+      "conceptNodeId": "sql.select-where"
+    },
+    {
+      "id": "fc-sql-select-where-2",
+      "front": "What does LIMIT 10 do to a query's result set?",
+      "back": "It caps the returned rows to at most 10, applied after any WHERE filtering and ORDER BY sorting.",
+      "conceptNodeId": "sql.select-where"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly identifies and fixes the boundary operator bug, explaining why it matters, not just applying the fix",
+      "All three mini-project queries return correct results against the seeded table",
+      "Correctly explains why database-side filtering scales better than loading everything into application code"
+    ]
+  },
+  "references": [
+    {
+      "title": "PostgreSQL Documentation — SELECT",
+      "url": "https://www.postgresql.org/docs/current/sql-select.html",
+      "type": "officialDocs",
+      "versionOrDate": "PostgreSQL 16",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

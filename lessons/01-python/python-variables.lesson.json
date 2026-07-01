@@ -1,0 +1,138 @@
+{
+  "id": "python-variables",
+  "title": "Variables: Giving a Reading a Name",
+  "skillFolder": "01-python",
+  "missionId": "M1",
+  "concept": "Variables",
+  "knowledgeGraphNodeId": "python.variables",
+  "difficulty": "introductory",
+  "dependencies": [],
+  "learningObjectives": [
+    "Assign a value to a variable and explain what actually happens in memory when you do",
+    "Choose descriptive variable names that reflect real-world meaning instead of generic placeholders",
+    "Reassign a variable and predict what happens to the old value",
+    "Use variables together to compute and print a derived value from raw readings"
+  ],
+  "whyItMatters": "Every layer of the AI Energy OS starts here. A weather API response, a substation's current demand reading, a battery's state of charge — every one of them is a single value that has to be given a name before your code can do anything with it. If you can't reliably hold and reuse a value, you can't forecast, optimise, or simulate anything downstream.",
+  "capstoneContribution": "Digital Twin data ingestion — the smallest unit of the weather/consumption/price data pipeline: holding one sensor reading in memory before it is stored, transformed, or forecasted.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A single sensor reading arrives and needs to survive past the current line of code.",
+      "content": "A substation sensor hands your program one number: the current electricity demand, `4821` (kW). The instant your program moves to the next line, that number is gone unless you've kept hold of it. How do you keep a value around long enough to actually use it?",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This exact problem repeats everywhere in the AI Energy OS.",
+      "content": "A weather API returns a temperature. A price feed returns a price. A battery reports its charge level. Every one of these is a raw value that needs a name and a place to live before it becomes useful. Variables are that mechanism — the first tool in the entire pipeline, and the one every later mission quietly depends on.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "A variable is a name bound to a value; Python variables are dynamically typed and rebindable.",
+      "content": "In Python, `demand_kw = 4821` creates a name, `demand_kw`, and binds it to the value `4821`. Unlike some languages, you never declare a type up front — the name can be rebound to a value of a different type later, though doing so on purpose (rather than by accident) is a discipline you'll build over this mission. Naming rules: letters, digits, and underscores only, must not start with a digit, and — critically for readability months from now — should describe what the value *means*, not just what type it is.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "A labeled box pointing at a value in memory, where the label — not the value — is what moves on reassignment.",
+      "content": "The accompanying diagram shows a box labeled `demand_kw` with an arrow pointing to the value `4821` sitting in memory. When the code runs `demand_kw = 5100`, the diagram animates the label detaching from `4821` and reattaching to a new value, `5100` — `4821` doesn't change, the label just points somewhere else now. This is the single most common misconception this lesson exists to prevent.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Drag a value into a labeled box, then reassign it and watch the label move.",
+      "content": "In the embedded simulator (see `simulations`), drag the value `4821` into a box labeled `demand_kw`, run one line of code that reassigns it to `5100`, and observe the label detach and reattach live rather than the box's contents being edited in place.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: assign a raw reading, convert its units, and print both.",
+      "content": "```python\ndemand_kw = 4821\nprint(demand_kw)\n\ndemand_mw = demand_kw / 1000\nprint(f\"Current demand: {demand_mw} MW\")\n```\nRun this exactly as written first. Then change `4821` to a different number and re-run — notice `demand_mw` automatically reflects the new value only after you re-run the conversion line, not automatically.",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Store three raw readings and compute one derived value from them, unaided.",
+      "content": "Without looking back at the guided example, write a short script that: (1) stores a temperature reading in Celsius, a wind speed in km/h, and a solar output in kW, each in a clearly named variable; (2) computes the temperature in Fahrenheit as a derived variable; (3) prints a single formatted status line using all four values.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a broken script that fails because Python variable names are case-sensitive.",
+      "content": "```python\nWind_Speed_Kmh = 18\nprint(f\"Wind speed: {wind_speed_kmh} km/h\")\n```\nThis raises a `NameError`. Find why, fix it, and explain in one sentence why Python didn't just assume you meant the variable you clearly intended.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Connect naming discipline to future debugging cost.",
+      "content": "If you'd named your demand variable `x` instead of `demand_kw`, how much harder would this lesson's independent coding task have been to read a week from now? Where else in the AI Energy OS — forecasting code, the RL reward function — will an unclear name cost you real debugging time later?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain variables to a hypothetical junior engineer without using the word 'box'.",
+      "content": "In 3-5 sentences, explain what a variable is and why descriptive naming matters, to someone who has never programmed, without relying on the box/label metaphor used earlier in this lesson. The AI Tutor will probe for whether you actually understand rebinding vs. mutation, or are just repeating the metaphor.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Ingest three hard-coded sensor readings into named variables and print a one-line status report.",
+      "content": "Write a five-line script that stands in for a future live sensor feed: three raw readings as hard-coded numbers (temperature, demand, solar output), each in a clearly named variable, one derived value computed from them, and a single printed status line. This script is the seed of the Digital Twin's data-ingestion path.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This script becomes the first committed file in the Digital Twin's data-ingestion folder.",
+      "content": "Keep the mini project script — once you reach `02-git`, it becomes the first file you commit into the Digital Twin's data-ingestion path, and you'll be able to point to it as the literal first line of the AI Energy OS.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-python-variables-sensor-intake",
+      "title": "Sensor Intake: Name Three Readings",
+      "description": "A sandboxed exercise where the learner is given three raw, unlabeled numeric values (representing demand, temperature, and solar output) and must assign them to correctly named variables, then pass automated checks that inspect the resulting names and derived calculation.",
+      "starterCodePath": "labs/01-python/sensor-intake/starter.py",
+      "testCasesPath": "labs/01-python/sensor-intake/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "variable-memory-visualizer",
+      "title": "Variable Memory Visualizer",
+      "description": "Drag-and-drop simulator showing a named label attaching/detaching from values in memory on assignment and reassignment."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-python-variables-1",
+      "front": "What actually changes in memory when you reassign a Python variable, e.g. `demand_kw = 5100` after `demand_kw = 4821`?",
+      "back": "The name `demand_kw` is rebound to point at the new value `5100`. The old value `4821` isn't edited — the label simply points somewhere else now (and `4821` is garbage-collected if nothing else references it).",
+      "conceptNodeId": "python.variables"
+    },
+    {
+      "id": "fc-python-variables-2",
+      "front": "Why does `wind_speed_kmh` fail with a NameError if you only ever assigned `Wind_Speed_Kmh`?",
+      "back": "Python variable names are case-sensitive; `wind_speed_kmh` and `Wind_Speed_Kmh` are two different names, and only the one actually assigned exists.",
+      "conceptNodeId": "python.variables"
+    }
+  ],
+  "assessment": {
+    "primaryType": "projectWork",
+    "rubric": [
+      "All variable names are descriptive of real-world meaning, not generic (no `x`, `temp1`, `val`)",
+      "At least one derived value is correctly computed from raw variables rather than hard-coded separately",
+      "Script runs without errors and produces a correctly formatted status line",
+      "Teach-back explanation correctly distinguishes rebinding from mutation without relying on the box metaphor"
+    ]
+  },
+  "references": [
+    {
+      "title": "Python Language Reference — Assignment statements",
+      "url": "https://docs.python.org/3/reference/simple_stmts.html#assignment-statements",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "PEP 8 — Naming Conventions",
+      "url": "https://peps.python.org/pep-0008/#naming-conventions",
+      "type": "standard",
+      "versionOrDate": "PEP 8",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

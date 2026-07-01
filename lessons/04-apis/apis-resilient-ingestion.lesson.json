@@ -1,0 +1,137 @@
+{
+  "id": "apis-resilient-ingestion",
+  "title": "Resilient Ingestion: A Client That Survives Real Conditions",
+  "skillFolder": "04-apis",
+  "missionId": "M2",
+  "concept": "Building a Resilient API Ingestion Client",
+  "knowledgeGraphNodeId": "apis.resilient-ingestion",
+  "difficulty": "intermediate",
+  "dependencies": ["apis.rate-limits-retries", "apis.pagination"],
+  "learningObjectives": [
+    "Combine authentication, JSON parsing, retries/backoff, and pagination into one coherent client",
+    "Cache a recent successful response so a transient outage doesn't leave the Digital Twin with no data at all",
+    "Log failures with enough detail to diagnose them later without needing to reproduce the exact conditions",
+    "Decide, for a real failure scenario, what the Digital Twin should do when live data simply isn't available right now"
+  ],
+  "whyItMatters": "Every piece of this skill folder has been practiced in isolation — auth here, retries there, pagination somewhere else. A real ingestion client needs all of them working together simultaneously, and it needs to fail gracefully in ways the rest of the Digital Twin can actually handle, since Mission 3's forecasting work will assume this feed is dependable.",
+  "capstoneContribution": "The Digital Twin's actual, production-shaped weather and price ingestion client — the single piece of code every later mission's live-data assumption rests on.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Every capability works alone but has never been tested together, unpredictably.",
+      "content": "Your weather client authenticates correctly, parses responses correctly, retries correctly, and paginates correctly — but only when tested one capability at a time. You've never run it end to end against a service that might fail in any of those ways at any moment, unpredictably.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Production software fails in combination, unattended, with no one watching.",
+      "content": "This is the actual shape of production software: not one clean scenario, but every failure mode you've studied this skill folder, potentially at once, with no one watching to restart it by hand. This is the gap between a working exercise and a system the AI Energy OS can actually depend on.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Layer every prior skill, and fall back to cached data rather than returning nothing.",
+      "content": "A resilient client layers every skill from this folder: authenticate, request, check status, retry with backoff on transient failures, paginate to completeness, and — critically — fall back to the last known-good cached response rather than returning nothing when a live request ultimately fails after all retries are exhausted. Logging a failure means recording enough context (endpoint, parameters, status code, timestamp, retry count) that a human reviewing it later can understand what happened without needing to reproduce the exact network conditions. The Digital Twin's own behavior when live data is unavailable should be a deliberate decision — e.g. 'use the last cached weather reading and flag it as stale' — not an unhandled crash.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "Every prior mechanism layers together, with a fallback branch to cached data as the last resort.",
+      "content": "All five prior lessons' mechanisms (auth, parsing, retry/backoff, pagination, and now caching/fallback) are shown as layered stages a request passes through, with a fallback path branching off to 'return last cached response, flagged stale' only after retries are truly exhausted.",
+      "estimatedMinutes": 5
+    },
+    "interactiveDemo": {
+      "summary": "Watch the resilient client correctly route a mix of injected failures.",
+      "content": "Interact with a simulated flaky endpoint that randomly fails in different ways (401, 429, malformed JSON, timeout) across multiple calls, watching the resilient client correctly route each failure through the right handling path, falling back to cache only when genuinely necessary.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: assemble a client with retry, fallback, and staleness flagging.",
+      "content": "```python\n_last_good_response = None\n\ndef fetch_weather_resilient(url, headers, params):\n    global _last_good_response\n    try:\n        response = fetch_with_backoff(url, headers, params)\n        record = parse_weather_response(response)\n        _last_good_response = record\n        return record\n    except RuntimeError as e:\n        log_failure(url, params, str(e))\n        if _last_good_response:\n            return {**_last_good_response, \"stale\": True}\n        raise\n```",
+      "estimatedMinutes": 10
+    },
+    "independentCoding": {
+      "summary": "Add structured logging and a test that exercises the cached-fallback path.",
+      "content": "Add structured logging (endpoint, params, status/error, timestamp, retry count) to the resilient client above, and write a test that deliberately exhausts retries to confirm the cached fallback and stale flag both work correctly.",
+      "estimatedMinutes": 15
+    },
+    "debugging": {
+      "summary": "Fix a silent stale-fallback that doesn't flag itself as stale.",
+      "content": "A resilient client falls back to a stale cached value silently, without marking it as stale, causing a downstream consumer to treat old data as current. Add the missing stale flag and propagate it correctly.",
+      "estimatedMinutes": 7
+    },
+    "reflection": {
+      "summary": "Which failure mode is most likely to actually occur once this runs unattended for weeks?",
+      "content": "As the synthesis of this entire skill folder: which single failure mode studied here do you think is most likely to actually occur once this runs unattended for weeks, and does your client actually handle that one well?",
+      "estimatedMinutes": 5
+    },
+    "teachBack": {
+      "summary": "Narrate the full failure-handling path end to end.",
+      "content": "Explain to someone the full failure-handling path of your resilient client, end to end, from a successful request through every possible failure branch to the final cached fallback.",
+      "estimatedMinutes": 6
+    },
+    "miniProject": {
+      "summary": "Assemble and stress-test the final resilient ingestion client.",
+      "content": "Assemble the final resilient ingestion client combining every skill from this folder, and run it against a simulated endpoint that injects a realistic mix of failures across 50 consecutive calls, reporting how many succeeded live, how many succeeded via retry, and how many fell back to stale cache.",
+      "estimatedMinutes": 20
+    },
+    "portfolioEvidence": {
+      "summary": "Every later mission's forecasting and optimisation work depends on this client.",
+      "content": "This is the actual, production-shaped ingestion client every later mission's forecasting and optimisation work will depend on having live (or gracefully degraded) data to work with.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": true,
+  "labs": [
+    {
+      "id": "lab-apis-resilient-ingestion-final-client",
+      "title": "Final Client",
+      "description": "Sandboxed exercise against a chaos-injecting simulated endpoint requiring a fully assembled resilient client with auth, retry/backoff, pagination, logging, and stale-cache fallback all working together correctly.",
+      "starterCodePath": "labs/04-apis/final-client/starter.py",
+      "testCasesPath": "labs/04-apis/final-client/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "resilient-client-failure-router",
+      "title": "Resilient Client Failure Router",
+      "description": "Shows an incoming mix of injected failures being routed through the correct handling path — retry, non-retryable failure, or stale-cache fallback — in real time."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-apis-resilient-ingestion-1",
+      "front": "Why must a stale-cache fallback be explicitly flagged as stale, rather than returned silently as if it were fresh?",
+      "back": "A downstream consumer (like a forecasting model) needs to know the data is stale to decide whether to trust it, discount it, or wait — treating stale data as current can silently corrupt decisions built on top of it.",
+      "conceptNodeId": "apis.resilient-ingestion"
+    },
+    {
+      "id": "fc-apis-resilient-ingestion-2",
+      "front": "What information should a failure log entry include to be useful without reproducing the exact conditions?",
+      "back": "At minimum: the endpoint and parameters called, the status code or error encountered, the timestamp, and how many retries were attempted before giving up.",
+      "conceptNodeId": "apis.resilient-ingestion"
+    }
+  ],
+  "assessment": {
+    "primaryType": "architectureDesign",
+    "rubric": [
+      "Client correctly combines authentication, retry/backoff, pagination, and stale-cache fallback without any capability regressing when combined",
+      "Stale-cache fallback is explicitly flagged and only used after retries are genuinely exhausted, not as a shortcut",
+      "Failure logs contain enough detail for a human to diagnose the issue without reproducing the exact network conditions"
+    ]
+  },
+  "references": [
+    {
+      "title": "AWS Builders' Library — Timeouts, retries, and backoff with jitter",
+      "url": "https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/",
+      "type": "other",
+      "versionOrDate": "AWS Builders' Library, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Martin Fowler — CircuitBreaker",
+      "url": "https://martinfowler.com/bliki/CircuitBreaker.html",
+      "type": "other",
+      "versionOrDate": "martinfowler.com, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

@@ -1,0 +1,137 @@
+{
+  "id": "pytorch-sequence-models",
+  "title": "Sequence Models: Giving the Network a Memory",
+  "skillFolder": "07-pytorch",
+  "missionId": "M4",
+  "concept": "Sequence Models for Time Series (RNN/LSTM)",
+  "knowledgeGraphNodeId": "pytorch.sequence-models",
+  "difficulty": "intermediate",
+  "dependencies": ["pytorch.overfitting-regularization"],
+  "learningObjectives": [
+    "Explain why a plain feedforward network treats each timestep independently and can't exploit sequential order",
+    "Explain, at a conceptual level, how a recurrent layer passes information from one timestep to the next",
+    "Prepare a sequence of past readings into the sliding-window input shape an LSTM expects",
+    "Train an LSTM-based forecaster and compare its use of sequence context against the feedforward version"
+  ],
+  "whyItMatters": "Your feedforward network from earlier in this mission takes a single row of features and predicts one output — it has no concept of 'yesterday' or 'the last 6 hours' unless you manually engineer that into separate columns. Demand and weather both have real momentum and daily rhythm; a model that can natively use a sequence of past readings, not just the current one, should be able to exploit that.",
+  "capstoneContribution": "The Digital Twin's sequence-aware forecaster — a model that natively consumes the last several hours of readings as an ordered sequence, rather than needing every lag manually engineered as a separate feature column.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Hand-engineered lag features only capture one specific lag, not a full sequence.",
+      "content": "Your feature table already includes manually engineered lag features (`temp_c_lag_1h`) from Mission 2, but that only captures one specific lag — a model that could natively process an entire recent sequence might capture patterns those hand-picked lags miss entirely.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Recurrent architectures are built specifically to exploit sequence and order.",
+      "content": "This is the direct technical answer to a limitation baked into every model so far in this mission: feedforward networks and scikit-learn models see one row at a time, with no inherent sense of order or memory, unless you hand-engineer it. Recurrent architectures are built specifically to exploit sequence and order.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "An LSTM carries a hidden state forward across timesteps, expecting input shaped as (batch, sequence, features).",
+      "content": "An RNN processes a sequence one timestep at a time, maintaining a hidden state that carries information forward from earlier timesteps to later ones — in principle giving it access to everything it's seen in the sequence so far. Plain RNNs struggle to retain information over long sequences (vanishing gradients across many timesteps); an LSTM (Long Short-Term Memory) adds gating mechanisms specifically designed to preserve relevant information over longer sequences. In PyTorch, `nn.LSTM(input_size, hidden_size, batch_first=True)` expects input shaped as `(batch, sequence_length, features)` — meaning your data must be reshaped into overlapping windows of, say, the last 24 hours of readings per training example, rather than one row per example as in the earlier feedforward lessons.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "A hidden state carries forward across an unrolled LSTM; a feedforward net resets each step.",
+      "content": "An LSTM unrolled across several timesteps shows a hidden state arrow carrying forward from each timestep to the next, contrasted with a feedforward network shown processing each timestep completely independently with no such connection.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Step through an LSTM's hidden state carrying forward across a short sequence.",
+      "content": "Step through an LSTM processing a short sequence one timestep at a time, watching the hidden state's visualized values update and carry forward, versus a feedforward network shown resetting with no memory at each step.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: define an LSTM forecaster and build sliding-window sequences.",
+      "content": "```python\nclass LSTMForecaster(nn.Module):\n    def __init__(self, n_features, hidden_size=32):\n        super().__init__()\n        self.lstm = nn.LSTM(n_features, hidden_size, batch_first=True)\n        self.output_layer = nn.Linear(hidden_size, 1)\n\n    def forward(self, x):\n        _, (hidden, _) = self.lstm(x)\n        return self.output_layer(hidden[-1])\n\nsequences = build_sliding_windows(feature_table, window_size=24)\n```",
+      "estimatedMinutes": 10
+    },
+    "independentCoding": {
+      "summary": "Implement the sliding-window reshaping function and verify its output shapes.",
+      "content": "Implement the `build_sliding_windows` function that reshapes your feature table into `(batch, 24, n_features)` sequences with corresponding next-hour targets, and verify the resulting shapes match what `nn.LSTM` expects.",
+      "estimatedMinutes": 15
+    },
+    "debugging": {
+      "summary": "Fix a shape mismatch caused by a missing sequence dimension.",
+      "content": "Code passes data shaped as `(batch, features)` directly to an `nn.LSTM` expecting `(batch, sequence_length, features)`, producing a shape-mismatch error. Diagnose the missing sequence dimension and fix the reshaping.",
+      "estimatedMinutes": 7
+    },
+    "reflection": {
+      "summary": "An LSTM might catch patterns a single hand-engineered lag feature misses.",
+      "content": "What specific kind of pattern might an LSTM catch that your hand-engineered lag-1-hour feature from Mission 2 would miss entirely?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain what the LSTM's hidden state carries forward, without saying 'memory'.",
+      "content": "Explain to someone, at a conceptual level, what the LSTM's hidden state is actually carrying forward between timesteps, without using the word 'memory' as your only explanation.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Train an LSTM forecaster and compare it against the feedforward network.",
+      "content": "Train an LSTM-based demand forecaster on 24-hour sliding windows of your feature table, and compare its validation loss against the feedforward network's from earlier lessons on the exact same held-out period.",
+      "estimatedMinutes": 18
+    },
+    "portfolioEvidence": {
+      "summary": "This is the direct comparison point for whether sequence awareness is worth the complexity.",
+      "content": "This sequence-aware forecaster is the most sophisticated model the Digital Twin has built so far, and the direct comparison point for whether sequence awareness is actually worth its added complexity.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-pytorch-sequence-models-lstm-forecaster",
+      "title": "LSTM Forecaster",
+      "description": "Sandboxed exercise implementing sliding-window sequence preparation and an LSTM-based forecaster, with a planted shape-mismatch bug to diagnose and fix.",
+      "starterCodePath": "labs/07-pytorch/lstm-forecaster/starter.py",
+      "testCasesPath": "labs/07-pytorch/lstm-forecaster/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "lstm-hidden-state-visualizer",
+      "title": "LSTM Hidden State Visualizer",
+      "description": "Step-through animation of an LSTM's hidden state carrying forward across a short input sequence."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-pytorch-sequence-models-1",
+      "front": "What input shape does nn.LSTM expect with batch_first=True?",
+      "back": "(batch, sequence_length, features) — a batch of sequences, each containing multiple timesteps, each timestep having some number of features.",
+      "conceptNodeId": "pytorch.sequence-models"
+    },
+    {
+      "id": "fc-pytorch-sequence-models-2",
+      "front": "Why can an LSTM struggle less with long sequences than a plain RNN?",
+      "back": "LSTMs add gating mechanisms specifically designed to preserve relevant information over longer sequences, mitigating the vanishing-gradient problem that makes plain RNNs lose earlier information over many timesteps.",
+      "conceptNodeId": "pytorch.sequence-models"
+    }
+  ],
+  "assessment": {
+    "primaryType": "projectWork",
+    "rubric": [
+      "Sliding-window reshaping produces correctly shaped sequences and aligned next-step targets",
+      "LSTM forecaster trains successfully and is evaluated on the same held-out period as the feedforward comparison",
+      "Correctly diagnoses and fixes the shape-mismatch bug from missing the sequence dimension"
+    ]
+  },
+  "references": [
+    {
+      "title": "PyTorch Documentation — torch.nn.LSTM",
+      "url": "https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html",
+      "type": "officialDocs",
+      "versionOrDate": "PyTorch 2.3",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Understanding LSTM Networks",
+      "url": "https://colah.github.io/posts/2015-08-Understanding-LSTMs/",
+      "type": "other",
+      "versionOrDate": "colah.github.io, 2015",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

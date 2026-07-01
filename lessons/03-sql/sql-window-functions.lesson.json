@@ -1,0 +1,130 @@
+{
+  "id": "sql-window-functions",
+  "title": "Window Functions: Trends Without Losing the Row",
+  "skillFolder": "03-sql",
+  "missionId": "M2",
+  "concept": "Window Functions",
+  "knowledgeGraphNodeId": "sql.window-functions",
+  "difficulty": "intermediate",
+  "dependencies": ["sql.schema-design"],
+  "learningObjectives": [
+    "Compute a rolling average or running total without collapsing rows the way GROUP BY does",
+    "Use OVER (PARTITION BY ... ORDER BY ...) to define a window per group in a defined order",
+    "Rank or number rows within a group using ROW_NUMBER() or RANK()",
+    "Explain why a window function is the right tool when you need both the detail row and a computed trend alongside it"
+  ],
+  "whyItMatters": "A daily average (from the Aggregation lesson) collapses an entire day into one number — useful for a summary, useless if you need to see each individual reading alongside a rolling 3-hour average to spot a trend forming in real time. This is the direct SQL precursor to the rolling/resampling operations Mission 3's pandas lessons formalize.",
+  "capstoneContribution": "The Digital Twin's trend-detection queries — a rolling average alongside every individual reading, the SQL-level version of the smoothing Mission 3's pandas and forecasting work will build on.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "GROUP BY collapses exactly the individual rows a trend view needs.",
+      "content": "You want to see each individual demand reading alongside a rolling 3-hour average, to spot a trend forming — but GROUP BY collapses rows into one summary per group, which throws away exactly the individual rows you need to see.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "'Show me the trend as it develops' is a genuinely different need from 'summarize the day.'",
+      "content": "This is the gap between 'summarize the day' (Aggregation) and 'show me the trend as it develops, row by row' — a genuinely different, very common need once you're looking for patterns rather than single totals.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Window functions compute per-row values over a related set of rows without collapsing them.",
+      "content": "A window function computes a value across a set of related rows (the 'window') without collapsing them into fewer rows, unlike GROUP BY. `AVG(demand_kw) OVER (PARTITION BY source_id ORDER BY timestamp ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)` computes a rolling 3-row average per source, ordered by time, while still returning one row per original reading. `ROW_NUMBER() OVER (PARTITION BY source_id ORDER BY demand_kw DESC)` numbers each source's readings from highest to lowest, useful for 'the top 3 readings per substation' type questions that GROUP BY alone can't express.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "A sliding window moves down an ordered sequence, attaching a rolling value to each current row.",
+      "content": "A sequence of individual rows shows a sliding 3-row window highlighted as it moves down the ordered sequence, each position computing and attaching its own rolling average value to the current row rather than replacing it.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Adjust a window size and watch the rolling-average column update per row live.",
+      "content": "Adjust a window size slider (e.g. 2-row vs. 5-row rolling average) over a live sequence of readings and watch the computed rolling-average column update per row in real time.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: compute a rolling average alongside every individual row.",
+      "content": "```sql\nSELECT\n    source_id,\n    timestamp,\n    demand_kw,\n    AVG(demand_kw) OVER (\n        PARTITION BY source_id\n        ORDER BY timestamp\n        ROWS BETWEEN 2 PRECEDING AND CURRENT ROW\n    ) AS rolling_avg_3\nFROM readings\nORDER BY source_id, timestamp;\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Rank readings per source and filter to the top 3, unaided.",
+      "content": "Write a query that numbers each source's readings by `demand_kw` descending using `ROW_NUMBER()`, then filters to only the top 3 per source using that numbering.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Recognize when GROUP BY was the wrong tool and rewrite using OVER().",
+      "content": "A query uses `GROUP BY` for a task that needed a per-row rolling average, and the individual reading rows got collapsed away, losing exactly the detail the task required. Identify why `GROUP BY` was the wrong tool and rewrite using a window function.",
+      "estimatedMinutes": 7
+    },
+    "reflection": {
+      "summary": "GROUP BY throws detail away; window functions preserve it alongside the computed value.",
+      "content": "What's the real difference between what GROUP BY throws away and what a window function preserves, and why did that distinction matter for this specific task?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why a window function can select the raw column and its own aggregate together.",
+      "content": "Explain to someone why `AVG(demand_kw) OVER (...)` can appear in the same SELECT as `demand_kw` itself, when a GROUP BY query could never do that.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Add a rolling average column to the earlier report without losing detail rows.",
+      "content": "Add a rolling 3-hour average column to the Digital Twin's readings report from the Aggregation lesson, without losing any individual reading rows.",
+      "estimatedMinutes": 14
+    },
+    "portfolioEvidence": {
+      "summary": "This is the SQL-level precursor to Mission 3's pandas rolling/resampling work.",
+      "content": "This rolling-average query is the direct SQL-level precursor to the resampling/rolling operations Mission 3's pandas lessons will build on top of.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-sql-window-functions-rolling-average",
+      "title": "Rolling Average",
+      "description": "Sandboxed exercise requiring a per-source rolling average via window function and a ROW_NUMBER()-based top-N-per-group query.",
+      "starterCodePath": "labs/03-sql/rolling-average/starter.sql",
+      "testCasesPath": "labs/03-sql/rolling-average/test_cases.sql"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "sliding-window-visualizer",
+      "title": "Sliding Window Visualizer",
+      "description": "Animates a sliding window moving across an ordered row sequence, computing a rolling value at each position without collapsing rows."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-sql-window-functions-1",
+      "front": "What's the key difference between a window function and GROUP BY?",
+      "back": "A window function computes a value across a set of related rows but still returns one row per original row. GROUP BY collapses all rows in a group into a single summary row.",
+      "conceptNodeId": "sql.window-functions"
+    },
+    {
+      "id": "fc-sql-window-functions-2",
+      "front": "What does PARTITION BY source_id do inside an OVER() clause?",
+      "back": "It restarts the window's computation separately for each distinct source_id, so the rolling average (or ranking) for one source never mixes in rows from a different source.",
+      "conceptNodeId": "sql.window-functions"
+    }
+  ],
+  "assessment": {
+    "primaryType": "codeReview",
+    "rubric": [
+      "Correctly identifies when a window function is needed instead of GROUP BY, based on whether detail rows must be preserved",
+      "PARTITION BY and ORDER BY are used correctly so the window computes per-source, time-ordered results",
+      "Rolling average / ranking results are verified against a small hand-computed example, not just assumed correct"
+    ]
+  },
+  "references": [
+    {
+      "title": "PostgreSQL Documentation — Window Functions Tutorial",
+      "url": "https://www.postgresql.org/docs/current/tutorial-window.html",
+      "type": "officialDocs",
+      "versionOrDate": "PostgreSQL 16",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

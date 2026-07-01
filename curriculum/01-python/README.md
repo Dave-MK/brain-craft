@@ -28,4 +28,4 @@ None — this is the entry point.
 
 ## Status
 
-Skeleton only. No lessons authored yet — see [`docs/20-roadmap/overview.md`](../../docs/20-roadmap/overview.md) Phase 0/1.
+Complete. All 11 lessons authored and schema-validated in [`lessons/01-python/`](../../lessons/01-python/): Variables, Control Flow, Lists, Loops, Functions, Dictionaries, Sets, Error Handling, Files & I/O, Modules & Packages, and Basic OOP (boss battle). This is the first fully finished skill folder — see [`docs/20-roadmap/overview.md`](../../docs/20-roadmap/overview.md).

@@ -1,0 +1,137 @@
+{
+  "id": "sklearn-feature-importance-evaluation",
+  "title": "Evaluation & Feature Importance: Which Inputs Actually Matter",
+  "skillFolder": "06-scikit-learn",
+  "missionId": "M3",
+  "concept": "Model Evaluation Metrics and Feature Importance",
+  "knowledgeGraphNodeId": "sklearn.feature-importance-evaluation",
+  "difficulty": "foundational",
+  "dependencies": ["sklearn.time-series-cv", "sklearn.classification-basics"],
+  "learningObjectives": [
+    "Choose an appropriate regression metric (MAE, RMSE) and classification metric (precision, recall, F1) for a given question",
+    "Explain the practical difference between MAE and RMSE, and when the difference matters",
+    "Extract and interpret feature importance from a fitted model to understand which inputs actually drive predictions",
+    "Use feature importance to decide whether a feature is worth keeping, engineering further, or dropping"
+  ],
+  "whyItMatters": "You've fit several models now, but 'is this model good' has been answered somewhat informally so far. Choosing the right metric for the actual question, and understanding which features are actually doing the work, is what turns 'a model that runs' into 'a model you can defend and improve deliberately.'",
+  "capstoneContribution": "The Digital Twin's model-evaluation and feature-selection discipline — the standard every forecasting and classification model going forward will be assessed against, and the tool that will guide which features Mission 4's neural models should also receive.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Metrics have been reported somewhat by default, without asking if they're the right ones.",
+      "content": "You've reported MAE for regression and a confusion matrix for classification so far, somewhat by default, without stopping to ask whether those are actually the right metrics for what the Grid Copilot needs to know.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "A mismatched metric is a subtle form of not really evaluating the model at all.",
+      "content": "Different real questions call for different metrics — an operator who cares more about avoiding big misses than average error wants RMSE, not MAE; a metric mismatched to the actual decision it's meant to inform is a subtle but real form of not really evaluating the model at all.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "MAE vs. RMSE trade off error sensitivity; feature importance reveals what's driving predictions.",
+      "content": "MAE (mean absolute error) treats all errors linearly; RMSE (root mean squared error) penalizes large errors disproportionately more, making it more sensitive to occasional big misses — the right choice depends on whether a few large errors are much worse than many small ones for your use case. For classification, precision (of predicted positives, how many were actually positive) and recall (of actual positives, how many were caught) trade off against each other, and F1 balances them into one number when neither is clearly more important. `model.feature_importances_` (tree-based models) or `model.coef_` (linear models) reveal which features are actually driving predictions — a feature with near-zero importance across multiple models is a candidate to simplify away or re-engineer.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "The same errors scored as MAE and RMSE side by side, showing RMSE's disproportionate penalty on large errors.",
+      "content": "The same set of prediction errors is scored two ways — as MAE (treating a few large errors and many small ones proportionally) and RMSE (visually enlarging the penalty for the large errors) — side by side on the same data.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Adjust individual errors and watch MAE/RMSE diverge, alongside a live feature-importance chart.",
+      "content": "Adjust a few individual prediction errors on a live sample and watch MAE and RMSE diverge as the errors become more uneven, alongside a live-updating feature-importance bar chart as different feature subsets are toggled on/off.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: compute both regression metrics and extract feature importance.",
+      "content": "```python\nfrom sklearn.metrics import mean_absolute_error, root_mean_squared_error\nfrom sklearn.ensemble import RandomForestRegressor\n\nmae = mean_absolute_error(y_test, predictions)\nrmse = root_mean_squared_error(y_test, predictions)\n\nrf = RandomForestRegressor().fit(X_train, y_train)\nfor name, importance in zip(X.columns, rf.feature_importances_):\n    print(f\"{name}: {importance:.3f}\")\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Compare MAE and RMSE on a test set with one unusually large error.",
+      "content": "Compare MAE and RMSE for your demand model on a test set that includes one unusually large error, and explain in your own words why the two metrics disagree about how bad that error is.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Add missing recall and F1 to an evaluation that only reports precision.",
+      "content": "An evaluation reports only precision for the overload classifier without recall, silently hiding that the model is missing most real overload events while still looking precise. Identify the missing metric and add it, along with F1.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Near-zero feature importance is itself informative, not just disappointing.",
+      "content": "If a feature you engineered turns out to have near-zero importance across every model you've tried, is that itself useful information, or just a disappointing result to discard silently?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain how MAE and RMSE can disagree about which model is worse.",
+      "content": "Explain to someone why a model with lower MAE could still have a worse RMSE than a competing model, using a concrete pair of error distributions as your example.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Produce a full evaluation report with metrics and feature-importance-driven recommendations.",
+      "content": "Produce a full evaluation report for your demand-forecasting model: MAE, RMSE, and feature importances, with a written recommendation on which features to keep, re-engineer, or drop going forward.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This report's findings directly inform Mission 4's neural model inputs.",
+      "content": "This evaluation report is the standard every forecasting and classification model in the rest of the curriculum will be held to, and its feature-importance findings directly inform what Mission 4's neural models are given as input.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-sklearn-feature-importance-evaluation-report",
+      "title": "Evaluation Report",
+      "description": "Sandboxed exercise producing a full MAE/RMSE/precision/recall/F1 evaluation and feature-importance report on a provided model and dataset.",
+      "starterCodePath": "labs/06-scikit-learn/evaluation-report/starter.py",
+      "testCasesPath": "labs/06-scikit-learn/evaluation-report/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "mae-vs-rmse-and-importance-visualizer",
+      "title": "MAE vs. RMSE & Feature Importance Visualizer",
+      "description": "Adjustable error distribution comparing MAE and RMSE live, alongside a toggleable feature-importance bar chart."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-sklearn-feature-importance-evaluation-1",
+      "front": "When would you prefer RMSE over MAE for evaluating a forecasting model?",
+      "back": "When a few large errors are much more costly than many small ones — RMSE penalizes large errors disproportionately more than MAE does, making it more sensitive to occasional big misses.",
+      "conceptNodeId": "sklearn.feature-importance-evaluation"
+    },
+    {
+      "id": "fc-sklearn-feature-importance-evaluation-2",
+      "front": "What does a near-zero feature importance for an engineered feature tell you?",
+      "back": "That feature isn't meaningfully helping the model make predictions, which is useful information — it's a candidate to simplify away, re-engineer differently, or investigate why the hypothesized relationship didn't hold.",
+      "conceptNodeId": "sklearn.feature-importance-evaluation"
+    }
+  ],
+  "assessment": {
+    "primaryType": "research",
+    "rubric": [
+      "Chosen metrics are justified against the actual decision they're meant to inform, not defaulted to without reasoning",
+      "Correctly explains a case where MAE and RMSE would disagree about which model is better",
+      "Feature-importance findings lead to a specific, justified recommendation (keep/re-engineer/drop), not just a listing of numbers"
+    ]
+  },
+  "references": [
+    {
+      "title": "scikit-learn — Regression metrics",
+      "url": "https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics",
+      "type": "officialDocs",
+      "versionOrDate": "scikit-learn 1.5",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "scikit-learn — Precision, recall and F-measures",
+      "url": "https://scikit-learn.org/stable/modules/model_evaluation.html#precision-recall-f-measure-metrics",
+      "type": "officialDocs",
+      "versionOrDate": "scikit-learn 1.5",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

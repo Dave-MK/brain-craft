@@ -1,0 +1,130 @@
+{
+  "id": "git-rebasing-basics",
+  "title": "Rebasing: A Cleaner History, Used Carefully",
+  "skillFolder": "02-git",
+  "missionId": "M1",
+  "concept": "Rebasing",
+  "knowledgeGraphNodeId": "git.rebasing-basics",
+  "difficulty": "intermediate",
+  "dependencies": ["git.resolving-conflicts", "git.remote-collaboration"],
+  "learningObjectives": [
+    "Rebase a branch onto an updated main to produce a linear history",
+    "Explain why rebasing rewrites commit history, and why that makes it dangerous on shared branches",
+    "Resolve conflicts that arise during a rebase, distinct in timing from a merge conflict",
+    "Decide, for a given real scenario, whether merge or rebase is the more appropriate choice"
+  ],
+  "whyItMatters": "main has moved on since you branched, and your branch's history is now tangled with commits that don't reflect a clean line of development. Rebasing is the tool for presenting your work as if it were built cleanly on top of the latest main — but used carelessly, on the wrong branch, it can rewrite history out from under a collaborator. Knowing exactly when it's safe is what separates using it well from using it dangerously.",
+  "capstoneContribution": "The Digital Twin's history-hygiene discipline — every future contributor's branch history stays legible enough that a reviewer (human or, eventually, the AI Tutor examining your work) can actually follow what happened and why.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A branch and main have both moved forward, tangling a straightforward merge.",
+      "content": "Your `improve-battery-thresholds` branch and main have both moved forward independently since you branched. Merging now would create a merge commit tangled with unrelated work that happened on main meanwhile.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "An unreadable history is nearly as unhelpful as no history at all.",
+      "content": "A history that's technically correct but unreadable — dozens of interleaved, unrelated merge commits — is nearly as unhelpful as no history at all. Rebasing exists to keep a branch's story legible: 'this is exactly what I changed, cleanly on top of the latest main.'",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Rebase replays commits on a new base, rewriting hashes — safe only on branches no one else has built upon.",
+      "content": "`git rebase main` while on your branch replays your branch's commits one by one on top of main's current tip, producing a linear history as if you'd started your branch just now. This rewrites your branch's commit hashes entirely — which is exactly why rebasing a branch that someone else has already pulled and built on top of causes real problems for them: their history and yours now disagree about what happened. The safe rule: rebase freely on branches only you are working on; never rebase a branch that's already been shared and built upon by someone else — merge it instead.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "A tangled branch-and-merge history becomes a single clean line replayed on main's tip.",
+      "content": "A tangled branch-and-merge history is shown on the left, and the same work replayed as a single clean line on top of main's tip is shown on the right after rebasing, with a caption noting the commit hashes are entirely different between the two.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Rebase a branch onto an advanced main, watching commits replay with new hashes.",
+      "content": "Rebase a simulated branch with 3 commits onto a main that has advanced by 2 commits, watching the 3 commits get individually replayed with new hashes on top of main's tip, including one that produces a rebase conflict to resolve.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: rebase a branch, resolve a conflict mid-rebase, then fast-forward merge.",
+      "content": "```bash\ngit switch improve-battery-thresholds\ngit rebase main\n# resolve any conflicts exactly as in a merge, then:\ngit rebase --continue\n\ngit switch main\ngit merge improve-battery-thresholds  # now a fast-forward\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Rebase a lagging branch onto main, resolve a planted conflict, and confirm a clean fast-forward.",
+      "content": "Given a branch that's fallen behind main by several commits, rebase it onto the latest main, resolve the one deliberately planted conflict, and confirm the final merge into main is a clean fast-forward.",
+      "estimatedMinutes": 15
+    },
+    "debugging": {
+      "summary": "Diagnose a diverged collaborator history caused by rebasing a shared branch.",
+      "content": "A learner rebased a branch that a (simulated) collaborator had already pulled and built further work on top of, and the collaborator's history is now hopelessly diverged. Diagnose why this happened and identify the rule that would have prevented it.",
+      "estimatedMinutes": 8
+    },
+    "reflection": {
+      "summary": "A concrete decision rule for merge vs. rebase, drawn from everything learned this skill folder.",
+      "content": "Given everything you now know about merge and rebase, what's the actual decision rule you'll use going forward for which one to reach for?",
+      "estimatedMinutes": 5
+    },
+    "teachBack": {
+      "summary": "Explain the single most important rule of rebasing using the collaborator scenario.",
+      "content": "Explain to someone why 'rebase never touches shared branches' is the single most important rule of rebasing, using the collaborator scenario from the debugging exercise as your example of what goes wrong without it.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "As the skill folder's synthesis: rebase a solo branch cleanly and narrate the full main history.",
+      "content": "As the final synthesis of this skill folder: take your full `digital_twin/` repository's branch history, identify at least one branch that would genuinely benefit from a rebase before merging (a solo, not-yet-shared branch), rebase it cleanly, resolve any conflicts, and merge it — ending with a main history you can walk a reviewer through commit by commit, explaining every merge and rebase decision you made across this entire skill folder.",
+      "estimatedMinutes": 20
+    },
+    "portfolioEvidence": {
+      "summary": "The Digital Twin's Git history is now a legible, end-to-end record of how the project was built.",
+      "content": "The Digital Twin's Git history, end to end, is now a legible record of exactly how the project got built — the discipline every future mission's work will be held to.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": true,
+  "labs": [
+    {
+      "id": "lab-git-rebasing-clean-history",
+      "title": "Clean History",
+      "description": "Sandboxed exercise requiring the learner to rebase a lagging branch onto an advanced main, resolve a rebase conflict, and produce a clean, fast-forwardable final merge.",
+      "starterCodePath": "labs/02-git/clean-history/starter/",
+      "testCasesPath": "labs/02-git/clean-history/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "rebase-vs-merge-visualizer",
+      "title": "Rebase vs. Merge Visualizer",
+      "description": "Side-by-side comparison of the same branch integrated via merge (tangled, two-parent history) versus rebase (linear, replayed history with new commit hashes)."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-git-rebasing-1",
+      "front": "Why does rebasing a branch someone else has already pulled and built on top of cause them real problems?",
+      "back": "Rebase rewrites your branch's commit hashes entirely. Once someone else has built further commits on top of the old hashes, their history and your rebased history disagree about what happened, causing painful divergence when they try to sync.",
+      "conceptNodeId": "git.rebasing-basics"
+    },
+    {
+      "id": "fc-git-rebasing-2",
+      "front": "What's the practical decision rule for choosing rebase vs. merge?",
+      "back": "Rebase freely on branches only you are working on, to keep history linear and legible. Never rebase a branch that's already been shared and built upon by someone else — merge it instead.",
+      "conceptNodeId": "git.rebasing-basics"
+    }
+  ],
+  "assessment": {
+    "primaryType": "architectureDesign",
+    "rubric": [
+      "States a clear, correct decision rule for when rebase is safe versus when merge is required instead",
+      "Rebase in the mini project produces a genuinely linear, legible history with correctly resolved conflicts",
+      "Can narrate the full accumulated main history commit by commit, explaining every merge and rebase decision made across the skill folder"
+    ]
+  },
+  "references": [
+    {
+      "title": "Pro Git — Git Branching: Rebasing",
+      "url": "https://git-scm.com/book/en/v2/Git-Branching-Rebasing",
+      "type": "officialDocs",
+      "versionOrDate": "Pro Git 2nd Edition",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

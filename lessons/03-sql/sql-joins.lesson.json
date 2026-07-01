@@ -1,0 +1,130 @@
+{
+  "id": "sql-joins",
+  "title": "JOIN: Combining Readings With What They Mean",
+  "skillFolder": "03-sql",
+  "missionId": "M2",
+  "concept": "JOIN",
+  "knowledgeGraphNodeId": "sql.joins",
+  "difficulty": "introductory",
+  "dependencies": ["sql.select-where"],
+  "learningObjectives": [
+    "Combine two related tables with an INNER JOIN",
+    "Use a LEFT JOIN to keep rows even when a matching related row doesn't exist",
+    "Choose the correct join type based on whether missing matches should be dropped or kept",
+    "Avoid joining on the wrong column and silently duplicating or losing rows"
+  ],
+  "whyItMatters": "A readings table with a bare source_id column doesn't tell you which substation that ID refers to, its location, or its rated capacity. That information lives in a separate sources table, and joining is the only way to combine a reading with what it actually means.",
+  "capstoneContribution": "The Digital Twin's ability to answer questions that span both readings and metadata — e.g. 'which substations exceeded 90% of their rated capacity today' — which requires combining two tables, not just querying one.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A source_id alone doesn't tell you a substation's rated capacity.",
+      "content": "Your readings table has a `source_id` column like `'substation-12'`, but nothing about that ID tells you the substation's rated capacity, which you need to know whether 4821 kW is actually close to overload for that specific substation.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Related data lives in separate tables and needs a reliable way to reconnect.",
+      "content": "Real data almost never lives in one flat table — normalizing related information into separate tables (readings vs. substations) avoids duplicating the substation's details on every single reading row, but it means you need a reliable way to bring them back together when a question spans both.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "INNER JOIN keeps only matches; LEFT JOIN keeps every left row even without a match.",
+      "content": "`SELECT r.demand_kw, s.rated_capacity_kw FROM readings r JOIN sources s ON r.source_id = s.id;` combines rows from both tables wherever the ON condition matches. An INNER JOIN (the default `JOIN`) only keeps rows with a match on both sides. A LEFT JOIN keeps every row from the left table, filling in NULLs for the right side when no match exists — essential when a reading might reference a source that's since been decommissioned or hasn't been added to the sources table yet.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "Two tables connect via matching IDs; INNER JOIN keeps connections, LEFT JOIN keeps unmatched left rows too.",
+      "content": "Two separate tables sit side by side connecting via matching ID values, with an INNER JOIN highlighting only the connected rows and a LEFT JOIN additionally including left-side rows with no connection, shown with a dashed NULL placeholder.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Drag a join condition between two tables and toggle join types live.",
+      "content": "Drag a join condition between two visualized tables and watch the resulting combined row set update live, toggling between INNER and LEFT JOIN to see which rows appear or disappear.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: join readings to sources and filter on the combined result.",
+      "content": "```sql\nSELECT r.timestamp, r.demand_kw, s.rated_capacity_kw\nFROM readings r\nJOIN sources s ON r.source_id = s.id\nWHERE r.demand_kw > s.rated_capacity_kw * 0.9;\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Write a LEFT JOIN that surfaces readings with no matching source.",
+      "content": "Write a LEFT JOIN query that lists every reading along with its source's rated capacity where known, and shows NULL for readings whose source isn't in the sources table at all.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Fix a join condition using the wrong columns.",
+      "content": "A query joins `ON r.id = s.id` instead of `ON r.source_id = s.id`, producing a nonsensical or massively duplicated result set. Find and fix the join condition.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "INNER JOIN can silently hide rows that LEFT JOIN would surface.",
+      "content": "What would an INNER JOIN have silently hidden from you, compared to the LEFT JOIN version, if some readings referenced sources not yet in the sources table?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain when to choose LEFT JOIN over INNER JOIN.",
+      "content": "Explain to someone when you'd choose a LEFT JOIN over an INNER JOIN, using the decommissioned-substation scenario as the concrete example.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Answer a real cross-table question with a correct join.",
+      "content": "Extend your Mission 2 SQL queries to answer: 'which substations exceeded 90% of their rated capacity at any point today,' requiring a correct join between readings and sources.",
+      "estimatedMinutes": 12
+    },
+    "portfolioEvidence": {
+      "summary": "This is the first feature reasoning across two related tables.",
+      "content": "This join-based query is the first Digital Twin feature that reasons across two related tables instead of one — the shape most real monitoring questions take.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-sql-joins-readings-sources",
+      "title": "Readings & Sources",
+      "description": "Sandboxed exercise joining a readings table to a sources table, including a deliberately orphaned reading requiring a correct LEFT JOIN to surface.",
+      "starterCodePath": "labs/03-sql/readings-sources/starter.sql",
+      "testCasesPath": "labs/03-sql/readings-sources/test_cases.sql"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "join-type-visualizer",
+      "title": "Join Type Visualizer",
+      "description": "Shows two tables connecting via matching keys, toggling live between INNER and LEFT JOIN to reveal which rows appear or disappear."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-sql-joins-1",
+      "front": "What happens to a reading whose source_id has no matching row in sources, under an INNER JOIN vs. a LEFT JOIN?",
+      "back": "Under an INNER JOIN, that reading disappears entirely from the result. Under a LEFT JOIN, it's kept, with NULL in place of the missing source columns.",
+      "conceptNodeId": "sql.joins"
+    },
+    {
+      "id": "fc-sql-joins-2",
+      "front": "What usually goes wrong when a JOIN's ON condition uses the wrong columns?",
+      "back": "The join either matches far too many row combinations (massive, meaningless duplication) or far too few (rows that should match don't), depending on which mismatched columns happen to coincide.",
+      "conceptNodeId": "sql.joins"
+    }
+  ],
+  "assessment": {
+    "primaryType": "codeReview",
+    "rubric": [
+      "Correctly chooses INNER vs. LEFT JOIN based on whether unmatched rows should be dropped or kept",
+      "Join condition uses the correct matching columns, verified against row counts before and after",
+      "Mini-project query correctly answers the stated cross-table question"
+    ]
+  },
+  "references": [
+    {
+      "title": "PostgreSQL Documentation — Joined Tables",
+      "url": "https://www.postgresql.org/docs/current/queries-table-expressions.html#QUERIES-JOIN",
+      "type": "officialDocs",
+      "versionOrDate": "PostgreSQL 16",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

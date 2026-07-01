@@ -1,0 +1,130 @@
+{
+  "id": "sql-schema-design",
+  "title": "Schema Design: Shaping the Data Before It Arrives",
+  "skillFolder": "03-sql",
+  "missionId": "M2",
+  "concept": "Schema Design for Time-Series Data",
+  "knowledgeGraphNodeId": "sql.schema-design",
+  "difficulty": "foundational",
+  "dependencies": ["sql.aggregation"],
+  "learningObjectives": [
+    "Design a normalized table structure separating readings from relatively static metadata",
+    "Choose appropriate column types and constraints (NOT NULL, primary keys, foreign keys) for real energy data",
+    "Explain the tradeoff between normalizing data into multiple tables versus keeping it denormalized in one",
+    "Design a schema that earlier lessons' queries could actually run against efficiently and correctly"
+  ],
+  "whyItMatters": "Every query written so far assumed someone else had already designed the readings and sources tables correctly. The Digital Twin's real data — weather, price, demand, battery state — needs schemas designed on purpose, before the data starts arriving, or every later query becomes harder than it needs to be.",
+  "capstoneContribution": "The actual table definitions (readings, sources, and soon weather and price tables) the rest of the Digital Twin's SQL layer is built on top of.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Nobody has designed tables for the weather and price data about to arrive.",
+      "content": "You've been querying tables that were handed to you. Weather and price data are about to start arriving, and nobody has designed tables for them yet.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "A bad schema shows up later as slow, awkward, or impossible queries.",
+      "content": "A badly designed schema doesn't announce itself immediately — it shows up months later as queries that are awkward, slow, or impossible without expensive rework. Designing it deliberately now, using everything you've learned about how these tables actually get queried, avoids that.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Primary/foreign keys and NOT NULL enforce correctness; normalizing trades redundancy for JOIN cost.",
+      "content": "A primary key uniquely identifies each row (an auto-incrementing `id`, or a natural key like `(source_id, timestamp)`). A foreign key (`source_id REFERENCES sources(id)`) enforces that a reading can only reference a source that actually exists, preventing exactly the kind of orphaned reference the JOIN lesson had to work around. `NOT NULL` constraints stop clearly-required fields (like `demand_kw`) from silently being missing. Normalizing — splitting readings and source metadata into separate tables — avoids repeating the same substation details on every reading row, at the cost of needing a JOIN to bring them back together; denormalizing trades that JOIN cost for storing redundant data, which is sometimes the right call for read-heavy, rarely-changing data.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "A sprawling denormalized table becomes two normalized tables connected by a foreign key.",
+      "content": "A single sprawling denormalized table with repeated substation details on every row sits next to the normalized two-table version with a foreign key arrow connecting them, highlighting the redundant cells that disappear.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Drag columns between a wide table and normalized tables, watching redundancy drop.",
+      "content": "Drag columns between a single wide table and two normalized tables, watching a live redundancy counter drop as details move out of the repeated readings rows and into a proper one-row-per-substation sources table.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: define two related, constrained tables.",
+      "content": "```sql\nCREATE TABLE sources (\n    id TEXT PRIMARY KEY,\n    rated_capacity_kw NUMERIC NOT NULL\n);\n\nCREATE TABLE readings (\n    id SERIAL PRIMARY KEY,\n    source_id TEXT NOT NULL REFERENCES sources(id),\n    timestamp TIMESTAMP NOT NULL,\n    demand_kw NUMERIC NOT NULL\n);\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Design a weather_readings table with a sensible related table and constraints.",
+      "content": "Design a `weather_readings` table (`station_id`, `timestamp`, `temperature_c`, `wind_speed_kmh`) with an appropriate primary key, NOT NULL constraints, and a sensible relationship to a `weather_stations` table.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Add a missing foreign key that would have prevented an orphaned-reading problem.",
+      "content": "A `readings` table is missing a foreign key constraint on `source_id`, which let a reading reference a nonexistent source and silently produced the orphaned-row problem the JOIN lesson had to route around. Add the missing constraint and explain what it would have prevented from the start.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Could a better schema have prevented the orphaned-reading problem from the JOIN lesson?",
+      "content": "The JOIN lesson had to handle readings referencing sources that didn't exist. Could a better schema have prevented that situation from ever happening in the first place?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain the normalize-vs-denormalize tradeoff using the repeated-capacity example.",
+      "content": "Explain to someone the tradeoff between normalizing into two tables versus keeping everything in one wide table, using the substation-capacity repeated-on-every-row example.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Design and seed the weather and price tables Mission 3 will need.",
+      "content": "Design and create the `weather_readings` and `price_readings` tables the Digital Twin will need for Mission 3's forecasting work, with appropriate keys and constraints, and seed each with a few rows to confirm they behave correctly.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "These table definitions are the foundation every later mission's queries build on.",
+      "content": "These table definitions are the actual foundation the rest of the Digital Twin's data layer — and every later mission's queries — will be built on.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-sql-schema-design-weather-price-tables",
+      "title": "Weather & Price Tables",
+      "description": "Sandboxed exercise designing normalized weather and price tables with correct keys and constraints, validated against a set of insert/query scenarios.",
+      "starterCodePath": "labs/03-sql/weather-price-tables/starter.sql",
+      "testCasesPath": "labs/03-sql/weather-price-tables/test_cases.sql"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "normalization-redundancy-visualizer",
+      "title": "Normalization Redundancy Visualizer",
+      "description": "Shows a wide denormalized table's redundant cells disappearing as columns move into a normalized, related table."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-sql-schema-design-1",
+      "front": "What does a foreign key constraint actually prevent?",
+      "back": "It prevents a row from referencing a value in another table that doesn't exist — e.g. a reading can't be inserted with a source_id that isn't already a valid row in the sources table.",
+      "conceptNodeId": "sql.schema-design"
+    },
+    {
+      "id": "fc-sql-schema-design-2",
+      "front": "What's the core tradeoff between normalizing and denormalizing a schema?",
+      "back": "Normalizing avoids repeating the same data across many rows but requires a JOIN to bring related data back together. Denormalizing avoids the JOIN by storing redundant data directly, at the cost of that redundancy and the risk of it going out of sync.",
+      "conceptNodeId": "sql.schema-design"
+    }
+  ],
+  "assessment": {
+    "primaryType": "architectureDesign",
+    "rubric": [
+      "Schema includes appropriate primary keys, foreign keys, and NOT NULL constraints for genuinely required fields",
+      "Justifies the normalize vs. denormalize decision made, rather than defaulting to one without reasoning",
+      "Designed tables would actually support the query patterns used in earlier lessons (SELECT/WHERE, JOIN, aggregation) without awkward workarounds"
+    ]
+  },
+  "references": [
+    {
+      "title": "PostgreSQL Documentation — Constraints",
+      "url": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+      "type": "officialDocs",
+      "versionOrDate": "PostgreSQL 16",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

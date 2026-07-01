@@ -1,0 +1,137 @@
+{
+  "id": "apis-http-fundamentals",
+  "title": "HTTP Fundamentals: Asking the Internet a Question",
+  "skillFolder": "04-apis",
+  "missionId": "M2",
+  "concept": "HTTP Fundamentals (methods, status codes, requests/responses)",
+  "knowledgeGraphNodeId": "apis.http-fundamentals",
+  "difficulty": "introductory",
+  "dependencies": ["python.error-handling"],
+  "learningObjectives": [
+    "Explain what happens when a program sends an HTTP GET request and receives a response",
+    "Read a response's status code and body to determine whether a request succeeded",
+    "Distinguish common status codes (200, 404, 401, 429, 500) and what each implies about what to do next",
+    "Use Python's requests library to make a real HTTP GET call and inspect the result"
+  ],
+  "whyItMatters": "Every reading in your CSV files so far was captured once, by hand, ahead of time. The Digital Twin's live weather and price data has to be fetched over the network, right now, from a service you don't control — and that starts with understanding exactly what a request and response actually are.",
+  "capstoneContribution": "The Digital Twin's first live network call — replacing a static CSV snapshot with an actual request to a real weather API, landing eventually in the tables designed in the SQL skill folder.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A static snapshot file can't give you today's actual weather.",
+      "content": "`weather_snapshot.json`, used back in the Files & I/O lesson, was captured once by hand. You need today's actual weather, right now, and nobody's going to manually save that file for you every hour.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is where the Digital Twin starts collecting data itself.",
+      "content": "This is the moment the Digital Twin stops relying on data someone already collected and starts collecting it itself. Every forecast the AI Energy OS eventually makes depends on data that has to be fetched live, not read from a fixture file.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Requests have a method and URL; responses have a status code and body.",
+      "content": "An HTTP request has a method (GET to retrieve data, POST to send it, etc.), a URL, and optional headers/body. The server's response includes a status code — 200 means success, 404 means the resource wasn't found, 401 means you're not authenticated, 429 means you've been rate-limited, 500 means the server itself failed — and a body, usually JSON for a modern API. Python's `requests` library (`requests.get(url)`) sends the request and returns a `Response` object with `.status_code` and `.json()`.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "A request crosses a network boundary; the response returns a status code and body.",
+      "content": "Your program sends a request across a network boundary to a weather service, which sends back a response with a status code and JSON body, with a clear visual distinction between 'succeeded' and 'failed' status code ranges.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Send a request to a simulated endpoint and inspect the live response.",
+      "content": "Send a request to a simulated weather endpoint with adjustable parameters and watch the status code and JSON body populate live in a response inspector panel.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: make a real GET request and inspect the response.",
+      "content": "```python\nimport requests\n\nresponse = requests.get(\"https://api.example-weather.com/current?location=london\")\nprint(response.status_code)\nprint(response.json())\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Check status before trusting a response, unaided.",
+      "content": "Make a request to a provided sandbox weather endpoint, check the status code before trusting the response, and print the temperature field only if the request succeeded.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Fix code that calls .json() before checking the status code.",
+      "content": "Code calls `.json()` on a response without first checking `.status_code`, and crashes when the endpoint returns a `404` with a non-JSON error body. Fix by checking status first.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Checking status before parsing is an extension of Mission 1's error-handling habits.",
+      "content": "Why is checking `status_code` before calling `.json()` not just good practice, but something that will eventually be required by the error-handling habits from Mission 1?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain 429 and why immediate retry is the wrong response.",
+      "content": "Explain to someone what a `429` status code means and why blindly retrying immediately after seeing one is exactly the wrong response.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Write a status-aware weather-request script.",
+      "content": "Write a script that requests current weather from a sandbox endpoint, checks the status code, and either prints the temperature or a clear error message depending on the outcome.",
+      "estimatedMinutes": 12
+    },
+    "portfolioEvidence": {
+      "summary": "This is the Digital Twin's first successful live network call.",
+      "content": "This is the Digital Twin's first successful live network call — the actual beginning of real-time data ingestion.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-apis-http-fundamentals-first-request",
+      "title": "First Request",
+      "description": "Sandboxed exercise against a mock weather endpoint requiring correct status-code handling before parsing the response body.",
+      "starterCodePath": "labs/04-apis/first-request/starter.py",
+      "testCasesPath": "labs/04-apis/first-request/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "request-response-visualizer",
+      "title": "Request/Response Visualizer",
+      "description": "Live inspector panel showing an outgoing request and the resulting status code and JSON body as parameters are adjusted."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-apis-http-fundamentals-1",
+      "front": "What does a 429 status code mean, and what should you NOT do in response?",
+      "back": "It means you've been rate-limited. You should not immediately retry the same request — doing so typically makes the rate limiting worse rather than resolving it.",
+      "conceptNodeId": "apis.http-fundamentals"
+    },
+    {
+      "id": "fc-apis-http-fundamentals-2",
+      "front": "Why should you check response.status_code before calling response.json()?",
+      "back": "A failed response often returns a non-JSON error body (or a differently-shaped JSON body), so parsing it as if it were the expected success response can crash or silently produce garbage data.",
+      "conceptNodeId": "apis.http-fundamentals"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly checks status_code before parsing the response body in every code path",
+      "Distinguishes at least three status codes (200, 404/401, 429) and describes the correct handling for each",
+      "Mini-project script produces a clear, distinct message for success vs. failure rather than a generic error"
+    ]
+  },
+  "references": [
+    {
+      "title": "MDN — HTTP response status codes",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status",
+      "type": "officialDocs",
+      "versionOrDate": "MDN, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Requests: HTTP for Humans — Quickstart",
+      "url": "https://requests.readthedocs.io/en/latest/",
+      "type": "officialDocs",
+      "versionOrDate": "Requests 2.32",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

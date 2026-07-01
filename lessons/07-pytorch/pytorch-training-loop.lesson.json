@@ -1,0 +1,137 @@
+{
+  "id": "pytorch-training-loop",
+  "title": "The Training Loop: Loss, Backprop, and the Optimizer",
+  "skillFolder": "07-pytorch",
+  "missionId": "M4",
+  "concept": "Training Loop (loss functions, backpropagation, optimizers)",
+  "knowledgeGraphNodeId": "pytorch.training-loop",
+  "difficulty": "foundational",
+  "dependencies": ["pytorch.building-networks"],
+  "learningObjectives": [
+    "Choose an appropriate loss function for a regression task and compute it against a batch of predictions",
+    "Explain the four-step training loop pattern: forward pass, compute loss, backward pass, optimizer step",
+    "Use an optimizer (SGD or Adam) to update a network's weights based on computed gradients",
+    "Diagnose a loss that isn't decreasing and identify the most likely cause"
+  ],
+  "whyItMatters": "A defined but untrained network produces meaningless predictions — this is the lesson where autograd and the network architecture combine into the actual process that turns a randomly-initialized network into a working forecaster.",
+  "capstoneContribution": "The Digital Twin's actual neural network training procedure — the loop that will run repeatedly to fit the demand forecaster's weights to real historical data.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A network with random weights makes meaningless predictions until something updates them.",
+      "content": "Your `DemandForecaster` network from the last lesson has completely random weights right now — its predictions are meaningless, and nothing you've built yet actually changes those weights based on how wrong they are.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is where autograd and the network architecture finally combine into real learning.",
+      "content": "This is where everything from the first two lessons in this skill folder finally combines: autograd computes how wrong each weight is, and this loop is what actually acts on that information, repeatedly, until the network is useful.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Forward pass, compute loss, backward pass, optimizer step — repeated every batch.",
+      "content": "A loss function (e.g. `nn.MSELoss()`) measures how wrong the network's predictions are compared to the actual targets — a single number to minimize. The training loop, run once per batch: (1) forward pass — `predictions = model(X_batch)`; (2) compute loss — `loss = loss_fn(predictions, y_batch)`; (3) backward pass — `loss.backward()`, computing gradients for every weight via autograd; (4) optimizer step — `optimizer.step()`, nudging each weight in the direction that reduces loss, scaled by the learning rate, immediately followed by `optimizer.zero_grad()` to clear gradients before the next batch (otherwise they'd accumulate incorrectly across batches). If loss isn't decreasing, the most common causes are a learning rate that's too high (overshooting) or too low (barely moving), or a forgotten `zero_grad()`.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "The four-step loop cycles repeatedly as the loss curve descends over time.",
+      "content": "The four-step loop is shown as a cycle: forward → loss → backward → optimizer step → back to forward, with a loss-over-time curve descending as the loop repeats across many batches.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Adjust the learning rate and watch the loss curve descend, oscillate, or barely move.",
+      "content": "Adjust the learning rate on a live training loop and watch the loss curve either descend smoothly, oscillate wildly (too high), or barely move (too low), directly observing the consequence of each setting.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: write and run the four-step training loop.",
+      "content": "```python\nimport torch.optim as optim\n\nloss_fn = nn.MSELoss()\noptimizer = optim.Adam(model.parameters(), lr=0.001)\n\nfor epoch in range(100):\n    predictions = model(X_train_tensor)\n    loss = loss_fn(predictions, y_train_tensor)\n\n    optimizer.zero_grad()\n    loss.backward()\n    optimizer.step()\n\n    if epoch % 10 == 0:\n        print(f\"Epoch {epoch}, loss: {loss.item():.2f}\")\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Write a full training loop for the classification network with the correct loss function.",
+      "content": "Write a full training loop for the overload-classification network from the last lesson, using `nn.BCEWithLogitsLoss()` as the appropriate loss function for binary classification, and print the loss every 10 epochs.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a training loop missing optimizer.zero_grad().",
+      "content": "A training loop is missing `optimizer.zero_grad()`, causing gradients to accumulate across batches and the loss to behave erratically or diverge. Identify the missing call and fix it.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Accumulating gradients across batches is specifically bad, not just wasteful.",
+      "content": "Why does forgetting `zero_grad()` cause gradients to 'accumulate,' and why is that specifically bad rather than just harmless extra computation?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain the four-step training loop pattern using your own loss output as evidence.",
+      "content": "Explain to someone the four-step training loop pattern using your own printed loss values as evidence that it's actually working.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Train the neural demand forecaster and observe the loss curve descend and plateau.",
+      "content": "Train the Digital Twin's neural demand forecaster for enough epochs to see the loss curve clearly descend and plateau, printing the loss at regular intervals and plotting it.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This is the training loop every subsequent lesson's model will use.",
+      "content": "This is the actual training procedure that turns the untrained network architecture into a working forecaster — the loop every subsequent lesson's model will be trained with.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-pytorch-training-loop-loss-curve",
+      "title": "Loss Curve",
+      "description": "Sandboxed exercise implementing a complete training loop with correct loss function selection, requiring a visible descending loss curve, and fixing a planted missing zero_grad() bug.",
+      "starterCodePath": "labs/07-pytorch/loss-curve/starter.py",
+      "testCasesPath": "labs/07-pytorch/loss-curve/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "learning-rate-loss-curve-visualizer",
+      "title": "Learning Rate Loss Curve Visualizer",
+      "description": "Live training run with adjustable learning rate, showing the loss curve descend smoothly, oscillate, or stall depending on the setting."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-pytorch-training-loop-1",
+      "front": "What are the four steps of a PyTorch training loop, in order?",
+      "back": "Forward pass (compute predictions), compute loss, backward pass (loss.backward() to compute gradients), and optimizer step (optimizer.step() to update weights, followed by zero_grad() before the next iteration).",
+      "conceptNodeId": "pytorch.training-loop"
+    },
+    {
+      "id": "fc-pytorch-training-loop-2",
+      "front": "Why must optimizer.zero_grad() be called before the next backward() call?",
+      "back": "PyTorch accumulates gradients into .grad by default rather than overwriting them; without clearing them first, each new backward() pass adds to the previous batch's gradients instead of replacing them, corrupting the update.",
+      "conceptNodeId": "pytorch.training-loop"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly diagnoses and fixes a missing optimizer.zero_grad() call",
+      "Loss function choice matches the task (MSELoss for regression, BCEWithLogitsLoss for binary classification)",
+      "Training run produces a visibly descending and plateauing loss curve, not a flat or diverging one"
+    ]
+  },
+  "references": [
+    {
+      "title": "PyTorch Tutorials — Optimizing Model Parameters",
+      "url": "https://pytorch.org/tutorials/beginner/basics/optimization_tutorial.html",
+      "type": "officialDocs",
+      "versionOrDate": "PyTorch 2.3",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "PyTorch Documentation — torch.optim",
+      "url": "https://pytorch.org/docs/stable/optim.html",
+      "type": "officialDocs",
+      "versionOrDate": "PyTorch 2.3",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

@@ -27,4 +27,4 @@ Everything after this point assumes Git is second nature.
 
 ## Status
 
-Skeleton only.
+Complete. All 6 lessons authored and schema-validated in [`lessons/02-git/`](../../lessons/02-git/): Init & Commits, Branches, Merging, Resolving Conflicts, Remote Collaboration & Pull Requests, and Rebasing (boss battle). The whole arc versions the `digital_twin/` package built in [`01-python`](../01-python/README.md) — `git.init-and-commits` depends directly on `python.oop-basics`, the cross-folder edge that ties Mission 1 together end to end.

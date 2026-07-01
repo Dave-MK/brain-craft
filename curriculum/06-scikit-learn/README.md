@@ -24,4 +24,4 @@ Demand and generation forecasting — the first real "Predict" layer of the AI E
 
 ## Status
 
-Skeleton only.
+Complete. All 6 lessons authored and schema-validated in [`lessons/06-scikit-learn/`](../../lessons/06-scikit-learn/): Regression Basics → Baselines & Leakage → Time-Series CV → Classification Basics → Evaluation & Feature Importance → The Demand Forecaster (boss battle, Mission 3's first real deliverable).

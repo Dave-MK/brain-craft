@@ -15,4 +15,6 @@ Per [`CLAUDE.md`](../CLAUDE.md): no lesson ships without validating against `les
 
 ## Status
 
-Empty — this is the top priority for the remainder of Phase 0 (see [`docs/20-roadmap/overview.md`](../docs/20-roadmap/overview.md)).
+`lesson.schema.json` is written (draft 2020-12). It enforces, at the schema level, the pedagogical non-negotiables from [`CLAUDE.md`](../CLAUDE.md) and [`docs/01-learning-science/overview.md`](../docs/01-learning-science/overview.md): every lesson must declare `whyItMatters` and `capstoneContribution` explicitly, ship at least one flashcard, ship at least one dated reference, and use a non-multiple-choice primary assessment type.
+
+Remaining: `concept-node.schema.json`, `assessment.schema.json` (currently inlined into `lesson.schema.json` as `$defs/assessment` — may be extracted once the knowledge graph and assessment engine need to reference it independently), `flashcard.schema.json` (same — currently inlined as `$defs/flashcard`).

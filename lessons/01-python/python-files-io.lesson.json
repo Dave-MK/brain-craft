@@ -1,0 +1,137 @@
+{
+  "id": "python-files-io",
+  "title": "Files & I/O: Loading Real Data Off Disk",
+  "skillFolder": "01-python",
+  "missionId": "M1",
+  "concept": "Files and I/O (CSV & JSON)",
+  "knowledgeGraphNodeId": "python.files-io",
+  "difficulty": "foundational",
+  "dependencies": ["python.error-handling"],
+  "learningObjectives": [
+    "Read a real CSV file of energy data into a list of dictionaries",
+    "Read and parse a real JSON API-style response into Python data structures",
+    "Write processed readings back out to a file so results persist between runs",
+    "Handle a missing or malformed file gracefully using the error-handling skills from the previous lesson"
+  ],
+  "whyItMatters": "Every reading used so far has been hard-coded directly in the script. The AI Energy OS needs to load actual historical demand, weather, and price data from real files — CSV exports from utilities, JSON responses from APIs — and everything built so far (lists, dicts, loops, functions, error handling) exists to process exactly this kind of file.",
+  "capstoneContribution": "The Digital Twin's actual data-loading layer — reading historical demand/weather CSV exports and JSON API captures from disk into the same structured-record shape used throughout this mission.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Real data lives in files, not Python literals typed into a script.",
+      "content": "All of your readings so far have been typed directly into the script. A real historical demand dataset lives in a CSV file with thousands of rows, and a weather API response you've saved for testing lives in a JSON file — neither one can be hand-typed as a Python literal.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is where the mission stops being simulated entirely inside a script.",
+      "content": "This is the moment the mission stops being simulated entirely inside a script and starts touching real, external data. Every later mission — pandas, scikit-learn, PyTorch — assumes you can already get data off disk and into memory reliably.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "csv.DictReader and json.load() parse files directly into the shapes already learned.",
+      "content": "The `csv` module's `csv.DictReader` reads a CSV file row by row, turning each row directly into a dictionary keyed by the header row — the same structured-record shape from the Dictionaries lesson. The `json` module's `json.load()` parses a JSON file directly into nested Python lists/dictionaries. Always open files with `with open(path) as f:` so the file is closed automatically even if an error occurs partway through — and wrap the open/read itself in `try/except` (`FileNotFoundError`, `json.JSONDecodeError`) per the previous lesson, since a missing or corrupt file is exactly the real-world messiness error handling exists for.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "CSV rows flow through DictReader into the same card-shaped records built by hand earlier.",
+      "content": "A CSV file's rows flow through `csv.DictReader` and land as a list of dictionary 'cards' identical in shape to the ones built by hand in the Dictionaries lesson — reinforcing that this is the same data shape, just sourced from disk instead of typed inline.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Load a sample CSV and JSON file and watch them parse into familiar record cards.",
+      "content": "Select a small sample CSV file and a small sample JSON file and watch them parse live into the same card-based dictionary visualization used in the Dictionaries lesson.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: load a CSV and a JSON file into familiar Python structures.",
+      "content": "```python\nimport csv\nimport json\n\nwith open(\"demand_history.csv\") as f:\n    reader = csv.DictReader(f)\n    readings = [row for row in reader]\n\nprint(readings[0])\n\nwith open(\"weather_snapshot.json\") as f:\n    weather = json.load(f)\n\nprint(weather[\"temperature_c\"])\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Load, convert, and re-save a CSV of battery readings, unaided.",
+      "content": "Given a small CSV file of battery state-of-charge readings, load it with `csv.DictReader`, convert the `soc_percent` field from string to float for every row, and write the classified results to a new CSV file.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a bug caused by forgetting every CSV value arrives as a string.",
+      "content": "```python\nif row[\"demand_kw\"] > 5000:\n    print(\"OVERLOAD\")\n```\nThis silently misbehaves because `row[\"demand_kw\"]` is a string (`\"5100\"`), not a number, and comparing a string to an int doesn't do what you'd expect. Find the missing conversion and fix it.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Every CSV value arrives as a string, even numeric-looking ones.",
+      "content": "Every value read from a CSV file arrives as a string, even if it looks like a number. Where else in this mission would that quietly break something if you didn't already know it?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why DictReader producing dictionaries wasn't a coincidence.",
+      "content": "Explain to someone why `csv.DictReader` producing a list of dictionaries wasn't a coincidence, but a direct consequence of everything learned in the Dictionaries lesson.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Load the mini project's rolling window from a real CSV file instead of hard-coded values.",
+      "content": "Replace the mini project's hard-coded rolling window with readings actually loaded from a small provided CSV file, keeping the same classification and reporting logic.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This is the actual starting point of the Digital Twin's data layer.",
+      "content": "This is the first version of the ingestion pipeline that reads real files rather than hard-coded Python literals — the actual starting point of the Digital Twin's data layer.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-python-files-io-csv-json-loader",
+      "title": "CSV & JSON Loader",
+      "description": "Sandboxed exercise loading a provided CSV of demand readings and a provided JSON weather snapshot, requiring correct type conversion and a graceful FileNotFoundError path for a deliberately missing file.",
+      "starterCodePath": "labs/01-python/csv-json-loader/starter.py",
+      "testCasesPath": "labs/01-python/csv-json-loader/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "file-to-record-visualizer",
+      "title": "File-to-Record Visualizer",
+      "description": "Animates CSV rows and JSON objects parsing into the same dictionary 'card' shape used throughout the mission."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-python-files-io-1",
+      "front": "What type is every value read from a CSV file via csv.DictReader, before you convert it?",
+      "back": "A string — even fields that look numeric, like '4821', arrive as the string '4821' and must be explicitly converted (e.g. with float() or int()) before numeric comparisons or math will behave correctly.",
+      "conceptNodeId": "python.files-io"
+    },
+    {
+      "id": "fc-python-files-io-2",
+      "front": "Why use 'with open(path) as f:' instead of f = open(path)?",
+      "back": "The with block guarantees the file is closed automatically once the block ends, even if an error occurs partway through reading — a plain open() without with risks leaving the file handle open on failure.",
+      "conceptNodeId": "python.files-io"
+    }
+  ],
+  "assessment": {
+    "primaryType": "projectWork",
+    "rubric": [
+      "Correctly converts every numeric CSV field from string before using it in comparisons or math",
+      "File loading is wrapped in error handling per the previous lesson, gracefully reporting a missing or malformed file rather than crashing",
+      "Mini project correctly reproduces prior lessons' classification/reporting behavior using data loaded from disk instead of hard-coded values"
+    ]
+  },
+  "references": [
+    {
+      "title": "Python Library Reference — csv",
+      "url": "https://docs.python.org/3/library/csv.html",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Python Library Reference — json",
+      "url": "https://docs.python.org/3/library/json.html",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

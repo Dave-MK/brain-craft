@@ -1,0 +1,137 @@
+{
+  "id": "pandas-filtering-aggregation",
+  "title": "Filtering & GroupBy: pandas' Answer to WHERE and GROUP BY",
+  "skillFolder": "05-pandas",
+  "missionId": "M2",
+  "concept": "Boolean Filtering and GroupBy Aggregation",
+  "knowledgeGraphNodeId": "pandas.filtering-aggregation",
+  "difficulty": "foundational",
+  "dependencies": ["pandas.dataframes-basics"],
+  "learningObjectives": [
+    "Filter a DataFrame with a boolean mask instead of a manual loop",
+    "Combine multiple filter conditions correctly using & and | with proper parentheses",
+    "Use groupby().agg() to reproduce SQL-style per-category summaries in pandas",
+    "Explain why boolean-mask filtering is vectorized and faster than looping row by row"
+  ],
+  "whyItMatters": "You already know how to do this in SQL. The Digital Twin needs the same filtering and summarizing logic available directly in Python, so it can feed straight into plotting, feature engineering, and eventually a scikit-learn model without a round trip back to the database for every question.",
+  "capstoneContribution": "The Digital Twin's in-memory analysis layer — the same daily-summary and threshold-filtering logic built in SQL, now available directly on a DataFrame for feature engineering.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "You want the SQL-style summary, but now inside a Python script doing more work.",
+      "content": "You have a DataFrame of readings loaded from your SQL table, and you want the same 'average demand per substation' answer you already know how to get in SQL — but now inside a Python script that's about to do more with it.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Query once, then filter/group/reshape freely in Python.",
+      "content": "Recreating SQL's filtering and grouping logic in pandas is what actually lets a data pipeline flow: query once, then filter, group, and reshape as many times as needed in Python without going back to the database for every variation.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Boolean masks filter rows all at once; groupby().agg() reproduces GROUP BY.",
+      "content": "`df[df['demand_kw'] >= 5000]` filters using a boolean mask — a Series of True/False values, one per row, computed all at once (vectorized) rather than checked row by row in a loop, which is both faster and more idiomatic. Combine conditions with `&` (and) and `|` (or), always wrapping each condition in parentheses: `df[(df['demand_kw'] >= 5000) & (df['source'] == 'substation-12')]`. `df.groupby('source')['demand_kw'].agg(['mean', 'max'])` reproduces `GROUP BY source_id` with `AVG`/`MAX` directly.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "A boolean mask column determines which rows pass through into the filtered result.",
+      "content": "A column of True/False values (the boolean mask) sits alongside the data column it was computed from, with only the True rows passing through into the filtered result — echoing the SQL WHERE-as-sieve diagram from the SQL skill folder.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Edit a filter expression and watch the mask and filtered result update live.",
+      "content": "Edit a boolean filter expression and watch the mask column and filtered result update live side by side.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: filter with a mask, then group and aggregate.",
+      "content": "```python\noverload_readings = df[df[\"demand_kw\"] >= 5000]\n\nsummary = df.groupby(\"source\")[\"demand_kw\"].agg([\"mean\", \"max\", \"count\"])\nprint(summary)\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Filter with a combined condition and group the result, unaided.",
+      "content": "Filter a DataFrame of battery readings to only LOW or CRITICAL rows using a combined boolean condition, then group by source and compute the count and minimum `soc_percent` per source.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Fix a missing-parentheses operator-precedence error in a combined filter.",
+      "content": "`df[df['demand_kw'] >= 5000 & df['source'] == 'substation-12']` raises an operator-precedence error in pandas. Fix by adding the required parentheses around each condition.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Pandas needs explicit parentheses where plain Python's and/or don't.",
+      "content": "Why does pandas require explicit parentheses around each condition when combining them with `&` or `|`, when plain Python's `and`/`or` don't have this issue?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why boolean-mask filtering is called vectorized and why that's faster.",
+      "content": "Explain to someone why filtering with a boolean mask is described as 'vectorized' and why that's faster than writing a Python for loop that checks each row.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Reproduce the SQL daily summary report entirely in pandas.",
+      "content": "Reproduce your SQL daily summary report (average, peak, total demand per substation) entirely in pandas, using `groupby().agg()` on a DataFrame loaded from the same data.",
+      "estimatedMinutes": 12
+    },
+    "portfolioEvidence": {
+      "summary": "This pandas-native summary should match the SQL report exactly.",
+      "content": "This pandas-native summary is the in-Python equivalent of the SQL report — the two should match exactly, proving both layers agree.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-pandas-filtering-aggregation-mask-groupby",
+      "title": "Mask & GroupBy",
+      "description": "Sandboxed exercise requiring correctly parenthesized boolean filters and groupby().agg() summaries matching known SQL results.",
+      "starterCodePath": "labs/05-pandas/mask-groupby/starter.py",
+      "testCasesPath": "labs/05-pandas/mask-groupby/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "boolean-mask-visualizer",
+      "title": "Boolean Mask Visualizer",
+      "description": "Shows a live True/False mask column alongside the data it was computed from, with only True rows passing into the filtered result."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-pandas-filtering-aggregation-1",
+      "front": "Why does df[df['demand_kw'] >= 5000 & df['source'] == 'x'] raise an error in pandas?",
+      "back": "Because of operator precedence, & binds tighter than the comparisons on either side without parentheses. Each condition must be wrapped in parentheses: (df['demand_kw'] >= 5000) & (df['source'] == 'x').",
+      "conceptNodeId": "pandas.filtering-aggregation"
+    },
+    {
+      "id": "fc-pandas-filtering-aggregation-2",
+      "front": "What does df.groupby('source')['demand_kw'].agg(['mean', 'max']) compute?",
+      "back": "The mean and max of demand_kw, computed separately for each distinct value of source — the pandas equivalent of SQL's GROUP BY source with AVG and MAX.",
+      "conceptNodeId": "pandas.filtering-aggregation"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly identifies and fixes the missing-parentheses operator-precedence bug",
+      "groupby().agg() result matches the equivalent SQL GROUP BY query exactly",
+      "Correctly explains why vectorized boolean filtering outperforms a manual row-by-row loop"
+    ]
+  },
+  "references": [
+    {
+      "title": "pandas User Guide — Boolean indexing",
+      "url": "https://pandas.pydata.org/docs/user_guide/indexing.html#boolean-indexing",
+      "type": "officialDocs",
+      "versionOrDate": "pandas 2.2",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "pandas User Guide — Group by: split-apply-combine",
+      "url": "https://pandas.pydata.org/docs/user_guide/groupby.html",
+      "type": "officialDocs",
+      "versionOrDate": "pandas 2.2",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

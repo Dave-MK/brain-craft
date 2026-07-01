@@ -23,4 +23,4 @@ Grid and consumption data storage — the AI Energy OS needs a real relational s
 
 ## Status
 
-Skeleton only.
+Complete. All 6 lessons authored and schema-validated in [`lessons/03-sql/`](../../lessons/03-sql/): SELECT & WHERE → JOIN → Aggregation → Schema Design → Window Functions → Indexing & Performance (boss battle). `sql.select-where` depends on `python.files-io`, tying Mission 2 back to Mission 1's ingestion work.

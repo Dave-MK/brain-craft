@@ -1,0 +1,137 @@
+{
+  "id": "graphs-rl-combination",
+  "title": "RL Meets Graphs: Routing Decisions Over a Structured Action Space",
+  "skillFolder": "09-graph-algorithms",
+  "missionId": "M5",
+  "concept": "Combining Reinforcement Learning with Graph-Structured Problems",
+  "knowledgeGraphNodeId": "graphs.rl-combination",
+  "difficulty": "intermediate",
+  "dependencies": ["rl.battery-scheduler", "graphs.flow-algorithms", "graphs.resilience-critical-nodes"],
+  "learningObjectives": [
+    "Explain why a routing decision is naturally a graph-structured action space, unlike the battery scheduler's simple discrete/continuous actions",
+    "Frame a grid-routing problem as an MDP where the state includes graph topology information and actions are edge/path choices",
+    "Explain at least one strategy for handling a large or variable-sized action space (e.g. restricting to top-k candidate paths from Dijkstra before letting an RL agent choose)",
+    "Compare a graph-algorithm-only routing solution against an RL-augmented one for a scenario with dynamic, changing conditions"
+  ],
+  "whyItMatters": "Mission 5's two skill folders have so far run in parallel — reinforcement learning for battery scheduling, graph algorithms for grid structure — but real grid routing decisions often need both: the graph structure defines what's even possible, while conditions change fast enough (real-time prices, live capacity, evolving contingencies) that a fixed algorithm alone can't adapt as well as a learned policy that's seen many scenarios.",
+  "capstoneContribution": "The Digital Twin's routing-decision layer — the actual convergence point of this mission's two skill folders, where graph algorithms define the feasible action space and reinforcement learning chooses adaptively within it.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Static routing recomputation can't learn from patterns across past scenarios.",
+      "content": "Dijkstra and max-flow from earlier lessons compute the best static routing for a fixed snapshot of conditions, but real conditions change continuously — prices shift, a line's available capacity fluctuates, a contingency might already be underway — and recomputing from scratch every time doesn't let the system learn from past routing decisions the way an RL agent's battery scheduler does.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is where the two halves of Mission 5 were always going to need each other.",
+      "content": "This is the actual point where the two halves of Mission 5 were always going to need each other: an RL agent with no graph structure would have to learn routing from nothing, which is enormously harder than it needs to be, while a graph algorithm alone can't adapt to patterns across many scenarios the way a trained policy can.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Restrict the action space to Dijkstra-generated candidates, letting RL adapt within it.",
+      "content": "A routing MDP's state includes not just the usual demand/price/battery information but the graph's current topology and capacity state; actions are typically restricted to a manageable candidate set — e.g. the top-k lowest-loss paths from Dijkstra between the relevant source and destination — rather than every conceivable path, since the full action space of 'any possible route' is usually far too large for an RL agent to explore directly. This candidate-restriction approach is a common, practical pattern for combining classical algorithms with RL: let the classical algorithm (Dijkstra, max-flow) do what it's provably good at (finding optimal or near-optimal candidates for a static snapshot), and let the learned policy handle the part classical algorithms structurally can't — adapting a choice among those candidates based on patterns learned across many scenarios, including ones a purely algorithmic approach wouldn't know to weight differently.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "Dijkstra generates candidates; an RL agent selects among them based on learned patterns.",
+      "content": "Dijkstra generates a shortlist of candidate routing paths, feeding into an RL agent that selects among them based on learned patterns across many past scenarios, contrasted with a pure graph-algorithm approach that always picks the same statically-optimal choice regardless of broader context.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Compare static Dijkstra-only choices against RL-augmented choices across shifting scenarios.",
+      "content": "Compare a static Dijkstra-only routing choice against an RL-augmented choice across several scenarios with shifting conditions, observing where the learned policy diverges from the static algorithm and why.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: generate candidate paths and let a policy choose among them.",
+      "content": "```python\ndef get_candidate_paths(graph, source, target, k=3):\n    return k_shortest_paths(graph, source, target, k)\n\ndef choose_route(state, candidate_paths, policy):\n    action_index = policy.choose_action(state, n_actions=len(candidate_paths))\n    return candidate_paths[action_index]\n\ncandidates = get_candidate_paths(grid, \"main-feed\", \"substation-4\", k=3)\nchosen_route = choose_route(current_state, candidates, trained_policy)\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Implement k-shortest-paths and construct a scenario favoring the adaptive policy.",
+      "content": "Implement a simple k-shortest-paths candidate generator for a routing decision, and write a scenario where a purely static Dijkstra choice would perform worse than a policy that could adapt to a pattern (e.g. a recurring evening price spike) across many similar past scenarios.",
+      "estimatedMinutes": 15
+    },
+    "debugging": {
+      "summary": "Fix a candidate generator that always returns only one option (k=1).",
+      "content": "A candidate-restriction implementation always includes only the single Dijkstra-optimal path (k=1), silently giving the RL agent no actual choice to learn from. Identify why this defeats the purpose of combining the two approaches and fix it to generate a genuine candidate set.",
+      "estimatedMinutes": 7
+    },
+    "reflection": {
+      "summary": "A single-candidate action space defeats the purpose of the RL component.",
+      "content": "If your candidate-generation step only ever produces one option, what has the RL agent actually learned to do, and why does that make the whole combination pointless?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why top-k restriction is a practical compromise, not a lesser version of either approach.",
+      "content": "Explain to someone why restricting an RL agent's action space to Dijkstra's top-k candidates is a practical compromise, rather than either a lesser version of RL or an unnecessary complication of a purely graph-algorithmic approach.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Build a routing-decision module beating static top-1 Dijkstra in at least one scenario.",
+      "content": "Build a routing-decision module that generates k candidate paths for a given source-destination pair using graph algorithms, and uses a simple learned policy to choose among them based on current state, demonstrating at least one scenario where this beats the static top-1 Dijkstra choice.",
+      "estimatedMinutes": 20
+    },
+    "portfolioEvidence": {
+      "summary": "This is the actual convergence point of Mission 5's two skill folders.",
+      "content": "This is the actual convergence point of Mission 5's two skill folders — the module the boss battle will extend into the Digital Twin's full grid-routing system.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-graphs-rl-combination-candidate-routing",
+      "title": "Candidate Routing",
+      "description": "Sandboxed exercise implementing k-shortest-paths candidate generation combined with a policy-based selection, requiring a fix for a planted single-candidate (k=1) bug.",
+      "starterCodePath": "labs/09-graph-algorithms/candidate-routing/starter.py",
+      "testCasesPath": "labs/09-graph-algorithms/candidate-routing/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "dijkstra-rl-candidate-visualizer",
+      "title": "Dijkstra + RL Candidate Visualizer",
+      "description": "Shows Dijkstra generating a candidate path shortlist and an RL policy selecting among them, contrasted with a static top-1-only choice."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-graphs-rl-combination-1",
+      "front": "Why restrict an RL agent's routing action space to Dijkstra's top-k candidates instead of every possible path?",
+      "back": "The full space of every possible route is usually far too large for an RL agent to explore directly; letting Dijkstra generate a small set of strong candidates first makes the learning problem tractable.",
+      "conceptNodeId": "graphs.rl-combination"
+    },
+    {
+      "id": "fc-graphs-rl-combination-2",
+      "front": "What's wrong with a candidate generator that always returns k=1 (only the Dijkstra-optimal path)?",
+      "back": "It gives the RL agent no actual choice to learn from, since there's only ever one option — defeating the entire purpose of combining a learned policy with the graph algorithm.",
+      "conceptNodeId": "graphs.rl-combination"
+    }
+  ],
+  "assessment": {
+    "primaryType": "architectureDesign",
+    "rubric": [
+      "Candidate generator produces a genuine set of multiple distinct, reasonable route options, not a single default",
+      "Constructed scenario clearly demonstrates a case where the adaptive policy would plausibly outperform a static choice",
+      "Correctly explains the practical rationale for restricting rather than eliminating the graph algorithm's role"
+    ]
+  },
+  "references": [
+    {
+      "title": "NetworkX — Simple paths",
+      "url": "https://networkx.org/documentation/stable/reference/algorithms/simple_paths.html",
+      "type": "officialDocs",
+      "versionOrDate": "NetworkX 3.3",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Gymnasium — Basic Usage",
+      "url": "https://gymnasium.farama.org/introduction/basic_usage/",
+      "type": "officialDocs",
+      "versionOrDate": "Gymnasium, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

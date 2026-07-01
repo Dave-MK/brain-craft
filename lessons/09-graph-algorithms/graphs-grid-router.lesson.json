@@ -1,0 +1,137 @@
+{
+  "id": "graphs-grid-router",
+  "title": "The Grid Router: Mission 5's Full Routing and Contingency System",
+  "skillFolder": "09-graph-algorithms",
+  "missionId": "M5",
+  "concept": "Final Grid Routing and Contingency Module (capstone synthesis)",
+  "knowledgeGraphNodeId": "graphs.grid-router",
+  "difficulty": "intermediate",
+  "dependencies": ["graphs.rl-combination"],
+  "learningObjectives": [
+    "Combine topology modeling, shortest-path/flow routing, resilience analysis, and RL-augmented candidate selection into one integrated routing system",
+    "Answer the mission's two founding routing/resilience questions concretely, with your own grid topology and numbers",
+    "Quantify the trade-off between routing efficiency (cost/loss) and resilience (contingency robustness) for a specific recommendation",
+    "Produce a report a grid operator (or the AI Tutor evaluating this work) could actually act on"
+  ],
+  "whyItMatters": "This is the actual synthesis of Mission 5 and the direct answer to two of the very first concrete example questions the entire AI Energy OS mission was scoped around: minimizing routing cost, and surviving a multi-substation contingency. A mission that built every individual piece but never assembled them into one system that answers those founding questions concretely hasn't actually delivered on its own premise.",
+  "capstoneContribution": "The Digital Twin's complete grid-routing and contingency module — topology, routing, flow, resilience, and adaptive candidate selection combined into the system that directly answers the mission's founding questions with real numbers from your own topology.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Five separate pieces have never been assembled to answer the founding questions end to end.",
+      "content": "You've built topology modeling, shortest-path routing, flow analysis, resilience/contingency detection, and RL-augmented candidate selection as five separate pieces — but never actually assembled them to answer, end to end, on your own grid: 'what's the most efficient way to route power right now, and would it survive if two specific substations failed?'",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is where the mission's founding questions get answered for real.",
+      "content": "This is the actual moment this mission's founding questions get answered for real, with your own numbers, not as a hypothetical. 'How do I reduce energy costs by routing more efficiently' and 'how do I avoid overloading the grid if two substations fail' were never rhetorical — this lesson is where you produce the actual, checkable answer.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "A complete report combines routing, resilience checking, and adaptive selection with an explicit trade-off.",
+      "content": "A complete grid-routing report combines: the current minimum-loss/minimum-cost routing recommendation (from shortest-path/flow analysis), an explicit resilience check confirming that recommendation would (or wouldn't) survive a specified contingency scenario, and — where conditions are dynamic enough to benefit from it — the RL-augmented candidate selection from the previous lesson choosing among several resilience-checked options rather than a single static best. Every recommendation should quantify its trade-off explicitly: a slightly more expensive route that survives a stated contingency versus a cheaper one that doesn't, mirroring the same honest-trade-off discipline established in Mission 4's neural-vs-classical verdict and Mission 5's RL explainability lesson — a recommendation without a stated trade-off isn't actually a complete answer.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "Topology flows through routing/flow/resilience analysis and RL-augmented selection to one final recommendation.",
+      "content": "The full pipeline is shown: topology in, routing/flow/resilience analysis run in parallel, RL-augmented selection among resilience-checked candidates, converging on one final recommendation with an attached trade-off summary.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Run the finished system against several live scenarios and inspect each recommendation.",
+      "content": "Run the finished routing system against several live scenarios (normal conditions, a simulated two-substation contingency, a price spike) and inspect the generated recommendation and trade-off summary for each.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: assemble the full recommend_route pipeline with resilience filtering.",
+      "content": "```python\ndef recommend_route(grid, source, target, contingency_scenarios, policy):\n    candidates = get_candidate_paths(grid, source, target, k=3)\n    resilient_candidates = [\n        c for c in candidates\n        if all(survives_contingency(grid, c, scenario) for scenario in contingency_scenarios)\n    ]\n    if not resilient_candidates:\n        return {\"recommendation\": None, \"reason\": \"no candidate survives all specified contingencies\"}\n\n    chosen = choose_route(current_state, resilient_candidates, policy)\n    return {\n        \"recommendation\": chosen,\n        \"loss_percent\": compute_route_loss(grid, chosen),\n        \"survives_contingencies\": contingency_scenarios,\n    }\n```",
+      "estimatedMinutes": 10
+    },
+    "independentCoding": {
+      "summary": "Confirm the system falls back correctly when the cheapest route fails a contingency.",
+      "content": "Run your complete routing system against a scenario where the lowest-loss route would NOT survive a specified two-substation contingency, and confirm the system correctly falls back to a resilience-checked alternative with a documented trade-off.",
+      "estimatedMinutes": 15
+    },
+    "debugging": {
+      "summary": "Fix a system that never actually checks candidates against contingencies.",
+      "content": "A system returns the raw lowest-loss candidate without ever actually checking it against the contingency scenarios, silently recommending a route that would fail if the specified substations went offline. Identify the missing resilience check and fix the recommendation logic.",
+      "estimatedMinutes": 8
+    },
+    "reflection": {
+      "summary": "An optimal-looking but unchecked recommendation carries a real, hidden cost.",
+      "content": "What's the real cost of a routing recommendation that looks optimal under normal conditions but was never actually checked against the contingency scenario the operator cares most about?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Synthesize Mission 5: walk through the full routing decision for a real scenario.",
+      "content": "As the synthesis of Mission 5 entirely: walk someone through your complete routing system's decision for a specific real scenario in your grid topology, from topology through routing, resilience, and final trade-off.",
+      "estimatedMinutes": 6
+    },
+    "miniProject": {
+      "summary": "Deliver the final Mission 5 grid-routing and contingency report.",
+      "content": "Deliver the Digital Twin's final Mission 5 grid-routing and contingency report: for your own grid topology, the current best routing recommendation, an explicit two-substation contingency check, and a documented efficiency-vs-resilience trade-off a grid operator could act on.",
+      "estimatedMinutes": 25
+    },
+    "portfolioEvidence": {
+      "summary": "This concretely answers the two founding questions the mission was scoped around.",
+      "content": "This report directly and concretely answers the two founding routing/resilience questions the entire AI Energy OS mission was scoped around — the tangible proof Mission 5 delivered on its own premise.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": true,
+  "labs": [
+    {
+      "id": "lab-graphs-grid-router-final-system",
+      "title": "Final System",
+      "description": "Sandboxed exercise assembling the complete routing/resilience/RL-augmented recommendation pipeline, requiring a fix for a planted missing-contingency-check bug and a correct fallback under a failing scenario.",
+      "starterCodePath": "labs/09-graph-algorithms/final-system/starter.py",
+      "testCasesPath": "labs/09-graph-algorithms/final-system/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "full-routing-system-visualizer",
+      "title": "Full Routing System Visualizer",
+      "description": "End-to-end pipeline visualization from topology through routing, resilience checking, and RL-augmented selection to a final recommendation with trade-off summary."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-graphs-grid-router-1",
+      "front": "Why must a routing recommendation include an explicit trade-off statement, not just the chosen route?",
+      "back": "A recommendation without a stated trade-off (e.g. 'this route is slightly more expensive but survives the specified contingency') isn't actually a complete, checkable answer — the operator can't judge it without knowing what was traded against what.",
+      "conceptNodeId": "graphs.grid-router"
+    },
+    {
+      "id": "fc-graphs-grid-router-2",
+      "front": "What should the system do if no candidate route survives all specified contingency scenarios?",
+      "back": "Report that explicitly — 'no candidate survives all specified contingencies' — rather than silently falling back to the best-looking option that doesn't actually satisfy the resilience requirement.",
+      "conceptNodeId": "graphs.grid-router"
+    }
+  ],
+  "assessment": {
+    "primaryType": "architectureDesign",
+    "rubric": [
+      "Final report answers both founding questions (routing efficiency and two-substation resilience) with concrete numbers from the learner's own topology",
+      "Every recommendation includes an explicit, quantified efficiency-vs-resilience trade-off",
+      "System correctly falls back to a resilience-checked alternative when the naive lowest-loss route fails a contingency"
+    ]
+  },
+  "references": [
+    {
+      "title": "NetworkX — Flow algorithms",
+      "url": "https://networkx.org/documentation/stable/reference/algorithms/flow.html",
+      "type": "officialDocs",
+      "versionOrDate": "NetworkX 3.3",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Max-flow min-cut theorem",
+      "url": "https://en.wikipedia.org/wiki/Max-flow_min-cut_theorem",
+      "type": "other",
+      "versionOrDate": "Wikipedia, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

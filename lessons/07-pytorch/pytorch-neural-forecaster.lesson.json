@@ -1,0 +1,137 @@
+{
+  "id": "pytorch-neural-forecaster",
+  "title": "The Neural Forecaster: Mission 4's Honest Verdict",
+  "skillFolder": "07-pytorch",
+  "missionId": "M4",
+  "concept": "Final Neural Forecasting Model and Honest Comparison (capstone synthesis)",
+  "knowledgeGraphNodeId": "pytorch.neural-forecaster",
+  "difficulty": "intermediate",
+  "dependencies": ["pytorch.sequence-models"],
+  "learningObjectives": [
+    "Combine architecture design, training, regularization, and sequence modeling into one final neural forecaster",
+    "Evaluate the neural forecaster using the exact same methodology (TimeSeriesSplit, metrics) as Mission 3's scikit-learn model, for a fair comparison",
+    "Report an honest verdict on whether the added complexity of a neural network was actually worth it for this specific problem",
+    "Identify what would need to change (more data, different architecture, different problem) for the verdict to flip"
+  ],
+  "whyItMatters": "This mission's entire premise was 'maybe a neural network can do better than scikit-learn' — and a mission that never actually answers that question honestly, one way or the other, has failed regardless of how sophisticated the model built along the way looks.",
+  "capstoneContribution": "The Digital Twin's honest neural-vs-classical verdict — whichever model wins, this becomes the actual forecasting component feeding Mission 5's optimisation work, chosen on evidence rather than on which mission felt more impressive to build.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A sophisticated neural forecaster has never been run through the same honest gauntlet as the sklearn model.",
+      "content": "You've built an increasingly sophisticated neural forecaster across this entire skill folder, but you've never actually run it through the same honest evaluation gauntlet — baseline comparison, TimeSeriesSplit, the same metrics — that Mission 3's scikit-learn model went through.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Neural networks aren't automatically better; finding out honestly matters more than assuming it.",
+      "content": "A fair fight matters here specifically because neural networks have a reputation for being 'better' that isn't automatically true — on a dataset this size, with these features, a simpler model might genuinely win, and finding that out honestly is more valuable than assuming the more complex model must be superior.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "A fair comparison uses identical validation and asks whether the margin justifies the added complexity.",
+      "content": "A fair comparison requires identical evaluation conditions: the same TimeSeriesSplit folds, the same held-out test period, the same metric(s) chosen for the same reasons as in Mission 3's feature-importance-evaluation lesson, and the same naive baseline as the floor every candidate must beat. The 'honest verdict' isn't just a number — it's a specific claim: which model wins, by how much, and whether that margin is large enough to justify the neural network's added training time, complexity, and harder-to-interpret predictions compared to the scikit-learn baseline's simplicity and direct interpretability. If the neural model doesn't clearly win, the correct conclusion is to say so and explain why, not to keep tuning until it does.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "Both models run through the identical evaluation pipeline, converging on one scoreboard.",
+      "content": "The scikit-learn model and the neural forecaster both run through the identical TimeSeriesSplit evaluation pipeline, converging on a single side-by-side scoreboard against the naive baseline.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Review a live scoreboard and write the honest verdict.",
+      "content": "Review a live side-by-side scoreboard of the sklearn baseline, the neural forecaster, and the naive floor across every cross-validation fold, and be prompted to write the honest verdict yourself.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: run both models through identical evaluation and compare.",
+      "content": "```python\nsklearn_scores = cross_val_score(\n    best_sklearn_model, X, y,\n    cv=TimeSeriesSplit(n_splits=5),\n    scoring=\"neg_mean_absolute_error\",\n)\nneural_scores = evaluate_neural_model_cv(lstm_model, sequences, targets, n_splits=5)\n\nprint(f\"Naive baseline MAE: {baseline_mae}\")\nprint(f\"Best sklearn model MAE: {-sklearn_scores.mean():.2f}\")\nprint(f\"Neural forecaster MAE: {neural_scores.mean():.2f}\")\n```",
+      "estimatedMinutes": 10
+    },
+    "independentCoding": {
+      "summary": "Compute the neural model's percentage improvement over both baselines.",
+      "content": "Compute the percentage improvement (or regression) of the neural forecaster over the sklearn baseline, and over the naive baseline, expressed as two separate numbers.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a comparison where the two models used unequal amounts of historical context.",
+      "content": "The neural model's sequences use a 24-hour window while the sklearn model's features only look back 1 hour, meaning the two models were never actually competing on equal information. Identify the mismatch and align the comparison fairly.",
+      "estimatedMinutes": 8
+    },
+    "reflection": {
+      "summary": "Winning due to more context, not architecture, is a different and important finding.",
+      "content": "If the neural model won only because it had access to more historical context, not because it's inherently a better architecture for this problem, what would that actually tell you about where the real improvement came from?",
+      "estimatedMinutes": 5
+    },
+    "teachBack": {
+      "summary": "Deliver the honest classical-vs-neural verdict and state what would flip it.",
+      "content": "As the synthesis of Mission 3 and 4 combined: deliver the honest verdict on classical ML vs. neural networks for demand forecasting on this dataset, and state specifically what would need to change for that verdict to flip.",
+      "estimatedMinutes": 6
+    },
+    "miniProject": {
+      "summary": "Produce the final Mission 4 deliverable: a fair, honest, written comparison.",
+      "content": "Produce the Digital Twin's final Mission 4 deliverable: a side-by-side, fairly-evaluated comparison of the naive baseline, the best Mission 3 scikit-learn model, and the Mission 4 neural forecaster, with a written, honest verdict and a chosen model to carry forward into Mission 5.",
+      "estimatedMinutes": 25
+    },
+    "portfolioEvidence": {
+      "summary": "This honest verdict determines which forecasting component feeds Mission 5.",
+      "content": "This honest verdict — not an assumption that 'neural is better' — determines which forecasting component actually feeds Mission 5's battery and EV optimisation work.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": true,
+  "labs": [
+    {
+      "id": "lab-pytorch-neural-forecaster-honest-comparison",
+      "title": "Honest Comparison",
+      "description": "Sandboxed exercise requiring a fair, identically-evaluated comparison of the naive baseline, the Mission 3 sklearn model, and the Mission 4 neural forecaster, including a planted unequal-context bug to fix.",
+      "starterCodePath": "labs/07-pytorch/honest-comparison/starter.py",
+      "testCasesPath": "labs/07-pytorch/honest-comparison/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "sklearn-vs-neural-scoreboard",
+      "title": "sklearn vs. Neural Scoreboard",
+      "description": "Live side-by-side scoreboard of the naive baseline, sklearn model, and neural forecaster across every cross-validation fold."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-pytorch-neural-forecaster-1",
+      "front": "Why is it unfair to compare a neural model using 24 hours of context against an sklearn model using only 1 hour?",
+      "back": "Any performance difference could come purely from the amount of historical information available, not from which model architecture is actually better — a fair comparison requires giving both models equal access to context.",
+      "conceptNodeId": "pytorch.neural-forecaster"
+    },
+    {
+      "id": "fc-pytorch-neural-forecaster-2",
+      "front": "What should the correct conclusion be if the neural model doesn't clearly beat the sklearn baseline?",
+      "back": "Report that honestly and explain why, rather than continuing to tune the neural model until it eventually 'wins' — the goal is an honest answer, not a predetermined one.",
+      "conceptNodeId": "pytorch.neural-forecaster"
+    }
+  ],
+  "assessment": {
+    "primaryType": "research",
+    "rubric": [
+      "Both models are evaluated with identical validation methodology, metrics, and equal access to historical context",
+      "The written verdict states a specific winner (or a tie) with a quantified margin, not a vague impression",
+      "Limitations/what-would-flip-the-verdict discussion is specific and evidence-based, not speculative filler"
+    ]
+  },
+  "references": [
+    {
+      "title": "PyTorch Documentation — torch.nn.LSTM",
+      "url": "https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html",
+      "type": "officialDocs",
+      "versionOrDate": "PyTorch 2.3",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "scikit-learn — Cross-validation: evaluating estimator performance",
+      "url": "https://scikit-learn.org/stable/modules/cross_validation.html",
+      "type": "officialDocs",
+      "versionOrDate": "scikit-learn 1.5",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

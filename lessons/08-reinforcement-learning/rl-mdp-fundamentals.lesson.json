@@ -1,0 +1,137 @@
+{
+  "id": "rl-mdp-fundamentals",
+  "title": "MDPs: Teaching a Decision-Maker to Think in States and Rewards",
+  "skillFolder": "08-reinforcement-learning",
+  "missionId": "M5",
+  "concept": "Markov Decision Processes (states, actions, rewards, policies, value functions)",
+  "knowledgeGraphNodeId": "rl.mdp-fundamentals",
+  "difficulty": "introductory",
+  "dependencies": ["pytorch.neural-forecaster"],
+  "learningObjectives": [
+    "Define a problem in terms of states, actions, rewards, and a policy",
+    "Explain the Markov property and why it matters for whether a problem can be modeled as an MDP",
+    "Distinguish a policy from a value function and explain how they relate",
+    "Frame battery scheduling as an MDP: what is the state, what are the actions, what is the reward"
+  ],
+  "whyItMatters": "Every model so far in this curriculum predicted a value (regression) or a category (classification) from a single snapshot of features — none of them decided what to do next, or accounted for how today's decision affects tomorrow's options. Battery scheduling is fundamentally a sequential decision problem: charging now affects what's possible later, and reinforcement learning is the framework built specifically for that.",
+  "capstoneContribution": "The formal problem definition for the Digital Twin's battery scheduler — state, action, and reward defined precisely enough that an RL algorithm can actually be applied to it in the following lessons.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Nothing yet decides what the battery should actually do, and today's choice shapes tomorrow's options.",
+      "content": "Your Mission 3/4 forecasters can predict tomorrow's demand, but nothing yet decides what the battery should actually do about it — and that decision today changes what's possible tomorrow (a battery discharged now can't discharge again until recharged), which none of your previous models had to reason about at all.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is a genuinely different kind of problem: what to do, not what will happen.",
+      "content": "This is a genuinely different kind of problem from everything else in the curriculum so far: not 'what will happen' but 'what should I do, given that my choice now shapes my options later.' That's exactly what the MDP framework and reinforcement learning exist to formalize and solve.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "States, actions, and rewards define an MDP; policies and value functions relate directly.",
+      "content": "A Markov Decision Process consists of states (a snapshot of everything relevant right now — battery charge level, current demand, current price), actions (what the agent can choose — charge, discharge, hold), and rewards (a number, computed after each action, reflecting how good that action was — e.g. negative cost, penalty for overload). The Markov property assumes the current state contains everything needed to decide the best next action — the past only matters insofar as it's reflected in the current state, not as separate history. A policy (π) maps states to actions (what to do in each situation); a value function estimates the total future reward achievable from a given state (or state-action pair) under a given policy — the two are deeply related, since a good policy is exactly one that chooses actions leading to high-value states.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "The agent-environment loop: state, action, reward, next state, repeated.",
+      "content": "An agent in a battery-charge state takes an action, receives a reward, and transitions to a new state, repeated as a looping cycle — the fundamental agent-environment interaction loop every RL algorithm in this skill folder builds on.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Step through a simplified battery MDP choosing actions and observing rewards.",
+      "content": "Click through a simplified battery MDP step by step — choosing charge/discharge/hold at each state, watching the state (charge level) update and a reward number appear, building intuition for the state-action-reward loop before any algorithm is introduced.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: define a simple state, action function, and reward.",
+      "content": "```python\nstate = {\"battery_soc\": 0.5, \"demand_kw\": 4800, \"price_per_kwh\": 0.28}\n\ndef take_action(state, action):\n    if action == \"charge\":\n        new_soc = min(1.0, state[\"battery_soc\"] + 0.1)\n        cost = state[\"price_per_kwh\"] * 0.1\n    elif action == \"discharge\":\n        new_soc = max(0.0, state[\"battery_soc\"] - 0.1)\n        cost = -state[\"price_per_kwh\"] * 0.1\n    else:\n        new_soc, cost = state[\"battery_soc\"], 0\n    reward = -cost\n    return {**state, \"battery_soc\": new_soc}, reward\n\nnext_state, reward = take_action(state, \"discharge\")\nprint(next_state, reward)\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Add a safety-reserve penalty to the reward function.",
+      "content": "Extend the `take_action` function to include a penalty in the reward if the resulting `battery_soc` would go below 0.1 (a safety reserve), and test it against a few different starting states and actions.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a reward computed from stale, pre-action state.",
+      "content": "A reward function computes the reward from the state *before* the action was applied instead of accounting for its actual effect, silently rewarding actions based on stale information. Identify and fix the reward computation order.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "The Markov property holds reasonably well here, but might not always.",
+      "content": "Why does the Markov property's assumption — 'the current state has everything needed to decide' — actually hold reasonably well for battery scheduling, but might fail for a problem where recent history matters beyond what's captured in the current snapshot?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain policy vs. value function using the battery MDP.",
+      "content": "Explain to someone the difference between a policy and a value function using the battery MDP as your concrete example.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Define a complete, realistic battery MDP ready for an RL algorithm.",
+      "content": "Define a complete, more realistic battery MDP: a richer state (soc, demand forecast, price, time of day), a documented action space, and a reward function reflecting cost and a safety constraint, ready for an actual RL algorithm to be applied to in the next lesson.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This is the problem specification every RL algorithm in this skill folder will be trained against.",
+      "content": "This formal MDP definition is the actual problem specification every RL algorithm in the rest of this skill folder will be trained against.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-rl-mdp-fundamentals-battery-mdp-definition",
+      "title": "Battery MDP Definition",
+      "description": "Sandboxed exercise defining a complete battery-scheduling MDP with state, action, and reward function, including a planted stale-state reward bug to fix.",
+      "starterCodePath": "labs/08-reinforcement-learning/battery-mdp-definition/starter.py",
+      "testCasesPath": "labs/08-reinforcement-learning/battery-mdp-definition/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "mdp-agent-loop-visualizer",
+      "title": "MDP Agent Loop Visualizer",
+      "description": "Step-through visualization of the state-action-reward-next-state loop for a simplified battery MDP."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-rl-mdp-fundamentals-1",
+      "front": "What does the Markov property assume about a state?",
+      "back": "That the current state contains everything needed to decide the best next action — the past matters only insofar as it's already reflected in the current state, not as separate history to track.",
+      "conceptNodeId": "rl.mdp-fundamentals"
+    },
+    {
+      "id": "fc-rl-mdp-fundamentals-2",
+      "front": "How does a value function relate to a policy?",
+      "back": "A value function estimates the total future reward achievable from a state (or state-action pair); a good policy is exactly one that consistently chooses actions leading toward high-value states.",
+      "conceptNodeId": "rl.mdp-fundamentals"
+    }
+  ],
+  "assessment": {
+    "primaryType": "architectureDesign",
+    "rubric": [
+      "State definition includes everything genuinely needed to decide a good next action, without unnecessary bloat",
+      "Action space and reward function are precisely and unambiguously defined, ready for an algorithm to be applied",
+      "Correctly identifies and fixes the stale-state reward computation bug"
+    ]
+  },
+  "references": [
+    {
+      "title": "Gymnasium — Basic Usage",
+      "url": "https://gymnasium.farama.org/introduction/basic_usage/",
+      "type": "officialDocs",
+      "versionOrDate": "Gymnasium, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Sutton & Barto — Reinforcement Learning: An Introduction",
+      "url": "http://incompleteideas.net/book/RLbook2020.pdf",
+      "type": "other",
+      "versionOrDate": "2nd Edition, 2020",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

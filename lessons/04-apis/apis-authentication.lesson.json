@@ -1,0 +1,137 @@
+{
+  "id": "apis-authentication",
+  "title": "Authentication: Proving You're Allowed to Ask",
+  "skillFolder": "04-apis",
+  "missionId": "M2",
+  "concept": "API Authentication (keys, headers)",
+  "knowledgeGraphNodeId": "apis.authentication",
+  "difficulty": "introductory",
+  "dependencies": ["apis.http-fundamentals"],
+  "learningObjectives": [
+    "Explain why most real APIs require authentication, unlike the open sandbox endpoint used so far",
+    "Send an API key correctly via headers or query parameters, per a given API's documentation",
+    "Store an API key as an environment variable instead of hard-coding it in source",
+    "Recognize a 401 vs. 403 response and know which one means fix your credentials vs. you're not allowed to do this at all"
+  ],
+  "whyItMatters": "A real weather or price API won't respond to just anyone — it needs proof you're an authorized caller, both to prevent abuse and to track usage against a quota. Every real data source the Digital Twin will eventually depend on requires this.",
+  "capstoneContribution": "The Digital Twin's credential-handling convention — every API key it ever uses, for weather, price, or eventually anything else, follows the same never-hard-coded pattern established here.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A real API returns 401 the moment you try an unauthenticated request.",
+      "content": "The sandbox endpoint used in the last lesson accepted requests from anyone. A real weather API returns a `401 Unauthorized` the moment you try the same thing without proving who you are.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is the line between a toy demo and something that runs against a real service.",
+      "content": "This is the line between a toy demo and something that could actually run against a real, rate-limited, commercially operated API. Getting authentication right — and never leaking the credential — matters from the very first real API call onward.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "API keys travel via headers/params; store them in environment variables, never in source.",
+      "content": "Most APIs authenticate via an API key sent either as a query parameter (`?api_key=...`) or, more commonly and more securely, as a request header (`Authorization: Bearer <key>` or a custom header like `X-API-Key: <key>`). Hard-coding a key directly in source code risks it leaking the moment the code is shared or committed to a public repository — instead, load it from an environment variable (`os.environ[\"WEATHER_API_KEY\"]`) that's set outside the code, never committed. A `401 Unauthorized` means your credentials are missing or invalid; a `403 Forbidden` means your credentials are valid but you're not allowed to access this specific resource — a different problem with a different fix.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "A request's API key is checked against a vault, passed through or bounced with 401/403.",
+      "content": "A request with an API key attached in a header flows to an API gateway, which checks it against a real vault and either passes the request through or bounces it back with a 401/403, with the vault represented separately from the code that sent the request.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Toggle valid/invalid/missing keys and observe the exact resulting status code.",
+      "content": "Toggle between sending a request with a valid key, an invalid key, and no key at all against a simulated authenticated endpoint, observing the exact status code each produces.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: authenticate a request using an environment-variable-stored key.",
+      "content": "```python\nimport os\nimport requests\n\napi_key = os.environ[\"WEATHER_API_KEY\"]\nresponse = requests.get(\n    \"https://api.example-weather.com/current\",\n    headers={\"Authorization\": f\"Bearer {api_key}\"},\n    params={\"location\": \"london\"},\n)\nprint(response.status_code)\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Authenticate correctly and handle 401/403 with distinct messages.",
+      "content": "Rewrite the previous lesson's mini project to authenticate correctly using an environment-variable-stored key, and handle both a `401` and a `403` response with distinct, clear error messages.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Refactor a hard-coded API key out of the source code.",
+      "content": "A script has the API key hard-coded directly as a string literal. Identify the security risk and refactor it to load from an environment variable instead.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Committed secrets connect back to Mission 1's Git history lessons.",
+      "content": "What's actually at risk if an API key gets committed to a public Git repository, given everything you learned about Git history in Mission 1's Git lessons?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain the practical difference between 401 and 403.",
+      "content": "Explain to someone the practical difference between a `401` and a `403` response, and what you'd actually do differently in response to each.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Add secure authentication to the weather-request script.",
+      "content": "Add authentication to the weather-request script from the previous lesson, storing the key as an environment variable and handling authentication failures with clear, distinct messages.",
+      "estimatedMinutes": 12
+    },
+    "portfolioEvidence": {
+      "summary": "This becomes the Digital Twin's standard credential-handling pattern.",
+      "content": "This credential-handling pattern becomes the Digital Twin's standard for every future API key it will ever use.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-apis-authentication-secure-key-handling",
+      "title": "Secure Key Handling",
+      "description": "Sandboxed exercise requiring correct header-based authentication and environment-variable key storage, including detection of a planted hard-coded secret to fix.",
+      "starterCodePath": "labs/04-apis/secure-key-handling/starter.py",
+      "testCasesPath": "labs/04-apis/secure-key-handling/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "auth-header-visualizer",
+      "title": "Auth Header Visualizer",
+      "description": "Shows a request's API key being checked against a simulated credential vault, resulting in pass-through, 401, or 403."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-apis-authentication-1",
+      "front": "Why should an API key be loaded from an environment variable instead of hard-coded in a script?",
+      "back": "Hard-coded secrets risk leaking the moment the code is shared or committed to version control. An environment variable keeps the credential outside the code entirely.",
+      "conceptNodeId": "apis.authentication"
+    },
+    {
+      "id": "fc-apis-authentication-2",
+      "front": "What's the difference between a 401 and a 403 response?",
+      "back": "401 means your credentials are missing or invalid — fix your authentication. 403 means your credentials are valid but you're not authorized for this specific resource — a permissions problem, not a credentials problem.",
+      "conceptNodeId": "apis.authentication"
+    }
+  ],
+  "assessment": {
+    "primaryType": "codeReview",
+    "rubric": [
+      "No API key or secret appears hard-coded anywhere in the reviewed code",
+      "401 and 403 responses are handled with distinct, correctly differentiated messages",
+      "Authentication header/parameter is sent in the form the target API actually expects"
+    ]
+  },
+  "references": [
+    {
+      "title": "Requests — Authentication",
+      "url": "https://requests.readthedocs.io/en/latest/user/authentication/",
+      "type": "officialDocs",
+      "versionOrDate": "Requests 2.32",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "MDN — 401 Unauthorized",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401",
+      "type": "officialDocs",
+      "versionOrDate": "MDN, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

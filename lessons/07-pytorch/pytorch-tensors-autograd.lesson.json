@@ -1,0 +1,137 @@
+{
+  "id": "pytorch-tensors-autograd",
+  "title": "Tensors & Autograd: The Machinery Under Every Neural Network",
+  "skillFolder": "07-pytorch",
+  "missionId": "M4",
+  "concept": "Tensors and Automatic Differentiation",
+  "knowledgeGraphNodeId": "pytorch.tensors-autograd",
+  "difficulty": "introductory",
+  "dependencies": ["sklearn.demand-forecaster"],
+  "learningObjectives": [
+    "Create and manipulate PyTorch tensors, and explain how they differ from a NumPy array or pandas Series",
+    "Explain what a computational graph is and why PyTorch builds one automatically",
+    "Use .backward() to compute a gradient and explain what that gradient actually represents",
+    "Predict, for a simple hand-computable expression, what autograd's gradient result should be, and verify it"
+  ],
+  "whyItMatters": "Your scikit-learn model in Mission 3 fit its parameters via a solved formula (linear regression) or a built-in algorithm (random forest) you never had to implement. Every neural network from here on learns by gradient descent, computed automatically by autograd — and if you don't understand what a gradient actually is, every debugging session in this mission will feel like guesswork.",
+  "capstoneContribution": "The literal computational foundation the Digital Twin's neural forecasting model will be built on — tensors holding the feature data, and autograd computing exactly how each weight should change to reduce error.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Neural networks have no closed-form solution — they learn iteratively via gradients.",
+      "content": "scikit-learn's `LinearRegression().fit()` found the best coefficients for you, instantly, with a closed-form solution. Nothing in a neural network has a closed-form solution — it has to learn iteratively, one small gradient-based nudge at a time, and you need to know what that nudge actually is.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Every neural network in this mission is quietly built on autograd.",
+      "content": "This is the one piece of machinery every neural network in this mission (and in real production ML) is quietly built on top of. Skipping it means every future debugging session — 'why isn't my model learning?' — has no foundation to reason from.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Tensors track operations; backward() walks the resulting graph to compute gradients automatically.",
+      "content": "A `torch.Tensor` is PyTorch's core data structure — like a NumPy array, but with GPU support and, critically, the ability to track operations performed on it. Setting `requires_grad=True` tells PyTorch to build a computational graph recording every operation involving that tensor. Calling `.backward()` on a final scalar output (like a loss value) walks that graph backward, computing the gradient of the output with respect to every tensor that required it — exactly the calculus derivative, computed automatically rather than by hand. `tensor.grad` then holds that computed gradient, ready to be used to update the tensor's value.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "A forward pass builds a graph left to right; backward() walks it right to left computing gradients.",
+      "content": "A small chain of operations (multiply, add, square) is shown as a computational graph, with a forward pass flowing left to right computing the output, and `backward()` shown flowing right to left computing gradients at each node.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Chain operations on a tensor and watch the graph and gradients populate live.",
+      "content": "Build a small expression by chaining operations on a tensor and watch the resulting computational graph draw itself, then trigger `.backward()` and watch the gradient value populate at each node in real time.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: compute a gradient with autograd and verify it by hand.",
+      "content": "```python\nimport torch\n\nx = torch.tensor(3.0, requires_grad=True)\ny = x ** 2 + 2 * x\n\ny.backward()\nprint(x.grad)  # dy/dx = 2x + 2 = 8.0 at x=3\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Hand-compute a derivative first, then verify it with autograd.",
+      "content": "Given the expression `z = 3*x**2 - 5*x + 1`, hand-compute `dz/dx` at `x=2` on paper first, then verify your answer using autograd.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Fix a .backward() call on a tensor missing requires_grad=True.",
+      "content": "Code calls `.backward()` on a tensor without `requires_grad=True`, raising an error. Diagnose the specific error message and fix it.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Hand-verifying one gradient builds confidence for debugging networks you can't verify in full.",
+      "content": "Why does hand-verifying autograd's gradient against your own calculus, even once, make you more confident debugging a neural network you'll never be able to hand-verify in full?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain what tensor.grad contains using your own hand-verified example.",
+      "content": "Explain to someone what `tensor.grad` actually contains after calling `.backward()`, using your own hand-verified example.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Implement a manual gradient descent loop using only autograd.",
+      "content": "Implement a tiny gradient descent loop by hand — no `nn.Module`, no optimizer — that uses autograd to minimize a simple quadratic function, printing the value and gradient at each step until it converges.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "Every later training loop is a more convenient wrapper around this exact mechanism.",
+      "content": "This hand-rolled gradient descent loop is the literal mechanism every later PyTorch training loop in this mission is a more convenient wrapper around.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-pytorch-tensors-autograd-manual-gradient-descent",
+      "title": "Manual Gradient Descent",
+      "description": "Sandboxed exercise implementing a hand-rolled gradient descent loop using raw tensors and autograd, with a hand-verification step against a simple known derivative.",
+      "starterCodePath": "labs/07-pytorch/manual-gradient-descent/starter.py",
+      "testCasesPath": "labs/07-pytorch/manual-gradient-descent/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "computational-graph-visualizer",
+      "title": "Computational Graph Visualizer",
+      "description": "Draws the computational graph for a chained tensor expression and animates backward() computing gradients at each node."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-pytorch-tensors-autograd-1",
+      "front": "What does calling .backward() on a scalar tensor actually compute?",
+      "back": "The gradient of that scalar with respect to every tensor upstream in the computational graph that had requires_grad=True — the same thing as a calculus derivative, computed automatically by walking the graph backward.",
+      "conceptNodeId": "pytorch.tensors-autograd"
+    },
+    {
+      "id": "fc-pytorch-tensors-autograd-2",
+      "front": "Why does PyTorch need requires_grad=True set explicitly, rather than tracking gradients for every tensor by default?",
+      "back": "Tracking every operation for gradient computation has real memory and compute overhead; requiring it explicitly lets you track it only for the tensors (typically model parameters) that actually need gradients computed.",
+      "conceptNodeId": "pytorch.tensors-autograd"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly diagnoses and fixes a missing requires_grad=True or double-backward error",
+      "Hand-computed derivative matches autograd's computed gradient for the independent-coding task",
+      "Manual gradient descent loop actually converges toward the function's minimum, verified by printed values"
+    ]
+  },
+  "references": [
+    {
+      "title": "PyTorch Tutorials — Tensors",
+      "url": "https://pytorch.org/tutorials/beginner/basics/tensorqs_tutorial.html",
+      "type": "officialDocs",
+      "versionOrDate": "PyTorch 2.3",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "PyTorch Tutorials — A Gentle Introduction to torch.autograd",
+      "url": "https://pytorch.org/tutorials/beginner/blitz/autograd_tutorial.html",
+      "type": "officialDocs",
+      "versionOrDate": "PyTorch 2.3",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

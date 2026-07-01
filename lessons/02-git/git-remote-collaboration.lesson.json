@@ -1,0 +1,137 @@
+{
+  "id": "git-remote-collaboration",
+  "title": "Remotes & Pull Requests: Collaborating on Purpose",
+  "skillFolder": "02-git",
+  "missionId": "M1",
+  "concept": "Remotes, Push/Pull, and Pull Requests",
+  "knowledgeGraphNodeId": "git.remote-collaboration",
+  "difficulty": "foundational",
+  "dependencies": ["git.merging"],
+  "learningObjectives": [
+    "Connect a local repository to a remote and push/pull changes correctly",
+    "Explain the difference between fetch and pull",
+    "Open a pull request that clearly describes what changed and why, even solo",
+    "Review a pull request's diff critically before merging it, rather than merging on trust alone"
+  ],
+  "whyItMatters": "Every commit made so far has lived only on one machine. The AI Energy OS eventually needs a shared, remote source of truth — and the pull-request workflow (propose a change, review it, then merge) is how real engineering teams keep main trustworthy even as multiple people, or future collaborators, or just future-you reviewing past-you's work, contribute.",
+  "capstoneContribution": "The Digital Twin's move from 'a local folder of code' to 'a real, remotely hosted, reviewable project' — the point where it becomes something a collaborator, researcher, or future you could actually pick up.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Everything built so far exists on only one machine.",
+      "content": "Everything you've built lives only on this one machine. If the disk fails, or you want to work from a second machine, or eventually invite a collaborator, none of that is possible yet.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is the step that makes the work durable, shareable, and reviewable.",
+      "content": "This is the step that turns your local experiment into something durable and shareable. It's also how you'll practice a review discipline — catching your own mistakes before they land on main — that pays off the moment more than one person, or more than one future version of you, touches the code.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Remotes host a copy elsewhere; fetch reviews before integrating, pull integrates immediately.",
+      "content": "A remote is a reference to a copy of the repository hosted elsewhere (e.g. on GitHub); `git remote add origin <url>` registers it. `git push origin main` sends your local commits to the remote; `git fetch` downloads the remote's latest history without changing your local branches, while `git pull` fetches and immediately merges into your current branch — the distinction matters because fetch lets you review incoming changes before integrating them. A pull request proposes merging one branch into another on the remote host, with a description of what changed and why, and a place for review comments before it's merged.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "Push and pull flow between local and remote; fetch updates a tracking reference without touching local branches.",
+      "content": "A local repository and a remote repository are shown as two separate boxes, with push and pull arrows flowing between them, and fetch shown as a one-way arrow that updates a separate 'remote-tracking' reference without touching the local branch.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Push a branch, open a mock pull request, review it, then merge.",
+      "content": "Simulate pushing a branch to a remote, open a mock pull request with a description field, add a review comment on a specific line of the diff, then merge it — watching the remote's main branch update only after the merge step.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: register a remote, push, branch, and open a pull request.",
+      "content": "```bash\ngit remote add origin https://github.com/you/digital-twin.git\ngit push -u origin main\n\ngit switch -c improve-battery-thresholds\n# make changes, commit\ngit push -u origin improve-battery-thresholds\n# open a pull request from improve-battery-thresholds into main\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Push a real branch and write a pull-request description that flags what a reviewer should check.",
+      "content": "Push a real branch of your own (or a simulated one in the sandbox) to a remote, write a pull-request description that clearly states what changed and why, and list at least two things you'd want a reviewer to specifically check.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Diagnose an unexpected pull conflict caused by skipping review-before-merge.",
+      "content": "A learner ran `git pull` and got a merge conflict they weren't expecting because they hadn't fetched/reviewed first. Walk through using `git fetch` plus `git log` to review incoming changes before merging, as the safer alternative.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Reviewing before integrating is safer than always pulling directly.",
+      "content": "Why might reviewing incoming changes with `git fetch` before merging be safer than always running `git pull` directly, especially on a shared branch?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why a pull request exists even on a solo project.",
+      "content": "Explain to someone why a pull request exists as a separate step from just pushing directly to main, even on a solo project.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Push, open, review, and merge a real pull request end to end.",
+      "content": "Push your `digital_twin/` repository to a real or simulated remote, open a pull request for your most recent branch, write a clear description, and merge it only after reviewing your own diff as if you were a reviewer seeing it for the first time.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "The Digital Twin is now a project with real remote history and review discipline.",
+      "content": "This is the point where the Digital Twin becomes a project with a real remote history and a review discipline, not just local commits only you have ever seen.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-git-remote-collaboration-pull-request",
+      "title": "Pull Request Workflow",
+      "description": "Sandboxed exercise simulating a remote host: push a branch, author a pull-request description, add review comments, and merge only after addressing them.",
+      "starterCodePath": "labs/02-git/pull-request-workflow/starter/",
+      "testCasesPath": "labs/02-git/pull-request-workflow/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "remote-push-pull-visualizer",
+      "title": "Remote Push/Pull Visualizer",
+      "description": "Shows local and remote repositories as separate boxes with push/fetch/pull arrows, distinguishing fetch's tracking-reference update from pull's immediate merge."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-git-remote-collaboration-1",
+      "front": "What's the key difference between git fetch and git pull?",
+      "back": "git fetch downloads the remote's latest history without touching your local branches, letting you review it first. git pull fetches and immediately merges into your current branch.",
+      "conceptNodeId": "git.remote-collaboration"
+    },
+    {
+      "id": "fc-git-remote-collaboration-2",
+      "front": "Why open a pull request instead of pushing directly to main, even when working solo?",
+      "back": "It creates a deliberate review checkpoint — a place to re-read your own diff, document why the change was made, and catch mistakes before they land on the trusted branch, which is a habit worth having before it's ever required by a teammate.",
+      "conceptNodeId": "git.remote-collaboration"
+    }
+  ],
+  "assessment": {
+    "primaryType": "projectWork",
+    "rubric": [
+      "Pull request description clearly states what changed and why, not just restating the diff",
+      "Learner identifies specific, concrete things a reviewer should check rather than a generic 'looks good' checklist",
+      "Correctly distinguishes when to use fetch-then-review versus pull directly"
+    ]
+  },
+  "references": [
+    {
+      "title": "GitHub Docs — About pull requests",
+      "url": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests",
+      "type": "officialDocs",
+      "versionOrDate": "GitHub Docs, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Git Reference — git-fetch",
+      "url": "https://git-scm.com/docs/git-fetch",
+      "type": "officialDocs",
+      "versionOrDate": "Git 2.44",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

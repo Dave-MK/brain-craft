@@ -1,0 +1,137 @@
+{
+  "id": "sklearn-classification-basics",
+  "title": "Classification: Will Tomorrow Overload the Grid?",
+  "skillFolder": "06-scikit-learn",
+  "missionId": "M3",
+  "concept": "Supervised Learning: Classification",
+  "knowledgeGraphNodeId": "sklearn.classification-basics",
+  "difficulty": "foundational",
+  "dependencies": ["sklearn.regression-basics"],
+  "learningObjectives": [
+    "Explain the difference between a regression target (a number) and a classification target (a category)",
+    "Fit a logistic regression classifier and generate class predictions",
+    "Interpret a confusion matrix and explain what each of its four cells represents",
+    "Recognize when accuracy alone is a misleading metric, particularly for imbalanced classes"
+  ],
+  "whyItMatters": "Not every question the AI Energy OS needs answered is 'what number will it be' — some are 'will this cross a threshold, yes or no,' like 'will tomorrow's peak demand exceed the substation's safe limit.' That's a fundamentally different kind of prediction from the regression work in this mission so far.",
+  "capstoneContribution": "The Digital Twin's first overload-risk classifier — predicting whether tomorrow's peak demand will exceed a substation's safe limit, a direct input to the Grid Copilot's early-warning behavior described in the capstone vision.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "The real operational question is often yes/no, not a specific number.",
+      "content": "You can predict a specific demand number with regression, but the actual operational question is often simpler and more urgent: will tomorrow cross the OVERLOAD threshold from Mission 1's classifier, yes or no?",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Training on the yes/no question directly is often better than thresholding a regression output.",
+      "content": "Some real decisions genuinely are yes/no, and forcing them through a regression model (predict the number, then threshold it yourself) is often less direct and less well-calibrated than training a classifier on the yes/no question itself.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Classification predicts a category; confusion matrices reveal what accuracy alone hides.",
+      "content": "A classification target is a category (e.g. `will_overload: True/False`) rather than a continuous number. `LogisticRegression().fit(X_train, y_train)` learns a decision boundary; `.predict(X_test)` returns class labels, while `.predict_proba(X_test)` returns the model's confidence for each class — often more useful than the bare label for a decision-support tool like the Grid Copilot. A confusion matrix breaks predictions into true positives, true negatives, false positives, and false negatives; if OVERLOAD days are rare (a class imbalance), a model that always predicts 'no overload' can still score high accuracy while being completely useless — this is exactly why accuracy alone is an insufficient metric for this kind of question.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "A 2x2 confusion matrix, with a bar showing how imbalance inflates accuracy misleadingly.",
+      "content": "A 2x2 confusion matrix grid has each cell's meaning (true positive, false positive, false negative, true negative) labeled, alongside a bar showing how a lopsided class balance can make accuracy alone look deceptively high.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Adjust a decision threshold and watch the confusion matrix update live.",
+      "content": "Adjust a decision threshold slider on a live classifier's predicted probabilities and watch the confusion matrix's four cells update in real time as more or fewer days get classified as OVERLOAD.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: fit a classifier and inspect its confusion matrix.",
+      "content": "```python\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import confusion_matrix\n\ny_class = (combined[\"demand_kw\"] >= 5000).astype(int)\nX_train, X_test, y_train, y_test = train_test_split(X, y_class, test_size=0.2, shuffle=False)\n\nclf = LogisticRegression()\nclf.fit(X_train, y_train)\npredictions = clf.predict(X_test)\nprint(confusion_matrix(y_test, predictions))\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Fit and interpret a low-solar-generation classifier, unaided.",
+      "content": "Fit a classifier predicting whether solar output will fall below a 'low generation' threshold tomorrow, and compute and interpret its confusion matrix.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Recognize a misleadingly high accuracy on an imbalanced dataset.",
+      "content": "An evaluation reports only accuracy on a heavily imbalanced OVERLOAD dataset (95% non-overload days), where a trivial always-predict-normal model achieves high accuracy while catching zero real overloads. Identify why accuracy is misleading here and propose a better metric.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "An impressive accuracy number can hide a completely useless model.",
+      "content": "Why would a 95%-accurate overload classifier that never actually predicts an overload be completely useless to the Grid Copilot, despite the impressive-sounding number?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain false positive vs. false negative and which is costlier here.",
+      "content": "Explain to someone the difference between a false positive and a false negative in the overload-prediction context, and which one is actually more costly to get wrong for a real grid operator.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Train and evaluate an overload-risk classifier with a cost discussion.",
+      "content": "Train and evaluate an overload-risk classifier using your feature table, reporting a full confusion matrix and explicitly discussing the cost of false positives vs. false negatives for this specific use case.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This feeds directly into the Grid Copilot's early-warning concept.",
+      "content": "This overload classifier is the Digital Twin's first yes/no decision-support prediction, feeding directly into the Grid Copilot's early-warning concept.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-sklearn-classification-basics-overload-risk",
+      "title": "Overload Risk",
+      "description": "Sandboxed exercise fitting a classifier on an imbalanced overload-risk dataset, requiring correct confusion-matrix interpretation beyond bare accuracy.",
+      "starterCodePath": "labs/06-scikit-learn/overload-risk/starter.py",
+      "testCasesPath": "labs/06-scikit-learn/overload-risk/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "confusion-matrix-threshold-visualizer",
+      "title": "Confusion Matrix Threshold Visualizer",
+      "description": "Adjustable decision-threshold slider over predicted probabilities, updating the confusion matrix's four cells live."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-sklearn-classification-basics-1",
+      "front": "Why can a classifier score 95% accuracy while being completely useless for overload prediction?",
+      "back": "If only 5% of days are actual overload days, a model that always predicts 'no overload' scores 95% accuracy while catching zero real overload events — accuracy alone doesn't reveal that failure.",
+      "conceptNodeId": "sklearn.classification-basics"
+    },
+    {
+      "id": "fc-sklearn-classification-basics-2",
+      "front": "What are the four cells of a confusion matrix?",
+      "back": "True positive (correctly predicted positive), true negative (correctly predicted negative), false positive (incorrectly predicted positive), and false negative (incorrectly predicted negative).",
+      "conceptNodeId": "sklearn.classification-basics"
+    }
+  ],
+  "assessment": {
+    "primaryType": "codeReview",
+    "rubric": [
+      "Correctly identifies why accuracy alone is misleading on the imbalanced overload dataset",
+      "Confusion matrix is computed and interpreted correctly, including which error type is more operationally costly",
+      "Discusses false positive vs. false negative cost explicitly, not just reports the numbers"
+    ]
+  },
+  "references": [
+    {
+      "title": "scikit-learn — Logistic regression",
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression",
+      "type": "officialDocs",
+      "versionOrDate": "scikit-learn 1.5",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "scikit-learn — confusion_matrix",
+      "url": "https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html",
+      "type": "officialDocs",
+      "versionOrDate": "scikit-learn 1.5",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

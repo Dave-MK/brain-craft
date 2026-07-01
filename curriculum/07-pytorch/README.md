@@ -24,4 +24,4 @@ Deep forecasting models where classical scikit-learn approaches plateau — sequ
 
 ## Status
 
-Skeleton only.
+Complete. All 6 lessons authored and schema-validated in [`lessons/07-pytorch/`](../../lessons/07-pytorch/): Tensors & Autograd → Building Networks → The Training Loop → Overfitting & Regularization → Sequence Models (LSTM) → The Neural Forecaster (boss battle — Mission 4's honest classical-vs-neural verdict). **Mission 4 ("Teach Machines") is fully authored.**

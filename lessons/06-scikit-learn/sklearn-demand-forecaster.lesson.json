@@ -1,0 +1,137 @@
+{
+  "id": "sklearn-demand-forecaster",
+  "title": "The Demand Forecaster: Mission 3's First Real Deliverable",
+  "skillFolder": "06-scikit-learn",
+  "missionId": "M3",
+  "concept": "Building a Validated Demand Forecasting Model (capstone synthesis)",
+  "knowledgeGraphNodeId": "sklearn.demand-forecaster",
+  "difficulty": "intermediate",
+  "dependencies": ["sklearn.feature-importance-evaluation"],
+  "learningObjectives": [
+    "Combine baseline comparison, proper time-series validation, and feature-importance-driven refinement into one complete modeling workflow",
+    "Justify a final chosen model over at least one credible alternative using evaluation evidence, not preference",
+    "Produce a forecasting model with documented, honest performance claims a stranger could verify",
+    "Identify the model's known weaknesses and the specific conditions under which it should not be trusted"
+  ],
+  "whyItMatters": "Every piece of this skill folder — baselines, correct splitting, cross-validation, classification, metrics, feature importance — exists to produce exactly one thing: a demand forecasting model the Digital Twin can actually rely on, with honestly documented limits, not an impressive-looking notebook that falls apart under real conditions.",
+  "capstoneContribution": "The Digital Twin's first production-shaped forecasting model — the actual 'Predict' layer deliverable this entire mission has been building toward, ready to feed Mission 4's neural forecasting comparison and Mission 5's optimisation work.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Every piece exists in isolation, never assembled into one coherent, defensible workflow.",
+      "content": "You've built several model pieces in isolation — a baseline, a regression model, a classifier, cross-validation, evaluation metrics — but never assembled them into one coherent, defensible forecasting workflow with a single, honest conclusion about how good the result actually is.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "A real deliverable is a validated, honestly-limited model, not the highest score you can find.",
+      "content": "This is the actual deliverable a real forecasting project produces: not the highest score you can get by trying things, but a specific, validated, honestly-limited model with a clear account of why it was chosen over the alternatives you tried.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Baseline first, compare candidates identically, select on evidence, and disclose known weaknesses.",
+      "content": "A complete forecasting workflow: establish the naive baseline first, try at least two credible model candidates (e.g. linear regression and a random forest), evaluate every candidate with the same `TimeSeriesSplit` cross-validation and the same metric(s) chosen deliberately for the actual use case, and select the final model based on that evidence — not on which one happened to score best on a single lucky split. The workflow ends with an honest limitations section: which conditions (a season not well-represented in training data, an unprecedented weather event) the model was never validated against and shouldn't be trusted for, mirroring the disclosure discipline expected of the AI Tutor itself, which should always be able to explain the confidence behind a recommendation, not just state it.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "Multiple candidates run through the same pipeline, converging on a chosen model with disclosed weaknesses.",
+      "content": "Multiple candidate models each run through the same `TimeSeriesSplit` pipeline and are scored identically, converging on one selected model with a documented 'known weaknesses' panel attached to the final choice.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Compare candidate models on a live leaderboard and select a final one with justification.",
+      "content": "Compare several already-run candidate models side by side on a live leaderboard showing cross-validated scores against the naive baseline, selecting a final model and being prompted to state why.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: compare candidates identically against the same baseline.",
+      "content": "```python\ncandidates = {\n    \"linear_regression\": LinearRegression(),\n    \"random_forest\": RandomForestRegressor(),\n}\n\nresults = {}\nfor name, candidate_model in candidates.items():\n    scores = cross_val_score(\n        candidate_model, X, y,\n        cv=TimeSeriesSplit(n_splits=5),\n        scoring=\"neg_mean_absolute_error\",\n    )\n    results[name] = -scores.mean()\n\nprint(results)\nprint(f\"Naive baseline MAE: {baseline_mae}\")\n```",
+      "estimatedMinutes": 10
+    },
+    "independentCoding": {
+      "summary": "Add and justify a third candidate model of your own choosing.",
+      "content": "Add a third credible candidate model of your own choosing to the comparison above, and justify in one paragraph why you selected it as a contender.",
+      "estimatedMinutes": 15
+    },
+    "debugging": {
+      "summary": "Fix an invalid comparison caused by inconsistent validation methodology across candidates.",
+      "content": "One candidate was accidentally evaluated with a plain `train_test_split` while the others used `TimeSeriesSplit`, making the comparison invalid despite all the numbers looking plausible individually. Identify the inconsistency and fix the comparison to use identical validation for every candidate.",
+      "estimatedMinutes": 8
+    },
+    "reflection": {
+      "summary": "Inconsistent validation methodology undermines a comparison even when every number looks fine alone.",
+      "content": "What's the actual risk of comparing models evaluated with different validation methodologies, even if every individual number looks reasonable on its own?",
+      "estimatedMinutes": 5
+    },
+    "teachBack": {
+      "summary": "Synthesize the mission: explain your final choice, evidence, and where not to trust it.",
+      "content": "As the synthesis of this entire mission: explain to someone your final model choice, the evidence that led to it, and the specific conditions under which you would NOT trust its predictions.",
+      "estimatedMinutes": 6
+    },
+    "miniProject": {
+      "summary": "Deliver the final Mission 3 demand forecasting model with an honest limitations section.",
+      "content": "Deliver the Digital Twin's final Mission 3 demand forecasting model: baseline comparison, at least two validated candidates, a justified final choice, and a written, honest limitations section.",
+      "estimatedMinutes": 25
+    },
+    "portfolioEvidence": {
+      "summary": "This is the actual 'Predict' layer deliverable of the AI Energy OS.",
+      "content": "This is the actual 'Predict' layer deliverable of the AI Energy OS — the model Mission 4's neural forecasting work will be directly compared against, and Mission 5's optimisation work will consume.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": true,
+  "labs": [
+    {
+      "id": "lab-sklearn-demand-forecaster-final-model",
+      "title": "Final Model",
+      "description": "Sandboxed exercise requiring a complete forecasting workflow — baseline, multiple candidates, identical cross-validation, justified selection, and documented limitations — including a planted inconsistent-validation bug to fix.",
+      "starterCodePath": "labs/06-scikit-learn/final-model/starter.py",
+      "testCasesPath": "labs/06-scikit-learn/final-model/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "model-candidate-leaderboard",
+      "title": "Model Candidate Leaderboard",
+      "description": "Live leaderboard comparing candidate models' cross-validated scores against the naive baseline, prompting a justified final selection."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-sklearn-demand-forecaster-1",
+      "front": "Why is it invalid to compare candidate models if they weren't all evaluated with the same validation methodology?",
+      "back": "Different validation methods (e.g. a single split vs. TimeSeriesSplit) can produce systematically different scores unrelated to actual model quality, making a cross-candidate comparison meaningless even if each individual score looks fine.",
+      "conceptNodeId": "sklearn.demand-forecaster"
+    },
+    {
+      "id": "fc-sklearn-demand-forecaster-2",
+      "front": "What belongs in a forecasting model's honest limitations section?",
+      "back": "The specific conditions the model was never validated against and shouldn't be trusted for — e.g. an under-represented season, or weather conditions outside the training data's range.",
+      "conceptNodeId": "sklearn.demand-forecaster"
+    }
+  ],
+  "assessment": {
+    "primaryType": "architectureDesign",
+    "rubric": [
+      "Every candidate model is evaluated with identical validation methodology and metrics, enabling a fair comparison",
+      "Final model choice is justified with specific evaluation evidence, not preference or which one 'felt' best",
+      "Limitations section names specific, concrete conditions under which the model should not be trusted"
+    ]
+  },
+  "references": [
+    {
+      "title": "scikit-learn — Random forests",
+      "url": "https://scikit-learn.org/stable/modules/ensemble.html#random-forests",
+      "type": "officialDocs",
+      "versionOrDate": "scikit-learn 1.5",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "scikit-learn — Model selection and evaluation",
+      "url": "https://scikit-learn.org/stable/model_selection.html",
+      "type": "officialDocs",
+      "versionOrDate": "scikit-learn 1.5",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

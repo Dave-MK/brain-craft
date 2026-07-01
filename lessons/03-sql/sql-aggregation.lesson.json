@@ -1,0 +1,130 @@
+{
+  "id": "sql-aggregation",
+  "title": "GROUP BY & Aggregates: From Rows to Answers",
+  "skillFolder": "03-sql",
+  "missionId": "M2",
+  "concept": "Aggregation (GROUP BY, aggregate functions)",
+  "knowledgeGraphNodeId": "sql.aggregation",
+  "difficulty": "foundational",
+  "dependencies": ["sql.joins"],
+  "learningObjectives": [
+    "Use aggregate functions (COUNT, SUM, AVG, MIN, MAX) to summarize many rows into one answer",
+    "Group rows with GROUP BY to get one summary per category instead of one for the whole table",
+    "Filter grouped results with HAVING, distinct from filtering individual rows with WHERE",
+    "Avoid selecting a non-aggregated, non-grouped column alongside an aggregate"
+  ],
+  "whyItMatters": "'Which substation had the highest average demand this month' isn't a question about any single row — it's a question about many rows summarized per substation. Aggregation is how the Digital Twin answers 'how are we doing overall,' not just 'show me one reading.'",
+  "capstoneContribution": "The Digital Twin's first real summary reporting — average, peak, and total demand per substation per day, the exact shape of report the Grid Copilot dashboard will eventually surface.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "You can list rows, but not yet summarize them per substation.",
+      "content": "You can list every individual reading for substation-12, but you can't yet answer 'what was substation-12's average demand today' without doing the arithmetic yourself outside the database.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Most operational questions are summary questions, not single-row lookups.",
+      "content": "Nearly every operational question about the grid is really a summary question — average, peak, total — not a request for raw rows. Aggregation is the database doing that summarizing directly, correctly, and fast, even across millions of rows.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Aggregate functions summarize rows; GROUP BY produces one summary per category; HAVING filters after grouping.",
+      "content": "`AVG(demand_kw)`, `SUM(demand_kw)`, `COUNT(*)`, `MIN`, `MAX` compute one value across a set of rows. Without `GROUP BY`, an aggregate summarizes the entire result set into one row. `GROUP BY source_id` instead produces one summary row per distinct `source_id`. `HAVING` filters *after* grouping (e.g. `HAVING AVG(demand_kw) > 4500`), distinct from `WHERE`, which filters individual rows *before* grouping happens. Selecting a plain column alongside an aggregate without grouping by it is either an error or produces an arbitrary, meaningless value, depending on the database.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "Rows cluster into colored groups, then collapse into one summary row per group.",
+      "content": "Rows cluster into colored groups by `source_id`, then each group collapses into a single summary row showing that group's average/max/count.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Toggle a GROUP BY column and watch rows cluster and collapse live.",
+      "content": "Toggle a GROUP BY column on a live table visualization and watch rows visually cluster into colored groups before collapsing into summary rows as the aggregate function is applied.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: aggregate, group, and filter grouped results.",
+      "content": "```sql\nSELECT source_id, AVG(demand_kw) AS avg_demand, MAX(demand_kw) AS peak_demand\nFROM readings\nGROUP BY source_id\nHAVING AVG(demand_kw) > 4500\nORDER BY avg_demand DESC;\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Aggregate a per-source count and earliest-occurrence timestamp, unaided.",
+      "content": "Write a query that returns, per source, the count of OVERLOAD-range readings and the earliest timestamp one occurred, for sources with more than 2 such readings.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Fix a query mixing an ungrouped column with an aggregate.",
+      "content": "A query selects `timestamp` alongside `AVG(demand_kw)` without grouping by `timestamp`, producing an error or a meaningless arbitrary value. Fix it by either grouping by the column appropriately or removing it.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "An aggregate collapses many rows — an ungrouped column has no single value to show.",
+      "content": "Why does mixing an ungrouped column with an aggregate function not make sense, once you think about what value that column could possibly show for an entire group of rows?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain WHERE vs. HAVING to someone who assumes they're interchangeable.",
+      "content": "Explain the difference between WHERE and HAVING to someone who assumes they're interchangeable.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Build the Digital Twin's first daily summary report.",
+      "content": "Build the Digital Twin's first daily summary report: average, peak, and total demand per substation for the current day, using a single aggregated query.",
+      "estimatedMinutes": 12
+    },
+    "portfolioEvidence": {
+      "summary": "This report is the backing implementation for the eventual Grid Copilot dashboard.",
+      "content": "This summary report is the exact shape of data the eventual Grid Copilot dashboard will display — this query is its first real backing implementation.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-sql-aggregation-daily-summary",
+      "title": "Daily Summary",
+      "description": "Sandboxed exercise producing per-source aggregated summaries with HAVING filters, including a deliberately broken ungrouped-column query to fix.",
+      "starterCodePath": "labs/03-sql/daily-summary/starter.sql",
+      "testCasesPath": "labs/03-sql/daily-summary/test_cases.sql"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "group-by-cluster-visualizer",
+      "title": "GROUP BY Cluster Visualizer",
+      "description": "Rows visually cluster into colored groups by a chosen column, then collapse into one summary row per group."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-sql-aggregation-1",
+      "front": "What's the difference between WHERE and HAVING?",
+      "back": "WHERE filters individual rows before grouping happens; HAVING filters the summarized groups after GROUP BY has produced them.",
+      "conceptNodeId": "sql.aggregation"
+    },
+    {
+      "id": "fc-sql-aggregation-2",
+      "front": "Why can't you SELECT a plain, ungrouped column alongside AVG(demand_kw) without grouping by it?",
+      "back": "Each group collapses to one row, but a plain column could have many different values across the rows in that group — there's no single correct value to show unless you group by it or aggregate it too.",
+      "conceptNodeId": "sql.aggregation"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly explains why an ungrouped column can't sit alongside an aggregate without being grouped or aggregated",
+      "Correctly distinguishes WHERE (pre-grouping row filter) from HAVING (post-grouping group filter) with a working example of each",
+      "Daily summary report correctly computes average, peak, and total per substation"
+    ]
+  },
+  "references": [
+    {
+      "title": "PostgreSQL Documentation — Aggregate Functions Tutorial",
+      "url": "https://www.postgresql.org/docs/current/tutorial-agg.html",
+      "type": "officialDocs",
+      "versionOrDate": "PostgreSQL 16",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

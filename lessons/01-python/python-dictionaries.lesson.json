@@ -1,0 +1,130 @@
+{
+  "id": "python-dictionaries",
+  "title": "Dictionaries: A Reading Is More Than One Number",
+  "skillFolder": "01-python",
+  "missionId": "M1",
+  "concept": "Dictionaries",
+  "knowledgeGraphNodeId": "python.dictionaries",
+  "difficulty": "introductory",
+  "dependencies": ["python.lists"],
+  "learningObjectives": [
+    "Represent a single structured record with multiple named fields using a dictionary instead of several separate variables",
+    "Access, add, and update dictionary values by key, including safely with .get()",
+    "Iterate over a list of dictionaries (records) with a for loop",
+    "Recognize when a dictionary is the right structure versus when a plain list is enough"
+  ],
+  "whyItMatters": "A single demand_kw number isn't a full sensor record — a real reading also has a timestamp, a location, maybe a data-quality flag. Every weather and price API response Mission 2 consumes arrives as exactly this kind of structured, labeled record, and dictionaries are how Python represents it before it ever reaches pandas.",
+  "capstoneContribution": "The structured reading-record format ({'timestamp': ..., 'demand_kw': ..., 'source': ...}) the Digital Twin uses for every ingested data point, and the direct shape Mission 2's API responses will arrive in.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A bare number doesn't say when or where it was measured.",
+      "content": "A single `demand_kw` number tells you nothing about *when* or *where* it was measured. You need to attach a timestamp and a source to every reading without creating three more separate lists you have to keep in sync by position.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is exactly the shape every real weather and price API returns.",
+      "content": "This is exactly the shape of data every real weather and price API returns: a labeled bundle of fields per record, not a bare number. Learning dictionaries now means Mission 2's API lesson feels familiar instead of like an entirely new data model.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Dictionaries map keys to values; a list of dictionaries represents many structured records.",
+      "content": "A dictionary maps keys to values: `reading = {\"timestamp\": \"2026-07-01T09:00\", \"demand_kw\": 4821, \"source\": \"substation-12\"}`. Access by key (`reading[\"demand_kw\"]`), add or update a key (`reading[\"flag\"] = \"ok\"`), and use `.get()` to access a key that might not exist without raising an error. A list of dictionaries (`[reading_1, reading_2, ...]`) represents many structured records — the shape nearly every real dataset takes before it becomes a pandas DataFrame.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "A labeled record card replaces the earlier unlabeled row-of-boxes list.",
+      "content": "The diagram shows a labeled record card with named fields (timestamp, demand_kw, source) as opposed to the earlier unlabeled row-of-boxes list, then a stack of these cards representing a list of records.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Build a record card, add a second one, and loop over the resulting list.",
+      "content": "Build a record by dragging labeled field/value pairs into a card, then add a second card to a growing list and run a loop that prints one field from each card.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: build, update, and loop over structured reading records.",
+      "content": "```python\nreading = {\"timestamp\": \"2026-07-01T09:00\", \"demand_kw\": 4821, \"source\": \"substation-12\"}\nprint(reading[\"demand_kw\"])\nreading[\"flag\"] = \"ok\"\n\nreadings = [reading, {\"timestamp\": \"2026-07-01T10:00\", \"demand_kw\": 4790, \"source\": \"substation-12\"}]\nfor r in readings:\n    print(r[\"timestamp\"], r[\"demand_kw\"])\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Build a list of battery-reading dictionaries and filter it in a loop.",
+      "content": "Given three raw (timestamp, soc_percent) pairs, build a list of dictionaries, one per battery reading, then write a loop that prints only the readings where `soc_percent` is below 25.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Fix a KeyError caused by assuming every record has the same keys.",
+      "content": "One record in a list is missing the `\"source\"` key, and a loop that does `r[\"source\"]` on every record raises a `KeyError` on that one. Fix the code using `.get()` with a sensible default instead of assuming every record is shaped identically.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Real APIs don't guarantee every record has the same keys.",
+      "content": "Why will assuming every API response has exactly the same keys eventually break your Mission 2 code, and what did `.get()` just teach you about defending against that in advance?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why a dictionary beats a bare list for one structured reading.",
+      "content": "Explain to someone who only knows lists why `{\"demand_kw\": 4821}` is a better fit than a bare list `[4821, \"substation-12\", \"2026-07-01T09:00\"]` for representing a single structured reading.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Rebuild the rolling window as a list of dictionaries instead of bare numbers.",
+      "content": "Rebuild the sensor-intake mini project's rolling window as a list of dictionaries (one per hour, each with timestamp, demand_kw, and classification) instead of a bare list of numbers, and print a formatted report line per record.",
+      "estimatedMinutes": 12
+    },
+    "portfolioEvidence": {
+      "summary": "This structure is exactly what the Digital Twin stores and later reads with pandas.",
+      "content": "This list-of-dictionaries structure becomes the exact shape the Digital Twin's ingestion pipeline stores in SQL (Mission 2) and later reads with pandas.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-python-dictionaries-structured-record",
+      "title": "Structured Record",
+      "description": "Sandboxed exercise building and filtering a list of dictionaries representing sensor readings, including at least one record with a missing key to force correct use of .get().",
+      "starterCodePath": "labs/01-python/structured-record/starter.py",
+      "testCasesPath": "labs/01-python/structured-record/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "dictionary-record-visualizer",
+      "title": "Dictionary Record Visualizer",
+      "description": "Shows a labeled record card with key/value pairs, and a stack of cards for a list of records, with live key lookups highlighted."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-python-dictionaries-1",
+      "front": "What happens if you access reading[\"source\"] on a dictionary that doesn't have a \"source\" key?",
+      "back": "It raises a KeyError. Using reading.get(\"source\", \"unknown\") instead returns a default value rather than crashing when the key is missing.",
+      "conceptNodeId": "python.dictionaries"
+    },
+    {
+      "id": "fc-python-dictionaries-2",
+      "front": "Why is {'demand_kw': 4821, 'timestamp': '...'} usually a better fit than a bare list for one sensor reading?",
+      "back": "A dictionary labels each field by name, so code that reads it doesn't depend on remembering a fixed position order — a list like [4821, '...'] only works if every reader agrees on which position means what.",
+      "conceptNodeId": "python.dictionaries"
+    }
+  ],
+  "assessment": {
+    "primaryType": "teachBack",
+    "rubric": [
+      "Explanation correctly identifies that dictionary keys provide meaning that positional list indices don't",
+      "Correctly uses .get() with a default in the debugging fix rather than wrapping access in a bare try/except as a first resort",
+      "Independent coding filter correctly handles the structured records without assuming a fixed field order"
+    ]
+  },
+  "references": [
+    {
+      "title": "Python Tutorial — Dictionaries",
+      "url": "https://docs.python.org/3/tutorial/datastructures.html#dictionaries",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

@@ -1,0 +1,137 @@
+{
+  "id": "python-lists",
+  "title": "Lists: Holding More Than One Reading",
+  "skillFolder": "01-python",
+  "missionId": "M1",
+  "concept": "Lists",
+  "knowledgeGraphNodeId": "python.lists",
+  "difficulty": "introductory",
+  "dependencies": ["python.variables"],
+  "learningObjectives": [
+    "Create and index a list of related readings, including with negative indices",
+    "Use slicing to extract a sub-range of readings without mutating the original list",
+    "Append to a list as new readings arrive",
+    "Explain why a list is mutable in a way a single variable's rebinding is not"
+  ],
+  "whyItMatters": "A single demand_kw variable can hold one reading. The AI Energy OS needs a full day of readings, or the last 24 hours of prices, before anything like forecasting is possible. Lists are the first data structure that scales past 'one value.'",
+  "capstoneContribution": "The Digital Twin's rolling window of raw sensor readings — the direct precursor to the pandas Series used from Mission 2 onward.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "24 hourly readings can't reasonably be 24 separate variables.",
+      "content": "You now have not one demand reading but 24 of them, one per hour. A separate variable per hour (`demand_hour_0`, `demand_hour_1`, ...) doesn't scale and can't be looped over.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Nearly all energy data arrives as a sequence, not a single value.",
+      "content": "Every forecasting model downstream expects a sequence of values, not 24 separate named variables. Lists are how Python represents 'many of the same kind of thing,' and this is the shape nearly all energy data takes.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Lists are ordered and mutable; indexing, negative indexing, and slicing are the core operations.",
+      "content": "A list is an ordered, mutable collection: `readings = [4821, 4790, 4650]`. Indexing starts at `0`; negative indices count from the end (`readings[-1]` is the most recent reading). Slicing (`readings[0:2]`) extracts a sub-range without mutating the original list. `.append()` adds one new reading; `.extend()` adds many at once.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "A row of numbered boxes, with append() adding one at the end and slicing highlighting a sub-range.",
+      "content": "A row of numbered boxes (0, 1, 2, ...) each hold one demand reading. The animation shows `.append()` adding a new box at the end, and a slice expression highlighting exactly which contiguous boxes it returns.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Drag readings into an ordered row of slots, then run indexing and slicing against it.",
+      "content": "Drag readings into an ordered row of slots, then run `readings[-1]` and a slice expression to see exactly which boxes get highlighted as the result.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: index, append, and slice a list of readings.",
+      "content": "```python\nreadings_kw = [4821, 4790, 4650, 4700]\nprint(readings_kw[0])\nprint(readings_kw[-1])\n\nreadings_kw.append(4680)\nprint(readings_kw[1:3])\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Index, slice, and append against a list of solar readings, unaided.",
+      "content": "Given a list of 6 solar output readings, write code that prints the first three, the last reading, and then appends one new reading you receive.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Fix an off-by-one IndexError against a 4-element list.",
+      "content": "```python\nreadings_kw = [4821, 4790, 4650, 4700]\nprint(readings_kw[4])\n```\nThis raises an `IndexError`. Explain exactly why index `4` is out of range for a 4-element list, and fix the code to safely print the last element.",
+      "estimatedMinutes": 5
+    },
+    "reflection": {
+      "summary": "Growing a list doesn't require rewriting existing access code.",
+      "content": "Why did adding one more reading with `.append()` not require you to rewrite any of your existing indexing code?",
+      "estimatedMinutes": 3
+    },
+    "teachBack": {
+      "summary": "Explain negative indexing to someone who's only used positive indices.",
+      "content": "Explain the difference between `readings_kw[-1]` and `readings_kw[len(readings_kw)-1]` to someone who's only ever seen positive indexing.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Replace the three single readings in the mini project with a rolling list.",
+      "content": "Extend the sensor-intake script: replace the three separate single readings with a list of the last 6 hourly demand readings, and print the minimum, maximum, and most recent reading.",
+      "estimatedMinutes": 12
+    },
+    "portfolioEvidence": {
+      "summary": "This rolling list is the raw input Mission 2's pandas lessons will formalize.",
+      "content": "This rolling list becomes the raw input the pandas Mission-2 lessons will convert into a proper time-indexed Series.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-python-lists-rolling-window",
+      "title": "Rolling Window",
+      "description": "Sandboxed exercise requiring correct indexing, slicing, and append() behavior against a growing list of hourly readings, including negative-index and empty-list edge cases.",
+      "starterCodePath": "labs/01-python/rolling-window/starter.py",
+      "testCasesPath": "labs/01-python/rolling-window/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "list-index-slice-visualizer",
+      "title": "List Index & Slice Visualizer",
+      "description": "Shows a row of labeled boxes with live-highlighted indexing and slicing results as the learner edits an expression."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-python-lists-1",
+      "front": "What does readings_kw[-1] return, and why is that useful for sensor data specifically?",
+      "back": "The last element in the list — for a rolling window of readings, that's always the most recent one, without needing to know how many readings are currently in the list.",
+      "conceptNodeId": "python.lists"
+    },
+    {
+      "id": "fc-python-lists-2",
+      "front": "Does readings_kw[1:3] modify the original list?",
+      "back": "No — slicing returns a new list containing the selected sub-range; the original list is unchanged.",
+      "conceptNodeId": "python.lists"
+    }
+  ],
+  "assessment": {
+    "primaryType": "projectWork",
+    "rubric": [
+      "Rolling window correctly uses a list rather than separate variables per reading",
+      "Correctly computes min/max/most-recent using appropriate list operations rather than hard-coded indices",
+      "Handles the append-then-reread sequence correctly, demonstrating the list is mutated in place rather than rebound"
+    ]
+  },
+  "references": [
+    {
+      "title": "Python Tutorial — Lists",
+      "url": "https://docs.python.org/3/tutorial/introduction.html#lists",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Python Tutorial — More on Lists",
+      "url": "https://docs.python.org/3/tutorial/datastructures.html#more-on-lists",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

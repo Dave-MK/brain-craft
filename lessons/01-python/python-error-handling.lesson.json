@@ -1,0 +1,130 @@
+{
+  "id": "python-error-handling",
+  "title": "Error Handling: Surviving One Bad Reading",
+  "skillFolder": "01-python",
+  "missionId": "M1",
+  "concept": "Error Handling (try/except)",
+  "knowledgeGraphNodeId": "python.error-handling",
+  "difficulty": "foundational",
+  "dependencies": ["python.dictionaries"],
+  "learningObjectives": [
+    "Wrap risky operations in try/except instead of letting the program crash on bad input",
+    "Catch specific exception types (KeyError, ValueError) rather than a bare except",
+    "Use else/finally appropriately when cleanup or fallback behavior is needed",
+    "Decide when to handle an error locally versus let it propagate"
+  ],
+  "whyItMatters": "Real sensor feeds are messy — a reading might be missing a field, arrive as a string instead of a number, or fail to parse entirely. The Digital Twin cannot crash every time one bad reading arrives out of thousands; it needs to handle the bad one and keep processing the rest.",
+  "capstoneContribution": "The Digital Twin's fault-tolerant ingestion loop — one malformed reading logs a warning and gets skipped, instead of taking down the entire pipeline.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "One malformed reading currently crashes the whole batch.",
+      "content": "Somewhere in your rolling window of readings, one record has `demand_kw` stored as the string `\"4821\"` instead of the number `4821`, and another is missing the `demand_kw` key entirely. Right now, either one crashes your whole classification loop.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "One bad reading out of thousands shouldn't take down the pipeline.",
+      "content": "In a real deployment, a single malformed reading out of thousands shouldn't take down the whole pipeline. This is the difference between a script that only works on a clean demo dataset and a system that survives real, messy data.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "try/except intercepts a matching exception instead of crashing; catch specific types.",
+      "content": "`try: risky_code() except SomeError as e: handle(e)` runs `risky_code()`, and if it raises an exception matching `SomeError`, control jumps to the except block instead of crashing the program. Catching specific exception types (`KeyError`, `ValueError`) rather than a bare `except:` means you only swallow errors you actually anticipated, and let genuinely unexpected bugs surface loudly. `else` runs only if no exception occurred; `finally` always runs, exception or not — useful for cleanup.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "Malformed readings divert down a logged-and-skipped path; good readings flow straight through.",
+      "content": "A reading flows into a try block; a malformed reading diverts down an except path (logged, skipped) while a good reading flows straight through to the classification step — and the loop continues in both cases.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Feed a mixed stream of readings through a visual try/except pipeline.",
+      "content": "Feed a stream of readings — some well-formed, some malformed — through a visual try/except pipeline and watch which ones divert to the 'skipped, logged' path versus flow straight through, with a running count of skipped records by reason.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: classify readings while catching the two most likely failure modes.",
+      "content": "```python\nreadings = [\n    {\"demand_kw\": 4821},\n    {\"demand_kw\": \"4790\"},\n    {},\n]\n\nfor r in readings:\n    try:\n        value = float(r[\"demand_kw\"])\n        print(f\"OK: {value}\")\n    except KeyError:\n        print(\"SKIPPED: missing demand_kw\")\n    except ValueError:\n        print(\"SKIPPED: demand_kw not a valid number\")\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Classify battery readings while counting skips by reason, unaided.",
+      "content": "Given a list of battery readings where some are missing `soc_percent` and some have it as a non-numeric string, write a loop that classifies the good ones and counts, without crashing, how many were skipped for each reason.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Narrow a bare except: that's silently hiding a real bug.",
+      "content": "```python\ntry:\n    value = float(r[\"demmand_kw\"])  # typo\nexcept:\n    value = 0\n```\nThe bare `except:` is silently masking a typo'd key name that should be fixed, not caught. Narrow the except clause to the specific expected exception type and let the real bug surface.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "A bare except: can hide more than it protects against.",
+      "content": "Why is a bare `except:` sometimes more dangerous than not handling the error at all?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain narrow vs. broad exception catching to someone who thinks broader is always safer.",
+      "content": "Explain the difference between catching `KeyError` specifically and catching `Exception` broadly, to someone who thinks 'catch everything' is always the safer choice.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Make the mini project's ingestion loop fault-tolerant.",
+      "content": "Wrap the mini project's ingestion loop in error handling so a malformed reading is logged and skipped instead of crashing the whole batch.",
+      "estimatedMinutes": 12
+    },
+    "portfolioEvidence": {
+      "summary": "This is the version of the pipeline that survives real, messy data.",
+      "content": "This fault-tolerant loop is the version of the ingestion pipeline that actually survives contact with real, messy sensor data.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-python-error-handling-fault-tolerant-ingestion",
+      "title": "Fault-Tolerant Ingestion",
+      "description": "Sandboxed exercise processing a batch of readings that includes deliberately malformed records (missing keys, wrong types); the learner must classify all good readings and report skip counts by reason without crashing.",
+      "starterCodePath": "labs/01-python/fault-tolerant-ingestion/starter.py",
+      "testCasesPath": "labs/01-python/fault-tolerant-ingestion/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "try-except-flow-visualizer",
+      "title": "Try/Except Flow Visualizer",
+      "description": "Shows a stream of readings flowing through a try/except pipeline, with malformed ones diverting to a logged-and-skipped path."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-python-error-handling-1",
+      "front": "Why is catching KeyError specifically better than a bare except: in the ingestion loop?",
+      "back": "A bare except: swallows every kind of error, including genuine bugs you didn't anticipate (like a typo'd key name), hiding them instead of surfacing them. Catching KeyError specifically only handles the exact failure mode you expected.",
+      "conceptNodeId": "python.error-handling"
+    },
+    {
+      "id": "fc-python-error-handling-2",
+      "front": "When does the finally block run in a try/except/finally statement?",
+      "back": "Always — whether or not an exception occurred, and whether or not it was caught. It's used for cleanup that must happen regardless of the outcome.",
+      "conceptNodeId": "python.error-handling"
+    }
+  ],
+  "assessment": {
+    "primaryType": "codeReview",
+    "rubric": [
+      "Identifies the bare except: as hiding a real bug rather than just accepting it as valid error handling",
+      "Catches specific exception types matching the actual anticipated failure modes (KeyError, ValueError), not a blanket catch-all",
+      "Fault-tolerant ingestion loop correctly reports skip counts by reason without crashing on any malformed record"
+    ]
+  },
+  "references": [
+    {
+      "title": "Python Tutorial — Errors and Exceptions",
+      "url": "https://docs.python.org/3/tutorial/errors.html",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

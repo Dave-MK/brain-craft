@@ -1,0 +1,137 @@
+{
+  "id": "pytorch-building-networks",
+  "title": "Building Networks: Layers, Activations, and the Forward Pass",
+  "skillFolder": "07-pytorch",
+  "missionId": "M4",
+  "concept": "Neural Network Architecture (nn.Module, layers, activations)",
+  "knowledgeGraphNodeId": "pytorch.building-networks",
+  "difficulty": "introductory",
+  "dependencies": ["pytorch.tensors-autograd"],
+  "learningObjectives": [
+    "Define a neural network as a subclass of nn.Module with a forward() method",
+    "Explain what a linear layer actually computes and why stacking them alone isn't enough",
+    "Explain why a nonlinear activation function (ReLU, etc.) is required between layers",
+    "Pass a batch of feature data through a network and interpret the raw output shape"
+  ],
+  "whyItMatters": "Autograd gives you gradients for any computation; a neural network is a specific, structured computation — layers of weighted sums and nonlinearities — designed to be flexible enough to learn complex patterns your scikit-learn linear model architecturally couldn't represent.",
+  "capstoneContribution": "The actual architecture of the Digital Twin's first neural forecaster — the specific arrangement of layers and activations that gives it more expressive power than the linear regression baseline from Mission 3.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A linear model architecturally can't represent curved, interacting relationships.",
+      "content": "Your Mission 3 linear regression could only ever learn a straight-line relationship between features and demand. Real demand almost certainly has curved, interacting relationships (e.g. the effect of temperature on demand differs at different times of day) that a purely linear model architecturally cannot represent, no matter how well it's trained.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Neural networks exist to represent a much richer space of functions, given the right structure.",
+      "content": "This is the actual reason neural networks exist: not to be more 'AI,' but to represent a much richer space of functions than a linear model can, provided you give them the right structure and enough data to learn it from.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Linear layers alone collapse into one line; nonlinear activations are what add real expressive power.",
+      "content": "`nn.Linear(in_features, out_features)` computes a weighted sum plus bias, exactly like linear regression, for each output. Stacking multiple `nn.Linear` layers directly, with nothing between them, mathematically collapses back into a single linear layer — no added expressive power. A nonlinear activation function (`nn.ReLU()`, applied between linear layers) is what actually lets a stack of layers represent curved, interacting relationships. A network is defined as a class inheriting from `nn.Module`, with layers created in `__init__` and the actual computation defined in `forward()`, which PyTorch calls automatically when you call the model like a function.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "Two stacked linear layers flatten to one line; adding ReLU lets the fit bend.",
+      "content": "Two linear layers stacked directly (mathematically flattening to one line) sit next to the same two layers with a ReLU activation in between (now able to bend), visualized as fitting a curved dataset.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Toggle ReLU on/off between layers and watch the fitted curve flatten or bend.",
+      "content": "Toggle a ReLU activation on and off between two linear layers on a live curve-fitting visualization, watching the model's fitted curve flatten into a straight line or bend to match curved data accordingly.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: define a small network as an nn.Module and run a forward pass.",
+      "content": "```python\nimport torch.nn as nn\n\nclass DemandForecaster(nn.Module):\n    def __init__(self, n_features):\n        super().__init__()\n        self.layer1 = nn.Linear(n_features, 16)\n        self.relu = nn.ReLU()\n        self.layer2 = nn.Linear(16, 1)\n\n    def forward(self, x):\n        x = self.layer1(x)\n        x = self.relu(x)\n        return self.layer2(x)\n\nmodel = DemandForecaster(n_features=3)\noutput = model(sample_batch)\nprint(output.shape)\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Define a deeper network for the overload-classification task and check its output shape.",
+      "content": "Define a network with three linear layers and two ReLU activations for the overload-classification task from Mission 3, and pass a sample batch through it to confirm the output shape matches what a binary classifier needs.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a network with no activation between two linear layers.",
+      "content": "A network stacking two `nn.Linear` layers with no activation between them trains but never outperforms the plain linear regression baseline no matter how it's tuned. Diagnose why and fix by adding the missing nonlinearity.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "A network with no activation can never beat a single linear regression.",
+      "content": "Why would a two-layer network with no activation function between the layers never be able to outperform a single linear regression, even with perfect training?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why stacking linear layers alone doesn't add expressive power.",
+      "content": "Explain to someone why stacking linear layers alone doesn't add expressive power, but adding a ReLU between them does, using the flattening-to-one-line observation as your proof.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Define the actual neural demand forecaster architecture.",
+      "content": "Define the actual architecture for the Digital Twin's neural demand forecaster: an `nn.Module` with at least two hidden layers and ReLU activations, sized appropriately for your feature table's input dimensions.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This is the network the rest of this mission will train, tune, and evaluate.",
+      "content": "This architecture definition is the actual neural network the rest of this mission will train, tune, and evaluate against the Mission 3 baseline.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-pytorch-building-networks-architecture-definition",
+      "title": "Architecture Definition",
+      "description": "Sandboxed exercise defining an nn.Module network with correct layer sizing and activation placement, with a planted no-activation network to diagnose.",
+      "starterCodePath": "labs/07-pytorch/architecture-definition/starter.py",
+      "testCasesPath": "labs/07-pytorch/architecture-definition/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "activation-curve-fitting-visualizer",
+      "title": "Activation Curve-Fitting Visualizer",
+      "description": "Live curve-fitting demo toggling a ReLU activation between two linear layers, showing the fitted function flatten or bend accordingly."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-pytorch-building-networks-1",
+      "front": "Why does stacking two nn.Linear layers directly, with nothing between them, add no expressive power over a single linear layer?",
+      "back": "Mathematically, a linear function of a linear function is still just a linear function — the two layers collapse into an equivalent single linear transformation, with no added ability to represent curves or interactions.",
+      "conceptNodeId": "pytorch.building-networks"
+    },
+    {
+      "id": "fc-pytorch-building-networks-2",
+      "front": "What is forward() responsible for in an nn.Module subclass?",
+      "back": "It defines the actual computation the network performs on an input — how the layers are applied in sequence — and PyTorch calls it automatically when you call the model instance like a function.",
+      "conceptNodeId": "pytorch.building-networks"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly diagnoses why a no-activation two-layer network can't outperform linear regression",
+      "Defined network architecture correctly places activations between, not after, every linear layer",
+      "Output shape from the forward pass matches what the downstream task (regression or classification) actually requires"
+    ]
+  },
+  "references": [
+    {
+      "title": "PyTorch Documentation — torch.nn.Module",
+      "url": "https://pytorch.org/docs/stable/generated/torch.nn.Module.html",
+      "type": "officialDocs",
+      "versionOrDate": "PyTorch 2.3",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "PyTorch Documentation — torch.nn.ReLU",
+      "url": "https://pytorch.org/docs/stable/generated/torch.nn.ReLU.html",
+      "type": "officialDocs",
+      "versionOrDate": "PyTorch 2.3",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

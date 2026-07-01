@@ -1,0 +1,137 @@
+{
+  "id": "sklearn-regression-basics",
+  "title": "Linear Regression: Your First Real Prediction",
+  "skillFolder": "06-scikit-learn",
+  "missionId": "M3",
+  "concept": "Supervised Learning: Linear Regression",
+  "knowledgeGraphNodeId": "sklearn.regression-basics",
+  "difficulty": "introductory",
+  "dependencies": ["pandas.capstone-feature-table"],
+  "learningObjectives": [
+    "Explain the difference between a feature (input) and a target (what you're predicting)",
+    "Split data into train and test sets and explain why evaluating on training data is misleading",
+    "Fit a scikit-learn LinearRegression model and generate predictions",
+    "Interpret a model's coefficients in terms of the real-world quantities they represent"
+  ],
+  "whyItMatters": "Every hour of theory in Mission 1 and 2 built the feature table; this is the lesson where that table finally produces its first actual prediction — the 'Predict' layer of the AI Energy OS starts here, with the simplest model that can possibly work.",
+  "capstoneContribution": "The Digital Twin's first predictive model — a linear regression baseline predicting demand_kw from temperature and hour_of_day, the simplest member of the forecasting family this mission builds toward.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "The feature table exists, but nothing yet predicts tomorrow's demand from it.",
+      "content": "You have a feature table with temperature, hour_of_day, and historical demand_kw — but nothing yet that actually predicts tomorrow's demand from those features.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "'Predict the Future' becomes literally true in code for the first time here.",
+      "content": "This is the exact moment the mission's name — 'Predict the Future' — becomes literally true in code, for the first time. Everything before this point prepared the data; this is where a model uses it to say something about what hasn't happened yet.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Split into train/test; fit on train; coefficients are directly interpretable.",
+      "content": "Supervised learning splits data into features (X, the inputs — temperature, hour_of_day) and a target (y, what you're predicting — demand_kw). `train_test_split(X, y, test_size=0.2)` holds out a portion of data the model never sees during training, so evaluating on it approximates how the model will perform on genuinely new data — evaluating on training data instead is misleading because the model may have simply memorized it. `LinearRegression().fit(X_train, y_train)` learns a coefficient per feature; `model.coef_` shows how much predicted demand changes per unit change in each feature, holding others constant — directly interpretable, unlike many more complex models.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "A fitted line through a scatter plot; train/test shown as non-overlapping regions.",
+      "content": "A scatter of temperature vs. demand points with a fitted regression line through them sits alongside a diagram showing the train/test split as two non-overlapping colored regions of the same dataset.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Drag points and watch the fitted line update; toggle train/test coloring.",
+      "content": "Drag data points on a scatter plot and watch a live-refitting regression line update, then toggle which points are 'test' vs. 'train' and see the line only ever fit using the train-colored points.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: fit a linear regression and inspect its coefficients.",
+      "content": "```python\nfrom sklearn.linear_model import LinearRegression\nfrom sklearn.model_selection import train_test_split\n\nX = combined[[\"temp_c\", \"hour_of_day\"]]\ny = combined[\"demand_kw\"]\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)\n\nmodel = LinearRegression()\nmodel.fit(X_train, y_train)\npredictions = model.predict(X_test)\nprint(model.coef_, model.intercept_)\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Fit and interpret a regression predicting solar output, unaided.",
+      "content": "Fit a linear regression predicting `solar_output_kw` from `temp_c` and a `cloud_cover` feature, and interpret whether each coefficient's sign (positive/negative) matches physical intuition.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix an evaluation that scores against the training set instead of the test set.",
+      "content": "Code evaluates model performance by scoring against `X_train`/`y_train` instead of the held-out test set, producing a misleadingly optimistic result. Identify and fix the evaluation to use the test set.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Training-set performance is optimistically biased even without a coding mistake.",
+      "content": "Why would a model's performance on its own training data almost always look better than its real-world performance, even without anything going wrong in the code?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain what model.coef_ represents using your own fitted model.",
+      "content": "Explain to someone what `model.coef_` actually represents, using the temperature coefficient from your own fitted model as a concrete example.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Fit and interpret a demand regression with plain-English coefficient explanations.",
+      "content": "Fit and interpret a linear regression predicting `demand_kw` from the features in your Mission 2 feature table, reporting both the coefficients and a plain-English sentence explaining what each one means physically.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This is the Digital Twin's first working predictive model.",
+      "content": "This is the Digital Twin's first working predictive model — the simplest possible member of the forecasting family the rest of this mission builds on.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-sklearn-regression-basics-first-fit",
+      "title": "First Fit",
+      "description": "Sandboxed exercise fitting a LinearRegression model on a provided feature table, requiring correct train/test evaluation and coefficient interpretation.",
+      "starterCodePath": "labs/06-scikit-learn/first-fit/starter.py",
+      "testCasesPath": "labs/06-scikit-learn/first-fit/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "regression-line-fit-visualizer",
+      "title": "Regression Line Fit Visualizer",
+      "description": "Live-refitting regression line over a draggable scatter plot, with toggleable train/test point coloring."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-sklearn-regression-basics-1",
+      "front": "Why is evaluating a model on its own training data misleading?",
+      "back": "The model may have partially memorized the training data rather than learned a generalizable pattern, so its training-set performance tends to look better than its real-world performance on unseen data.",
+      "conceptNodeId": "sklearn.regression-basics"
+    },
+    {
+      "id": "fc-sklearn-regression-basics-2",
+      "front": "What does a LinearRegression model's coef_ for a given feature represent?",
+      "back": "How much the predicted target changes per one-unit change in that feature, holding all other features constant — directly interpretable in the units of the original data.",
+      "conceptNodeId": "sklearn.regression-basics"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly identifies and fixes evaluation performed on training data instead of the held-out test set",
+      "Coefficient interpretation is expressed in terms of real-world units and direction, not just the raw number",
+      "Independent-coding task assesses whether coefficient signs match physical intuition, not just whether the code runs"
+    ]
+  },
+  "references": [
+    {
+      "title": "scikit-learn — Ordinary Least Squares",
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html#ordinary-least-squares",
+      "type": "officialDocs",
+      "versionOrDate": "scikit-learn 1.5",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "scikit-learn — train_test_split",
+      "url": "https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html",
+      "type": "officialDocs",
+      "versionOrDate": "scikit-learn 1.5",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

@@ -1,0 +1,137 @@
+{
+  "id": "python-loops",
+  "title": "Loops: Running One Check Against Every Reading",
+  "skillFolder": "01-python",
+  "missionId": "M1",
+  "concept": "Loops (for/while)",
+  "knowledgeGraphNodeId": "python.loops",
+  "difficulty": "introductory",
+  "dependencies": ["python.lists", "python.control-flow"],
+  "learningObjectives": [
+    "Iterate over a list with a for loop instead of manually indexing element by element",
+    "Use enumerate() to access both index and value during iteration",
+    "Write a while loop for a condition-driven repeat, e.g. 'keep charging until full'",
+    "Recognize the conditions that produce an infinite loop before ever running one"
+  ],
+  "whyItMatters": "Classifying one demand reading (Control Flow) doesn't scale to 24 readings a day, let alone the 8,760 in a year. Loops are what let a single threshold check run once and apply to every reading in the Digital Twin without copy-pasting code per reading.",
+  "capstoneContribution": "The batch-classification pass over the Digital Twin's rolling reading window — turns the single-reading threshold check into something that runs across a full day, then a full year, of data.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "24 readings, one working single-value classifier, and no way to apply it to all of them.",
+      "content": "You have a list of 24 hourly demand readings and one working threshold classifier (from Control Flow) that only handles a single value at a time.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Real energy datasets are thousands of readings, not dozens.",
+      "content": "Every later mission processes not one data point but thousands — a full year of hourly demand is 8,760 readings. A for loop is what makes 'run this once' become 'run this for every reading' without rewriting the logic 8,760 times.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "for iterates a fixed sequence; while repeats until a condition becomes false.",
+      "content": "`for reading in readings_kw:` binds `reading` to each element in turn and executes the loop body once per element. `enumerate(readings_kw)` yields `(index, value)` pairs when you need position and value together. `while condition:` repeats as long as `condition` stays true — useful when you don't know the number of iterations in advance (e.g. 'keep discharging the battery until it's empty'), but risks an infinite loop if the condition never becomes false.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "An animated pointer sweeps across the row-of-boxes list, running the classifier on each box.",
+      "content": "An animated pointer moves across the row-of-boxes list visual from the Lists lesson, pausing on each box while the classification logic runs against it and printing a result per box before moving on.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Step through a for loop one iteration at a time.",
+      "content": "Step through a for loop one iteration at a time via a 'step' button, watching the loop variable's value update and the classification output accumulate below.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: classify every reading in a list with a for loop, then with enumerate().",
+      "content": "```python\nreadings_kw = [4821, 4790, 5100, 4650]\nsafe_limit_kw = 5000\n\nfor reading in readings_kw:\n    if reading >= safe_limit_kw:\n        print(f\"{reading} kW: OVERLOAD\")\n    else:\n        print(f\"{reading} kW: normal\")\n\nfor hour, reading in enumerate(readings_kw):\n    print(f\"Hour {hour}: {reading} kW\")\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Loop over battery readings with enumerate(), printing only the low ones.",
+      "content": "Given a list of battery state-of-charge percentages recorded every hour, write a for loop with `enumerate()` that prints `Hour {i}: {value}% - LOW` for any reading below 25, and nothing for the rest.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Fix a while loop whose condition variable is never updated.",
+      "content": "```python\ncount = 0\nwhile count < 5:\n    print(\"charging...\")\n```\nThis never terminates because `count` is never changed inside the loop. Identify the missing line and fix it.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Infinite loops are a predictable mistake, not a mysterious bug.",
+      "content": "Why is a while loop with a condition that never changes exactly as dangerous as it sounds, and how would you notice it before running the code rather than after?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain for-over-a-list vs. while-with-a-counter to someone who thinks they're interchangeable.",
+      "content": "Explain the difference between a for loop over a list and a while loop with a counter, to someone who thinks they're always interchangeable.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Loop over the full rolling window instead of just the latest reading.",
+      "content": "Extend the sensor-intake mini project: loop over the full rolling window of 6 readings and print a per-hour classification line for each, instead of just the single latest reading.",
+      "estimatedMinutes": 12
+    },
+    "portfolioEvidence": {
+      "summary": "This becomes the Digital Twin's first per-timestep processing pass.",
+      "content": "The batch classification loop becomes the first version of the Digital Twin's per-timestep processing pass, later replaced by a vectorized pandas operation in Mission 2.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-python-loops-batch-classifier",
+      "title": "Batch Classifier",
+      "description": "Sandboxed exercise requiring the learner to loop over a list of readings and produce correct per-reading output, including a deliberately included while-loop variant that must terminate correctly.",
+      "starterCodePath": "labs/01-python/batch-classifier/starter.py",
+      "testCasesPath": "labs/01-python/batch-classifier/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "loop-step-visualizer",
+      "title": "Loop Step Visualizer",
+      "description": "Step-through animation of a for/while loop executing against a list, highlighting the current element and accumulated output."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-python-loops-1",
+      "front": "What two things does enumerate(readings_kw) give you on each iteration that a plain for loop doesn't?",
+      "back": "The index (position) of the current element alongside the value itself, as an (index, value) pair.",
+      "conceptNodeId": "python.loops"
+    },
+    {
+      "id": "fc-python-loops-2",
+      "front": "What's the single most common cause of an infinite while loop?",
+      "back": "The condition being checked never changes inside the loop body, so it stays true forever — usually because the variable that should be updated (e.g. a counter) was forgotten.",
+      "conceptNodeId": "python.loops"
+    }
+  ],
+  "assessment": {
+    "primaryType": "codeReview",
+    "rubric": [
+      "Correctly identifies why a given while loop never terminates and explains the fix, not just applies it blindly",
+      "for-loop solution uses enumerate() only where position is actually needed, not reflexively everywhere",
+      "Batch classifier produces correct output for every element in the list, including boundary-value readings"
+    ]
+  },
+  "references": [
+    {
+      "title": "Python Language Reference — The for statement",
+      "url": "https://docs.python.org/3/reference/compound_stmts.html#the-for-statement",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Python Language Reference — The while statement",
+      "url": "https://docs.python.org/3/reference/compound_stmts.html#the-while-statement",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

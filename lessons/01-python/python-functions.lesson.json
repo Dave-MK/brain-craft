@@ -1,0 +1,137 @@
+{
+  "id": "python-functions",
+  "title": "Functions: One Definition, Many Call Sites",
+  "skillFolder": "01-python",
+  "missionId": "M1",
+  "concept": "Functions",
+  "knowledgeGraphNodeId": "python.functions",
+  "difficulty": "introductory",
+  "dependencies": ["python.loops"],
+  "learningObjectives": [
+    "Define a function with parameters and a return value instead of relying on duplicated inline logic",
+    "Explain the difference between printing a result and returning one",
+    "Refactor duplicated logic (the threshold classifier) into a single reusable function",
+    "Write a clearly named function whose purpose is obvious from its signature alone"
+  ],
+  "whyItMatters": "The threshold-classification logic has now been written twice — once outside a loop, once inside one. Every mission from here on reuses forecasting, optimisation, and routing logic dozens of times; functions are what stop the AI Energy OS from becoming an unmaintainable pile of duplicated logic.",
+  "capstoneContribution": "The first reusable function in the Digital Twin's codebase — classify_demand() — called from every place that previously duplicated the threshold check inline.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "The same classification logic now exists in two places and can silently drift out of sync.",
+      "content": "Your threshold-classification logic now exists twice: once outside a loop, once inside one. If the safety limit changes, you have to remember to update it in both places — and eventually you won't.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Duplicated logic quietly drifting out of sync is a real, common engineering failure mode.",
+      "content": "This is the exact failure mode real engineering teams spend years fighting: logic duplicated in multiple places quietly drifting out of sync. A function collapses every copy into one definition with one place to fix.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "def creates a reusable block; return hands a value back to the caller, unlike print().",
+      "content": "`def classify_demand(reading_kw, safe_limit_kw=5000): ... return label` defines a reusable block. Parameters let the caller supply different inputs each time; `return` sends a value back to the caller, distinct from `print()`, which only displays it and gives nothing back to the rest of the program. Default parameter values (`safe_limit_kw=5000`) let common cases omit the argument entirely.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "Two duplicated logic blocks collapse into one shared block with inputs in and a labeled output.",
+      "content": "The diagram shows the classification logic pulled out of both call sites (the standalone check and the loop) into one box with inputs going in and a labeled output value coming out, with two arrows pointing back into where it's called from.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Rewire two duplicated blocks into calls to one shared function block.",
+      "content": "Rewire two duplicated logic blocks in a visual editor into calls to a single shared function block, watching both call sites update simultaneously when the shared block's logic changes.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: extract the classification logic into a function with defaults.",
+      "content": "```python\ndef classify_demand(reading_kw, safe_limit_kw=5000, warning_kw=4500):\n    if reading_kw >= safe_limit_kw:\n        return \"OVERLOAD\"\n    elif reading_kw > warning_kw:\n        return \"WARNING\"\n    return \"NORMAL\"\n\nfor reading in readings_kw:\n    print(classify_demand(reading))\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Write classify_battery() and call it in a loop, unaided.",
+      "content": "Write a function `classify_battery(soc_percent)` that returns `CRITICAL`, `LOW`, or `OK` per the thresholds from the Control Flow lesson, then call it in a loop over a list of readings.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Fix a function that prints instead of returning, so the caller gets None.",
+      "content": "```python\ndef classify_demand(reading_kw):\n    print(\"OVERLOAD\" if reading_kw >= 5000 else \"NORMAL\")\n\nresult = classify_demand(4821)\nprint(result)  # None\n```\nExplain exactly why `result` is `None` even though the function clearly printed the correct classification, and fix it.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Printing and returning are not the same operation.",
+      "content": "Why did `result = classify_demand(4821)` end up `None` even though the function clearly printed something correct? Where else might this exact confusion cost you later?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain return vs. print to someone who insists they're the same.",
+      "content": "Explain the difference between a function returning a value and a function printing a value, to someone who insists they're the same thing because both 'show the answer.'",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Refactor the sensor-intake project so both call sites share one function.",
+      "content": "Refactor the sensor-intake mini project so the classification logic used in both the single-reading and the batch-loop versions calls one shared function instead of duplicating the if/elif/else chain.",
+      "estimatedMinutes": 12
+    },
+    "portfolioEvidence": {
+      "summary": "classify_demand() becomes the first named, reusable function in the codebase.",
+      "content": "classify_demand() becomes the first named, reusable function committed to the Digital Twin's codebase, called from at least two places without duplication.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-python-functions-refactor",
+      "title": "Extract the Duplicate",
+      "description": "Sandboxed exercise providing intentionally duplicated classification logic across two call sites; the learner must refactor both into calls to a single shared function without changing behavior.",
+      "starterCodePath": "labs/01-python/extract-the-duplicate/starter.py",
+      "testCasesPath": "labs/01-python/extract-the-duplicate/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "function-extraction-visualizer",
+      "title": "Function Extraction Visualizer",
+      "description": "Shows duplicated logic blocks collapsing into a single function block with call-site arrows, live-updating both call sites when the shared logic changes."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-python-functions-1",
+      "front": "Why did result = classify_demand(4821) come back as None if the function used print() instead of return?",
+      "back": "print() only displays a value to the console; it doesn't hand anything back to the code that called the function. Without an explicit return, a function implicitly returns None.",
+      "conceptNodeId": "python.functions"
+    },
+    {
+      "id": "fc-python-functions-2",
+      "front": "What problem does giving a parameter a default value, like safe_limit_kw=5000, solve?",
+      "back": "It lets the common case omit the argument entirely while still allowing callers who need a different limit to override it explicitly.",
+      "conceptNodeId": "python.functions"
+    }
+  ],
+  "assessment": {
+    "primaryType": "architectureDesign",
+    "rubric": [
+      "Refactor removes the duplication entirely rather than leaving one call site still inline",
+      "Function signature (parameter names, defaults) is chosen deliberately, not copied without consideration of what should be a default vs. required",
+      "Return values are used correctly throughout — no accidental reliance on print() where a value needs to flow back to the caller"
+    ]
+  },
+  "references": [
+    {
+      "title": "Python Tutorial — Defining Functions",
+      "url": "https://docs.python.org/3/tutorial/controlflow.html#defining-functions",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Python Language Reference — Function definitions",
+      "url": "https://docs.python.org/3/reference/compound_stmts.html#function-definitions",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

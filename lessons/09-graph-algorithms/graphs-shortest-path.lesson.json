@@ -1,0 +1,130 @@
+{
+  "id": "graphs-shortest-path",
+  "title": "Shortest Path: Routing Power for Minimum Loss",
+  "skillFolder": "09-graph-algorithms",
+  "missionId": "M5",
+  "concept": "Shortest-Path Algorithms (Dijkstra's algorithm)",
+  "knowledgeGraphNodeId": "graphs.shortest-path",
+  "difficulty": "foundational",
+  "dependencies": ["graphs.representation-traversal"],
+  "learningObjectives": [
+    "Explain why BFS's hop-count shortest path isn't the same as the actual lowest-loss route on a weighted grid",
+    "Implement Dijkstra's algorithm to find the minimum-weight path between two nodes",
+    "Choose an appropriate edge weight (transmission loss, distance, capacity cost) for a given routing question",
+    "Recognize when Dijkstra's algorithm is not applicable (e.g. negative edge weights) and why"
+  ],
+  "whyItMatters": "BFS from the last lesson finds the path with the fewest transmission lines, but the fewest lines isn't necessarily the lowest-loss or cheapest route — a real grid operator cares about which path actually minimizes transmission loss or cost, and that requires weighting the edges by something meaningful, not just counting hops.",
+  "capstoneContribution": "The Digital Twin's minimum-loss routing calculation — directly answering the mission's original example question, 'how do I reduce energy costs by routing more efficiently.'",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Fewer hops doesn't mean lower loss on a weighted grid.",
+      "content": "BFS tells you substation-1 to substation-4 is 2 hops away via substation-2, but that route might have higher cumulative transmission loss than a 3-hop alternative via substation-3 and substation-5 with lower-loss lines.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Minimum-loss routing directly answers one of the mission's founding questions.",
+      "content": "This is the direct technical answer to one of the very first example questions this whole mission was scoped around: 'how do I reduce energy costs?' Minimum-loss routing is a genuine, concrete instance of that question, and shortest-path algorithms with the right edge weights are exactly the tool.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Dijkstra finds minimum-total-weight paths; weight choice determines what 'shortest' means.",
+      "content": "Dijkstra's algorithm finds the minimum-total-weight path from a source node to every other node (or a specific target), by repeatedly visiting the unvisited node with the smallest known distance so far and updating its neighbors' distances if a shorter path through it is found. Edge weights represent whatever quantity you're minimizing — transmission loss percentage, physical distance, or a cost figure — and the choice of weight changes what 'shortest' actually means for the specific question being asked. Dijkstra's algorithm requires non-negative edge weights; a negative weight can cause it to settle on a node's distance before a cheaper path through a later negative edge is discovered, producing an incorrect result — an important limitation to recognize before applying it to a new problem.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "Dijkstra's frontier expands to settle on the true minimum-loss path, contrasted with BFS's fewer-hops route.",
+      "content": "A weighted grid graph shows transmission-loss percentages labeled on each edge, with Dijkstra's algorithm's frontier expanding outward and settling on the true minimum-loss path highlighted at the end, contrasted with BFS's fewer-hops-but-higher-loss alternative.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Adjust edge weights and watch the computed shortest path change accordingly.",
+      "content": "Adjust edge weights (loss percentages) on a live grid graph and watch Dijkstra's computed shortest path change accordingly, directly observing how weight choice determines the routing outcome.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: implement Dijkstra's algorithm using a priority queue.",
+      "content": "```python\nimport heapq\n\ndef dijkstra(graph, start):\n    distances = {node: float(\"inf\") for node in graph}\n    distances[start] = 0\n    pq = [(0, start)]\n\n    while pq:\n        current_dist, node = heapq.heappop(pq)\n        if current_dist > distances[node]:\n            continue\n        for neighbor, weight in graph[node].items():\n            distance = current_dist + weight\n            if distance < distances[neighbor]:\n                distances[neighbor] = distance\n                heapq.heappush(pq, (distance, neighbor))\n    return distances\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Apply Dijkstra with loss-percentage weights to find a real minimum-loss route.",
+      "content": "Apply Dijkstra's algorithm to your grid topology using transmission-loss percentage as the edge weight, and report the minimum-loss path and total loss between two specific substations.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a Dijkstra implementation missing the stale-entry staleness check.",
+      "content": "A Dijkstra implementation is missing the `if current_dist > distances[node]: continue` staleness check, causing it to process outdated queue entries and potentially produce incorrect distances on a graph with many redundant paths. Identify and fix the missing check.",
+      "estimatedMinutes": 7
+    },
+    "reflection": {
+      "summary": "Dijkstra can give a wrong answer with a negative edge weight.",
+      "content": "Why would Dijkstra's algorithm give a wrong answer on a graph with a negative edge weight, even though the algorithm's logic looks like it should still 'find the smallest distance'?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why fewest-hops and minimum-loss can genuinely differ.",
+      "content": "Explain to someone why the fewest-hops path from BFS and the minimum-loss path from Dijkstra can be genuinely different routes on the same grid, using your own topology's computed examples.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Compute minimum-loss routes for every substation pair and flag investment opportunities.",
+      "content": "Compute the minimum-loss routing path between every pair of substations in your grid topology, and identify which routes would most benefit from infrastructure investment to reduce loss further.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This is a direct, working answer to a founding question of the mission.",
+      "content": "This minimum-loss routing capability is a direct, working answer to one of the founding questions of the entire AI Energy OS mission.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-graphs-shortest-path-dijkstra-routing",
+      "title": "Dijkstra Routing",
+      "description": "Sandboxed exercise applying Dijkstra's algorithm with real loss-percentage weights across a grid topology, with a planted missing staleness-check bug to fix.",
+      "starterCodePath": "labs/09-graph-algorithms/dijkstra-routing/starter.py",
+      "testCasesPath": "labs/09-graph-algorithms/dijkstra-routing/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "dijkstra-weight-adjustment-visualizer",
+      "title": "Dijkstra Weight Adjustment Visualizer",
+      "description": "Live grid graph with adjustable edge weights, showing Dijkstra's computed shortest path change in real time."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-graphs-shortest-path-1",
+      "front": "Why can the fewest-hops path (BFS) and the minimum-loss path (Dijkstra) be different routes on the same grid?",
+      "back": "BFS only counts the number of edges, ignoring their weights; Dijkstra minimizes the sum of edge weights (e.g. loss percentage), so a path with more hops but lower per-hop loss can beat a shorter-hop-count path with higher loss.",
+      "conceptNodeId": "graphs.shortest-path"
+    },
+    {
+      "id": "fc-graphs-shortest-path-2",
+      "front": "Why does Dijkstra's algorithm require non-negative edge weights?",
+      "back": "It permanently settles on a node's shortest distance once visited, assuming no future path could be cheaper; a negative edge weight can violate that assumption, letting a cheaper path through a later negative edge go undiscovered.",
+      "conceptNodeId": "graphs.shortest-path"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly diagnoses and fixes the missing staleness-check bug in the Dijkstra implementation",
+      "Computed minimum-loss routes are verified against the graph's actual weights, not just assumed correct",
+      "Correctly explains why negative edge weights break Dijkstra's core assumption"
+    ]
+  },
+  "references": [
+    {
+      "title": "Dijkstra's algorithm",
+      "url": "https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm",
+      "type": "other",
+      "versionOrDate": "Wikipedia, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

@@ -15,7 +15,7 @@ Grid routing and topology reasoning — modeling the electricity network itself 
 
 ## Prerequisites
 
-[`08-reinforcement-learning`](../08-reinforcement-learning/README.md) is a soft prerequisite (parallel, not strictly sequential) — see open question in [`docs/02-curriculum/overview.md`](../../docs/02-curriculum/overview.md)
+[`python.dictionaries`](../01-python/README.md) technically (adjacency-list representation); [`08-reinforcement-learning`](../08-reinforcement-learning/README.md) converges with this folder at `graphs-rl-combination`, confirming the two are parallel, not strictly sequential, exactly as anticipated below.
 
 ## Leads into
 
@@ -23,4 +23,4 @@ Grid routing and topology reasoning — modeling the electricity network itself 
 
 ## Status
 
-Skeleton only.
+Complete. All 6 lessons authored and schema-validated in [`lessons/09-graph-algorithms/`](../../lessons/09-graph-algorithms/): Representation & Traversal → Shortest Path (Dijkstra) → {Flow Algorithms, Resilience & Critical Nodes} → RL + Graphs Combination (converges with `08-reinforcement-learning`) → The Grid Router (boss battle). This lesson set delivers concrete, numeric answers to both founding example questions from the mission's original scoping conversation: minimum-loss routing and two-substation contingency survival. **Mission 5 ("Optimise Decisions") is fully authored.**

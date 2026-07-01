@@ -1,0 +1,137 @@
+{
+  "id": "rl-training-evaluation-safety",
+  "title": "Training, Evaluation, and Safety: Trusting an RL Agent Before It Runs",
+  "skillFolder": "08-reinforcement-learning",
+  "missionId": "M5",
+  "concept": "RL Training Evaluation and Safe Deployment Practices",
+  "knowledgeGraphNodeId": "rl.training-evaluation-safety",
+  "difficulty": "intermediate",
+  "dependencies": ["rl.value-based-methods", "rl.policy-gradient-methods"],
+  "learningObjectives": [
+    "Evaluate a trained RL agent's policy across a range of scenarios, not just its training-time reward curve",
+    "Recognize when an agent has overfit to the specific training environment rather than learned a robust policy",
+    "Implement basic safety constraints that prevent an agent from taking catastrophic actions during training and deployment",
+    "Explain why an RL agent should earn trust incrementally (simulation first, decision-support second, autonomous control last) rather than being deployed directly"
+  ],
+  "whyItMatters": "A rising training reward curve tells you the agent is getting better at whatever the reward function measures — it does not tell you the agent is safe, robust across conditions it wasn't trained on, or ready for anything beyond a simulated environment, and treating 'trains well' as 'ready to deploy' is exactly the mistake that would put real grid infrastructure at risk.",
+  "capstoneContribution": "The Digital Twin's RL safety and evaluation gate — the discipline that stands between a training reward curve going up and any claim that the battery scheduler is actually trustworthy, echoing the Grid Copilot's designed path from decision support to earned autonomy.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Rising training reward can hide the same overfitting problem seen in Mission 4.",
+      "content": "Your Q-learning and policy gradient agents both show a rising reward curve during training — but a rising training reward curve is exactly the kind of metric that can hide the same overfitting problem Mission 4's neural forecaster had to guard against, now in a sequential-decision setting where the consequences of being wrong are also sequential.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "An unsafe RL policy's consequences are sequential and potentially harmful if connected to something real.",
+      "content": "This mirrors the overfitting lesson from Mission 4 almost exactly, but the stakes are different: an overfit forecaster produces a bad prediction, while an overfit or unsafe RL policy could take a genuinely harmful sequence of actions if it were ever connected to something real — this is precisely why the AI Energy OS's own vision insists on decision support before autonomous control.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Test against out-of-distribution scenarios; enforce hard safety constraints; earn trust in stages.",
+      "content": "Evaluating an RL agent properly means testing its trained policy across scenarios genuinely different from training (a heatwave it never saw, a price spike outside the training distribution), not just reporting the reward curve from training itself — the RL equivalent of testing on a held-out period. Safety constraints — hard-coded rules the agent's chosen action is checked against before being executed, e.g. 'never let battery_soc go below a hard floor regardless of what the policy recommends' — provide a backstop independent of whatever the learned policy happens to have converged to, since a learned policy's guarantees are only ever as good as its training distribution. The staged-trust model from the AI Energy OS vision — prove value in simulation, then offer decision support (recommend an action, let a human or a rule-based system execute it), then earn autonomous control only after sustained demonstrated reliability — exists specifically because RL agents can behave unpredictably outside their training distribution in ways that are hard to fully anticipate in advance.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "Actions pass through a hard safety check before execution; trust builds along a staged ladder.",
+      "content": "An agent's action passes through a hard safety-constraint check before execution, with an unsafe recommendation being blocked and logged rather than executed, alongside a staged-trust ladder from 'simulation only' to 'decision support' to 'autonomous control.'",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Test the agent against out-of-distribution scenarios, then enable a safety layer.",
+      "content": "Test a trained agent against several out-of-distribution scenarios (an extreme price spike, an unusually depleted battery) and observe where its recommended actions become questionable or unsafe, then enable a safety-constraint layer and watch unsafe actions get blocked and logged instead.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: wrap an agent's action in a hard safety-constraint check.",
+      "content": "```python\ndef safe_action(agent, state, hard_floor=0.1):\n    proposed_action = agent.choose_action(state)\n    if proposed_action == \"discharge\" and state[\"battery_soc\"] <= hard_floor:\n        log_blocked_action(state, proposed_action, reason=\"hard floor violation\")\n        return \"hold\"\n    return proposed_action\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Evaluate the agent against scenarios different from training and report gaps.",
+      "content": "Evaluate your Q-learning agent's policy against 5 scenarios that differ meaningfully from its training conditions, and report, for each, whether its recommended action still seems reasonable or reveals a gap in its training.",
+      "estimatedMinutes": 14
+    },
+    "debugging": {
+      "summary": "Fix a safety check that uses stale, pre-action state instead of the resulting state.",
+      "content": "A safety wrapper checks the constraint using the state *before* the action's effect rather than the state the action would actually produce, letting a genuinely unsafe discharge slip through because the check happened on stale information. Identify and fix the check's timing.",
+      "estimatedMinutes": 7
+    },
+    "reflection": {
+      "summary": "A rising reward curve alone is insufficient evidence of readiness.",
+      "content": "Why is 'the training reward curve went up' insufficient evidence that an RL agent is ready for even decision-support use, let alone autonomous control?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain the staged-trust model and why skipping straight to autonomy is a mistake.",
+      "content": "Explain to someone the staged-trust model — simulation, then decision support, then autonomous control — and why skipping straight to autonomous control would be a mistake even for a well-trained agent.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Build a safety-constrained evaluation harness and report on genuine gaps.",
+      "content": "Build a safety-constrained evaluation harness for your battery-scheduling agent: test it against several out-of-distribution scenarios, wrap its actions in a hard safety constraint, and produce a report on which scenarios it handles well and which reveal genuine gaps.",
+      "estimatedMinutes": 18
+    },
+    "portfolioEvidence": {
+      "summary": "This harness is what lets the scheduler be trusted for decision-support use.",
+      "content": "This safety-and-evaluation harness is what actually lets the Digital Twin's battery scheduler be trusted for the boss battle's decision-support deliverable — not the raw training reward curve alone.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-rl-training-evaluation-safety-harness",
+      "title": "Safety Harness",
+      "description": "Sandboxed exercise building an out-of-distribution evaluation and hard-safety-constraint harness for a trained RL agent, requiring a fix for a planted stale-state safety-check bug.",
+      "starterCodePath": "labs/08-reinforcement-learning/safety-harness/starter.py",
+      "testCasesPath": "labs/08-reinforcement-learning/safety-harness/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "safety-constraint-staged-trust-visualizer",
+      "title": "Safety Constraint & Staged Trust Visualizer",
+      "description": "Shows unsafe agent actions being blocked and logged by a hard constraint, alongside a staged-trust ladder from simulation to decision support to autonomy."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-rl-training-evaluation-safety-1",
+      "front": "Why is a rising training reward curve insufficient evidence an RL agent is safe or ready to deploy?",
+      "back": "It only measures performance on the training distribution and reward function used, and says nothing about robustness to out-of-distribution scenarios or whether the agent's guarantees hold beyond what it was trained on.",
+      "conceptNodeId": "rl.training-evaluation-safety"
+    },
+    {
+      "id": "fc-rl-training-evaluation-safety-2",
+      "front": "What are the three stages of the staged-trust model for deploying an RL agent?",
+      "back": "Prove value in simulation first, then offer decision support (recommend, human or rule-based system executes), then earn autonomous control only after sustained demonstrated reliability.",
+      "conceptNodeId": "rl.training-evaluation-safety"
+    }
+  ],
+  "assessment": {
+    "primaryType": "codeReview",
+    "rubric": [
+      "Evaluation includes genuinely out-of-distribution scenarios, not just variations within the training distribution",
+      "Safety constraint checks the state the action would actually produce, not stale pre-action state",
+      "Report honestly identifies scenarios where the agent's behavior reveals a real gap, not just successes"
+    ]
+  },
+  "references": [
+    {
+      "title": "DeepMind — Specification gaming: the flip side of AI ingenuity",
+      "url": "https://www.deepmind.com/blog/specification-gaming-the-flip-side-of-ai-ingenuity",
+      "type": "other",
+      "versionOrDate": "DeepMind, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Gymnasium — Basic Usage",
+      "url": "https://gymnasium.farama.org/introduction/basic_usage/",
+      "type": "officialDocs",
+      "versionOrDate": "Gymnasium, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

@@ -23,4 +23,4 @@ Consumption and generation data analysis — turning raw ingested data (from SQL
 
 ## Status
 
-Skeleton only.
+Complete. All 6 lessons authored and schema-validated in [`lessons/05-pandas/`](../../lessons/05-pandas/): DataFrames Basics → Filtering & GroupBy → Time Series (resample/rolling) → Merging Datasets → Data Cleaning → The Feature Table (boss battle, Mission 2's final deliverable). **Mission 2 ("Manipulate Data") is now fully authored** — 18 lessons across `03-sql` + `04-apis` + `05-pandas`.

@@ -1,0 +1,130 @@
+{
+  "id": "python-oop-basics",
+  "title": "Basic OOP: A Reading That Knows How to Classify Itself",
+  "skillFolder": "01-python",
+  "missionId": "M1",
+  "concept": "Basic OOP (Classes)",
+  "knowledgeGraphNodeId": "python.oop-basics",
+  "difficulty": "foundational",
+  "dependencies": ["python.modules"],
+  "learningObjectives": [
+    "Define a class that bundles related data and behavior together, rather than a dictionary plus separate functions",
+    "Explain the difference between a class and an instance",
+    "Write an __init__ method and instance methods that operate on self",
+    "Recognize when a class is a genuine improvement over a plain dictionary, and when it's unnecessary ceremony"
+  ],
+  "whyItMatters": "A dictionary works for one reading, but the Digital Twin needs a growing number of behaviors attached to a reading — classify itself, validate itself, report itself — and every scikit-learn/PyTorch object encountered from Mission 3 onward follows exactly this pattern: data and behavior bundled together. This is the last core Python concept needed before the codebase this mission built becomes the real seed of the AI Energy OS.",
+  "capstoneContribution": "The SensorReading class — the Digital Twin's first proper object, replacing the plain dictionary used throughout this mission with something that can validate and classify itself.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Nothing ties a reading's data to the logic that assumes it's shaped correctly.",
+      "content": "Your reading dictionaries and your `classify_demand()` function are two separate things that happen to be used together everywhere. Nothing stops someone from calling `classify_demand()` on a dictionary that's missing required fields, because the dictionary has no idea what a valid reading even looks like.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Every scikit-learn/PyTorch object you'll use next mission is exactly this pattern.",
+      "content": "This exact pattern — a plain dict plus a pile of functions that assume it's shaped correctly — is what a class exists to fix. Every scikit-learn model and PyTorch layer you'll use starting next mission is an object exactly like the one you're about to build: data and the behavior that operates on it, bundled together.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "A class is a blueprint; an instance is a specific object built from it; self refers to the instance's own data.",
+      "content": "`class SensorReading:` defines a blueprint; `SensorReading(...)` creates an instance — a specific reading built from that blueprint. `def __init__(self, ...):` runs once when an instance is created, typically to store the passed-in values as `self.demand_kw = demand_kw`. Instance methods (`def classify(self):`) take `self` as their first parameter and can read the instance's own stored data without it being passed in again. A class earns its complexity exactly when data and the behavior around it belong together and get reused as a unit — for a single throwaway calculation, a plain dictionary or bare variable is still the simpler, right choice.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "One blueprint produces several instances, each with its own data but a shared method.",
+      "content": "The `SensorReading` blueprint (class) sits on one side, and three concrete reading instances built from it sit on the other, each with its own `demand_kw` value but sharing the exact same `classify()` method definition.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Stamp out several instances from one blueprint and call classify() on each.",
+      "content": "Fill in a class blueprint's fields, then 'stamp out' several instances with different values, calling `classify()` on each and watching each instance produce its own independent result from the shared method.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: define SensorReading with __init__ and a classify() method.",
+      "content": "```python\nclass SensorReading:\n    def __init__(self, demand_kw, source, safe_limit_kw=5000, warning_kw=4500):\n        self.demand_kw = demand_kw\n        self.source = source\n        self.safe_limit_kw = safe_limit_kw\n        self.warning_kw = warning_kw\n\n    def classify(self):\n        if self.demand_kw >= self.safe_limit_kw:\n            return \"OVERLOAD\"\n        elif self.demand_kw > self.warning_kw:\n            return \"WARNING\"\n        return \"NORMAL\"\n\nreading = SensorReading(4821, \"substation-12\")\nprint(reading.classify())\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Define BatteryReading with its own classify() method, unaided.",
+      "content": "Define a `BatteryReading` class with `soc_percent` and a `classify()` method reusing the CRITICAL/LOW/OK thresholds from earlier lessons, then create three instances and print each one's classification.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a method definition that forgot self.",
+      "content": "```python\nclass SensorReading:\n    def classify():\n        return \"NORMAL\"\n```\nCalling `reading.classify()` raises a `TypeError`. Identify the missing parameter and explain why Python requires it explicitly rather than assuming it.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Bundling behavior with data changes how confident you can be that it's used correctly.",
+      "content": "Now that `classify()` lives on the reading itself, what changed about how confident you can be that it's always called on correctly-shaped data, compared to the standalone `classify_demand(reading_dict)` function from before?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why bundling data and behavior together is different from keeping them separate.",
+      "content": "Explain to someone who's only used dictionaries and functions why bundling `demand_kw` and `classify()` together into one `SensorReading` class is different from just keeping them separate, using a concrete example of what goes wrong without the class.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Rewrite the rolling window as a list of SensorReading instances.",
+      "content": "Rewrite the entire sensor-intake mini project's rolling window as a list of `SensorReading` instances instead of a list of dictionaries, with classification now called as a method on each reading.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "SensorReading is the Digital Twin's first real object.",
+      "content": "SensorReading is the Digital Twin's first real object — the shape every later mission's DataFrame rows, model predictions, and RL states will echo.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": true,
+  "labs": [
+    {
+      "id": "lab-python-oop-basics-sensor-reading-class",
+      "title": "SensorReading Class",
+      "description": "Sandboxed exercise requiring the learner to define a SensorReading class with a correct __init__ and classify() method, then use it as a drop-in replacement across the accumulated mission project.",
+      "starterCodePath": "labs/01-python/sensor-reading-class/starter.py",
+      "testCasesPath": "labs/01-python/sensor-reading-class/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "class-instance-visualizer",
+      "title": "Class & Instance Visualizer",
+      "description": "Shows one class blueprint producing multiple independent instances, each with its own data but a shared method definition."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-python-oop-basics-1",
+      "front": "What's the difference between SensorReading (the class) and reading (an instance of it)?",
+      "back": "SensorReading is the blueprint that defines what fields and methods every reading has. reading = SensorReading(4821, 'substation-12') is one specific object built from that blueprint, holding its own actual values.",
+      "conceptNodeId": "python.oop-basics"
+    },
+    {
+      "id": "fc-python-oop-basics-2",
+      "front": "Why does an instance method need self as its first parameter?",
+      "back": "self is how the method accesses the specific instance's own stored data (e.g. self.demand_kw) rather than some other instance's — Python passes it in automatically when you call reading.classify(), but the method definition must declare it explicitly.",
+      "conceptNodeId": "python.oop-basics"
+    }
+  ],
+  "assessment": {
+    "primaryType": "oralExplanation",
+    "rubric": [
+      "Correctly explains what a class and an instance are, using a concrete example rather than only the box/blueprint metaphor",
+      "Justifies, with a specific example, when a class is worth its added complexity over a plain dictionary and when it isn't",
+      "SensorReading implementation correctly bundles data and behavior, with self used correctly throughout every instance method"
+    ]
+  },
+  "references": [
+    {
+      "title": "Python Tutorial — Classes",
+      "url": "https://docs.python.org/3/tutorial/classes.html",
+      "type": "officialDocs",
+      "versionOrDate": "Python 3.12",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

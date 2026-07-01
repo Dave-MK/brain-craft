@@ -1,0 +1,137 @@
+{
+  "id": "apis-consuming-rest",
+  "title": "Consuming a Real API: From JSON Response to Structured Record",
+  "skillFolder": "04-apis",
+  "missionId": "M2",
+  "concept": "Consuming REST APIs",
+  "knowledgeGraphNodeId": "apis.consuming-rest",
+  "difficulty": "foundational",
+  "dependencies": ["apis.authentication"],
+  "learningObjectives": [
+    "Parse a real, nested JSON API response into the dictionary/list shapes learned in Mission 1",
+    "Extract exactly the fields the Digital Twin needs and discard the rest deliberately",
+    "Convert an API response into the same structured-record shape used throughout the ingestion pipeline",
+    "Handle a response whose JSON structure doesn't match what the documentation implied"
+  ],
+  "whyItMatters": "A real weather API's JSON response looks nothing like the clean flat dictionary from the Files & I/O lesson — it's nested, inconsistently documented, and includes far more fields than you actually need. Turning that mess into the same clean structured-record shape the rest of the Digital Twin already expects is the actual job of this lesson.",
+  "capstoneContribution": "The real weather-API-to-structured-record converter — the piece that lets a live API response slot directly into the same ingestion, classification, and storage pipeline built throughout Mission 1 and the SQL skill folder.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A real response is deeply nested with far more fields than needed.",
+      "content": "The weather API's real response is a deeply nested JSON object with fields like `current.temp_c` buried three levels down, alongside a dozen fields (UV index, moon phase) the Digital Twin doesn't need at all.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Every real API response is messier than a lesson's guided example.",
+      "content": "Every real-world API response is messier than a lesson's guided example. Learning to navigate nested JSON deliberately, keeping only what matters, is what actually lets external data become useful internal data.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Nested JSON parses into nested dicts/lists; extract deliberately into the existing record shape.",
+      "content": "A nested JSON response parses into nested Python dictionaries/lists exactly as covered in Mission 1 — `response.json()[\"current\"][\"temp_c\"]` walks down exactly like any other nested dictionary access, including the same `.get()` safety pattern from the Error Handling lesson when a field's presence isn't guaranteed. The practical skill is deliberately selecting only the fields the Digital Twin actually needs and mapping them onto the existing structured-record shape (`{\"timestamp\": ..., \"temperature_c\": ..., \"source\": \"weather-api\"}`), rather than storing the entire raw response.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "A large nested JSON blob is reduced to a small, clean record with the rest greyed out.",
+      "content": "A large, deeply nested raw JSON blob sits on one side, with arrows extracting only 3-4 specific fields into the same small, clean record-card shape used throughout Mission 1, with the discarded fields visibly greyed out.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Click through a nested JSON tree and drag needed fields into a clean record.",
+      "content": "Click through a real nested JSON tree structure to locate specific fields, then drag only the needed ones into a clean record-card template.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: extract specific nested fields into a clean structured record.",
+      "content": "```python\nresponse = requests.get(url, headers=headers, params=params)\ndata = response.json()\n\nweather_record = {\n    \"timestamp\": data[\"current\"][\"last_updated\"],\n    \"temperature_c\": data[\"current\"][\"temp_c\"],\n    \"wind_speed_kmh\": data[\"current\"].get(\"wind_kph\"),\n    \"source\": \"weather-api\",\n}\nprint(weather_record)\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Extract specific fields from a nested price-API response, defending with .get().",
+      "content": "Given a sample nested price-API response, extract only the current price and its currency into the standard structured-record shape, defending with `.get()` against a field that's sometimes absent.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix code that assumes a deeply nested key always exists.",
+      "content": "Code assumes `data[\"current\"][\"air_quality\"][\"pm2_5\"]` always exists and crashes with a `KeyError` on a response where the API omitted the `air_quality` section entirely. Fix using `.get()` with sensible defaults at each level.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Storing only needed fields, not the raw response, is a deliberate choice.",
+      "content": "Why is it worth storing only the 3-4 fields you actually need, rather than the entire raw API response, in the Digital Twin's database?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain that nested JSON parsing reuses Mission 1's exact dictionary skills.",
+      "content": "Explain to someone why parsing a real API response uses exactly the same dictionary/list skills from Mission 1, even though the data looks far more intimidating at first glance.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Build real weather and price record converter functions.",
+      "content": "Build a real `weather_record` and `price_record` converter function, each taking a raw authenticated API response and returning the clean structured-record shape ready to insert into the schema-designed SQL tables.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "These converters bridge the outside world's messy data and the Digital Twin's clean shape.",
+      "content": "These converter functions are the actual bridge between the outside world's messy data and the Digital Twin's clean internal shape.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-apis-consuming-rest-json-to-record",
+      "title": "JSON to Record",
+      "description": "Sandboxed exercise converting realistic nested weather and price API responses into the standard structured-record shape, with defensive .get() usage against sometimes-missing fields.",
+      "starterCodePath": "labs/04-apis/json-to-record/starter.py",
+      "testCasesPath": "labs/04-apis/json-to-record/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "nested-json-extractor",
+      "title": "Nested JSON Extractor",
+      "description": "Interactive tree explorer for a real nested JSON response, letting the learner drag specific fields into a clean record template."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-apis-consuming-rest-1",
+      "front": "Why store only the fields you need from an API response, rather than the entire raw JSON?",
+      "back": "The raw response includes far more than the Digital Twin needs, and storing it all adds noise, storage cost, and surface area for downstream code to misuse fields it was never designed to depend on.",
+      "conceptNodeId": "apis.consuming-rest"
+    },
+    {
+      "id": "fc-apis-consuming-rest-2",
+      "front": "Why use .get() at each level when navigating a deeply nested API response, rather than direct key access?",
+      "back": "A field several levels deep might be entirely absent on some responses even if the documentation implies it's always present; .get() with a default avoids a KeyError crash when that happens.",
+      "conceptNodeId": "apis.consuming-rest"
+    }
+  ],
+  "assessment": {
+    "primaryType": "projectWork",
+    "rubric": [
+      "Converter functions correctly extract only the fields actually needed, matching the existing structured-record shape",
+      "Defensive .get() usage correctly handles fields that are sometimes absent, without silently producing wrong values",
+      "Output record shape is consistent with what the schema-designed SQL tables expect"
+    ]
+  },
+  "references": [
+    {
+      "title": "Requests — Quickstart: JSON Response Content",
+      "url": "https://requests.readthedocs.io/en/latest/user/quickstart/#json-response-content",
+      "type": "officialDocs",
+      "versionOrDate": "Requests 2.32",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Introducing JSON",
+      "url": "https://www.json.org/json-en.html",
+      "type": "standard",
+      "versionOrDate": "json.org, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

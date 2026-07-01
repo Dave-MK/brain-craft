@@ -1,0 +1,137 @@
+{
+  "id": "rl-value-based-methods",
+  "title": "Value-Based Methods: Learning How Good Every Choice Is",
+  "skillFolder": "08-reinforcement-learning",
+  "missionId": "M5",
+  "concept": "Value-Based RL (Q-learning)",
+  "knowledgeGraphNodeId": "rl.value-based-methods",
+  "difficulty": "foundational",
+  "dependencies": ["rl.reward-design"],
+  "learningObjectives": [
+    "Explain what a Q-value represents and how it differs from a state value",
+    "Implement tabular Q-learning's update rule and explain each term in it",
+    "Explain the exploration-exploitation tradeoff and implement an epsilon-greedy policy",
+    "Train a Q-learning agent on a small, discretized version of the battery MDP and interpret its learned policy"
+  ],
+  "whyItMatters": "You now have a well-defined MDP and a carefully designed reward — but nothing yet that actually learns a good policy from experience. Q-learning is the most direct, interpretable starting point: it literally learns 'how good is this action in this state,' building an explicit table you can inspect.",
+  "capstoneContribution": "The Digital Twin's first learned (not hand-coded) battery-scheduling policy — a Q-table the agent has built entirely from trial and error against the reward function from the previous lesson.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Hand-written rules are exactly the rigid approach RL exists to replace.",
+      "content": "You could hand-write charge/discharge rules yourself, but that's exactly the rigid, non-adaptive approach reinforcement learning exists to replace — you want the agent to discover a good policy through its own experience, not through your own guesses.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "The agent builds up estimates of good actions from experience, not from your rules.",
+      "content": "This is where reinforcement learning becomes real: instead of you deciding the rules, the agent tries actions, observes rewards, and gradually builds up an estimate of which actions are actually good in which situations — learned from experience, not programmed by hand.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Q-values estimate action quality per state; epsilon-greedy balances exploration and exploitation.",
+      "content": "A Q-value, Q(state, action), estimates the total future reward achievable by taking that action in that state and then acting optimally afterward — richer than a plain state value because it lets you compare actions directly within a state. The Q-learning update rule, `Q(s,a) ← Q(s,a) + α[r + γ·max_a'Q(s',a') - Q(s,a)]`, nudges the current estimate toward the observed reward plus the best estimated future value, discounted by γ (how much future reward matters relative to immediate reward) and moderated by α (the learning rate). An epsilon-greedy policy chooses the best-known action most of the time but occasionally (with probability ε) chooses randomly, to keep exploring actions that might turn out to be better than what's currently believed best — without this, the agent could get stuck exploiting an early, suboptimal discovery forever.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "A Q-table's cells darken toward the learned best action as training progresses.",
+      "content": "A Q-table appears as a grid of state rows and action columns, with cell values updating and darkening toward the learned 'best action' for each state as training progresses across many episodes.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Watch a Q-table update live with an adjustable exploration rate.",
+      "content": "Watch a live-training Q-table update cell by cell across simulated episodes, with an adjustable epsilon slider visibly changing how often the agent explores a random action instead of its current best guess.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: implement the Q-learning training loop with epsilon-greedy exploration.",
+      "content": "```python\nimport numpy as np\n\nq_table = np.zeros((n_states, n_actions))\nalpha, gamma, epsilon = 0.1, 0.95, 0.1\n\nfor episode in range(1000):\n    state = env.reset()\n    done = False\n    while not done:\n        if np.random.random() < epsilon:\n            action = np.random.randint(n_actions)\n        else:\n            action = np.argmax(q_table[state])\n\n        next_state, reward, done = env.step(action)\n        q_table[state, action] += alpha * (\n            reward + gamma * np.max(q_table[next_state]) - q_table[state, action]\n        )\n        state = next_state\n```",
+      "estimatedMinutes": 10
+    },
+    "independentCoding": {
+      "summary": "Train the agent and sanity-check its learned policy against intuition.",
+      "content": "Train the Q-learning agent above on the discretized battery MDP for enough episodes to see its policy stabilize, then print the learned best action for each discretized battery-charge level and check whether it matches basic intuition (e.g. charge when price is low).",
+      "estimatedMinutes": 15
+    },
+    "debugging": {
+      "summary": "Fix a training loop with epsilon=0 from episode one, preventing exploration.",
+      "content": "A training loop uses a fixed `epsilon=0` (pure greedy, no exploration) from the very first episode, causing the agent to lock onto whatever action it happened to try first without ever discovering better alternatives. Identify the missing exploration and fix it.",
+      "estimatedMinutes": 7
+    },
+    "reflection": {
+      "summary": "Zero exploration from the start likely converges to a mediocre policy.",
+      "content": "Why would an agent trained with `epsilon=0` from episode one likely converge to a mediocre policy, even after a huge number of training episodes?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain each term of the Q-learning update rule using your own trained table.",
+      "content": "Explain to someone what each term in the Q-learning update rule represents, using your own trained Q-table's values as a concrete example.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Train the full agent and sanity-check it against a simple hand-coded rule.",
+      "content": "Train a Q-learning agent on the full discretized battery MDP with your Mission 5 reward function, and produce a report showing the learned policy's behavior across a range of price and demand conditions, comparing it against a simple hand-coded rule as a sanity check.",
+      "estimatedMinutes": 18
+    },
+    "portfolioEvidence": {
+      "summary": "This is proof the MDP and reward actually produce sensible behavior when trained.",
+      "content": "This is the Digital Twin's first genuinely learned decision-making policy — proof the reward function and MDP definition from earlier lessons actually produce sensible behavior when an algorithm is applied to them.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-rl-value-based-methods-q-learning-battery",
+      "title": "Q-Learning Battery",
+      "description": "Sandboxed exercise implementing tabular Q-learning against the discretized battery MDP, requiring correct epsilon-greedy exploration and a fix for a planted zero-exploration bug.",
+      "starterCodePath": "labs/08-reinforcement-learning/q-learning-battery/starter.py",
+      "testCasesPath": "labs/08-reinforcement-learning/q-learning-battery/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "q-table-training-visualizer",
+      "title": "Q-Table Training Visualizer",
+      "description": "Live Q-table grid updating cell by cell across training episodes, with an adjustable epsilon exploration rate."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-rl-value-based-methods-1",
+      "front": "Why does a Q-value give you more direct decision-making information than a plain state value?",
+      "back": "A Q-value estimates the future reward of each specific action in a state, letting you directly compare actions and pick the best one, whereas a state value alone doesn't tell you which action produced it.",
+      "conceptNodeId": "rl.value-based-methods"
+    },
+    {
+      "id": "fc-rl-value-based-methods-2",
+      "front": "Why does an epsilon-greedy policy occasionally choose a random action instead of always the current best guess?",
+      "back": "To keep exploring actions that haven't been tried enough yet, which might turn out to be better than the agent's current, possibly premature, belief about what's best — without this, the agent risks getting stuck on an early suboptimal discovery.",
+      "conceptNodeId": "rl.value-based-methods"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly diagnoses and fixes the zero-exploration (epsilon=0) bug and explains why it matters",
+      "Trained Q-table's learned policy is sanity-checked against basic domain intuition, not just assumed correct",
+      "Correctly explains every term of the Q-learning update rule using the learner's own trained values"
+    ]
+  },
+  "references": [
+    {
+      "title": "Gymnasium — Basic Usage",
+      "url": "https://gymnasium.farama.org/introduction/basic_usage/",
+      "type": "officialDocs",
+      "versionOrDate": "Gymnasium, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Sutton & Barto — Reinforcement Learning: An Introduction",
+      "url": "http://incompleteideas.net/book/RLbook2020.pdf",
+      "type": "other",
+      "versionOrDate": "2nd Edition, 2020",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

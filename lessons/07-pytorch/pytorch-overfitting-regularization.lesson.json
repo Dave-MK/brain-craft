@@ -1,0 +1,137 @@
+{
+  "id": "pytorch-overfitting-regularization",
+  "title": "Overfitting: When Your Network Memorizes Instead of Learns",
+  "skillFolder": "07-pytorch",
+  "missionId": "M4",
+  "concept": "Overfitting and Regularization (dropout, weight decay, early stopping)",
+  "knowledgeGraphNodeId": "pytorch.overfitting-regularization",
+  "difficulty": "foundational",
+  "dependencies": ["pytorch.training-loop"],
+  "learningObjectives": [
+    "Plot and interpret training loss vs. validation loss curves to detect overfitting",
+    "Explain why a network with enough capacity can memorize training data rather than learn a generalizable pattern",
+    "Apply dropout and weight decay as regularization techniques and explain what each actually does",
+    "Implement early stopping based on validation loss rather than a fixed epoch count"
+  ],
+  "whyItMatters": "Your training loop from the last lesson only watched training loss decrease — it never checked whether the network was actually learning a generalizable pattern or just memorizing the specific training examples it saw, which is exactly the failure mode that would make the Digital Twin's forecaster look great in development and fail in production.",
+  "capstoneContribution": "The Digital Twin's overfitting-detection discipline — the validation methodology that keeps the neural forecaster from being deployed based on a training loss number that was quietly lying about real-world performance.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Training loss keeps dropping, but nothing has checked whether that's real learning.",
+      "content": "Your neural forecaster's training loss keeps dropping every epoch, looking better and better — but you've never checked whether it's actually improving at forecasting demand it hasn't seen, or just getting better at memorizing the specific readings in your training set.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "A network can memorize its training set while learning nothing generalizable.",
+      "content": "A sufficiently large network can, in principle, memorize its entire training set well enough to achieve near-zero training loss while learning nothing generalizable — exactly the gap between 'looks great in the notebook' and 'fails immediately in production' that the baseline-and-leakage lesson in Mission 3 warned about in a different form.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Validation loss reveals overfitting; dropout, weight decay, and early stopping counteract it.",
+      "content": "Tracking validation loss (computed on held-out data never used to update weights) alongside training loss reveals overfitting: if training loss keeps falling while validation loss rises or plateaus, the network is memorizing rather than generalizing. `nn.Dropout(p=0.2)` randomly zeroes a fraction of neurons during training, forcing the network to not rely too heavily on any single one — a direct regularization technique. Weight decay (an optimizer parameter, e.g. `optim.Adam(params, weight_decay=1e-5)`) penalizes large weights, discouraging the network from fitting noise with extreme parameter values. Early stopping — halting training once validation loss stops improving for several consecutive epochs — prevents training past the point of genuine improvement into pure memorization.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "Training loss keeps falling while validation loss turns upward, marking where overfitting begins.",
+      "content": "Two curves over training epochs show training loss steadily decreasing, validation loss decreasing then turning upward, with the 'overfitting begins here' point marked where the two curves diverge.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Adjust dropout and weight decay and watch the loss curves converge or diverge.",
+      "content": "Adjust dropout rate and weight decay on a live training run and watch the training/validation loss curves converge or diverge accordingly, with an early-stopping marker appearing at the optimal epoch.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: train with dropout, weight decay, and early stopping.",
+      "content": "```python\nmodel = DemandForecaster(n_features=3)  # with nn.Dropout(0.2) added between layers\noptimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)\n\nbest_val_loss = float(\"inf\")\npatience_counter = 0\n\nfor epoch in range(200):\n    model.train()\n    train_loss = train_one_epoch(model, X_train_tensor, y_train_tensor, loss_fn, optimizer)\n\n    model.eval()\n    val_loss = loss_fn(model(X_val_tensor), y_val_tensor).item()\n\n    if val_loss < best_val_loss:\n        best_val_loss = val_loss\n        patience_counter = 0\n    else:\n        patience_counter += 1\n        if patience_counter >= 10:\n            print(f\"Early stopping at epoch {epoch}\")\n            break\n```",
+      "estimatedMinutes": 10
+    },
+    "independentCoding": {
+      "summary": "Compare loss curves with and without dropout and find where overfitting begins.",
+      "content": "Train the overload classifier from earlier lessons with and without dropout, plot both training/validation loss curve pairs, and identify at which epoch (if any) overfitting begins in the no-dropout version.",
+      "estimatedMinutes": 14
+    },
+    "debugging": {
+      "summary": "Fix validation loss corrupted by a missing model.eval() call.",
+      "content": "Evaluation code forgets to call `model.eval()` before computing validation loss, leaving dropout active during evaluation and producing a noisy, misleadingly worse validation loss. Identify and fix the missing mode switch.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Forgetting model.eval() corrupts the validation number, not just wastes compute.",
+      "content": "Why does forgetting `model.eval()` before validation specifically corrupt the validation loss number, rather than just being a harmless inefficiency?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why lower training loss isn't automatically good news.",
+      "content": "Explain to someone why a lower training loss is not automatically good news, using your own training/validation loss curve divergence as the concrete evidence.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Retrain the forecaster with regularization and produce a proof-of-no-overfitting plot.",
+      "content": "Retrain the Digital Twin's neural demand forecaster with dropout, weight decay, and early stopping, and produce a training/validation loss curve plot proving overfitting was avoided or caught in time.",
+      "estimatedMinutes": 16
+    },
+    "portfolioEvidence": {
+      "summary": "This regularized run is the version worth comparing against the Mission 3 baseline.",
+      "content": "This regularized, early-stopped training run is the version of the neural forecaster actually worth comparing against Mission 3's scikit-learn baseline — an unregularized, overfit model wouldn't be a fair or honest comparison.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-pytorch-overfitting-regularization-loss-curves",
+      "title": "Loss Curves",
+      "description": "Sandboxed exercise producing training/validation loss curves with and without regularization, requiring detection of the overfitting onset point and a fix for a planted missing model.eval() bug.",
+      "starterCodePath": "labs/07-pytorch/loss-curves/starter.py",
+      "testCasesPath": "labs/07-pytorch/loss-curves/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "train-val-loss-divergence-visualizer",
+      "title": "Train/Val Loss Divergence Visualizer",
+      "description": "Live training/validation loss curves with adjustable dropout and weight decay, marking the point where overfitting begins."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-pytorch-overfitting-regularization-1",
+      "front": "What does it mean when training loss keeps falling but validation loss starts rising?",
+      "back": "The network is overfitting — memorizing specifics of the training data rather than learning a pattern that generalizes to unseen data.",
+      "conceptNodeId": "pytorch.overfitting-regularization"
+    },
+    {
+      "id": "fc-pytorch-overfitting-regularization-2",
+      "front": "Why must you call model.eval() before computing validation loss?",
+      "back": "It disables training-only behaviors like dropout, so validation loss reflects the network's actual, deterministic predictive performance rather than being corrupted by randomly dropped neurons.",
+      "conceptNodeId": "pytorch.overfitting-regularization"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly identifies the epoch where overfitting begins from a train/val loss curve pair",
+      "Correctly diagnoses and fixes a missing model.eval() call before validation",
+      "Final regularized training run demonstrates measurably reduced overfitting compared to the unregularized baseline"
+    ]
+  },
+  "references": [
+    {
+      "title": "PyTorch Documentation — torch.nn.Dropout",
+      "url": "https://pytorch.org/docs/stable/generated/torch.nn.Dropout.html",
+      "type": "officialDocs",
+      "versionOrDate": "PyTorch 2.3",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "PyTorch Documentation — torch.optim.Adam",
+      "url": "https://pytorch.org/docs/stable/generated/torch.optim.Adam.html",
+      "type": "officialDocs",
+      "versionOrDate": "PyTorch 2.3",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

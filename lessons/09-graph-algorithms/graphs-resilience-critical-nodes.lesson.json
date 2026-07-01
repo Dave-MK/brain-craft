@@ -1,0 +1,137 @@
+{
+  "id": "graphs-resilience-critical-nodes",
+  "title": "Resilience: What Happens If Two Substations Fail?",
+  "skillFolder": "09-graph-algorithms",
+  "missionId": "M5",
+  "concept": "Network Resilience and Critical Node/Edge Identification",
+  "knowledgeGraphNodeId": "graphs.resilience-critical-nodes",
+  "difficulty": "foundational",
+  "dependencies": ["graphs.shortest-path"],
+  "learningObjectives": [
+    "Explain what an articulation point (cut vertex) and a bridge (cut edge) represent in a network",
+    "Identify articulation points and bridges in a grid topology and explain their operational significance",
+    "Simulate the removal of a node or edge and assess the resulting impact on connectivity and routing",
+    "Rank substations or lines by criticality using a resilience metric, not just intuition"
+  ],
+  "whyItMatters": "This directly answers one of the founding example questions of the entire mission: 'how do I avoid overloading the grid if two substations fail?' You cannot answer that question without first knowing precisely which nodes and edges, if removed, would actually damage the network's connectivity or capacity — and that's a graph-structural question, not something forecasting or RL alone can tell you.",
+  "capstoneContribution": "The Digital Twin's contingency-analysis module — directly implementing the founding 'what if two substations fail' question from the mission's original scoping conversation, using precise graph-structural criteria rather than guesswork.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "No systematic way exists to answer which substation failures would disconnect the network.",
+      "content": "You know your grid's normal minimum-loss routes and capacity limits, but you have no systematic way to answer 'which substations, if they went offline simultaneously, would actually disconnect part of the network or force routing through an overloaded line?'",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is one of the very first concrete questions the whole mission was scoped around.",
+      "content": "This is quite literally one of the very first concrete example questions the entire AI Energy OS mission was scoped around. Answering it rigorously — not with a guess, but with a graph-structural calculation — is a direct, checkable deliverable this curriculum has been building toward since the very first conversation.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Articulation points and bridges identify single-node/edge criticality; contingency simulation extends this to multiple failures.",
+      "content": "An articulation point (or cut vertex) is a node whose removal disconnects the graph into multiple components — in grid terms, a substation whose failure isolates part of the network entirely, not just degrades its routing. A bridge (or cut edge) is the equivalent for a single edge. Both can be found efficiently with a modified DFS that tracks discovery times and the earliest-reachable ancestor from each node (a 'low-link' value), flagging nodes/edges where no back-edge allows bypassing them. Simulating an N-substation contingency (the mission's actual '2 substations fail' scenario) means removing multiple nodes at once and recomputing connectivity and max-flow for what remains — a natural combination of everything learned in this skill folder so far, not a new algorithm on its own. A simple resilience ranking can combine whether a node is an articulation point, how much max-flow capacity would be lost if it failed, and how many other nodes would become unreachable.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "Removing a highlighted articulation point splits the graph; removing a non-critical node doesn't.",
+      "content": "A grid graph shows articulation points and bridges highlighted, then an animation of removing one highlighted node shows the graph visibly splitting into disconnected pieces, contrasted with removing a non-critical node where the graph stays fully connected.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Click a node to simulate its removal and see the resulting impact live.",
+      "content": "Click any node in a live grid graph to simulate its removal and immediately see whether the graph disconnects, which substations become unreachable, and how the max-flow to surviving nodes changes as a result.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: find articulation points and bridges in a grid graph.",
+      "content": "```python\nimport networkx as nx\n\nG = nx.Graph()\nG.add_edges_from([\n    (\"main-feed\", \"substation-1\"), (\"substation-1\", \"substation-2\"),\n    (\"substation-2\", \"substation-3\"), (\"substation-1\", \"substation-4\"),\n])\n\narticulation_points = list(nx.articulation_points(G))\nbridges = list(nx.bridges(G))\nprint(articulation_points, bridges)\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Simulate a specific two-substation failure and check the network's response.",
+      "content": "Simulate the simultaneous failure of two specific substations in your grid topology (not necessarily articulation points individually) and report whether the combination disconnects any part of the network or forces routing through an overloaded line.",
+      "estimatedMinutes": 14
+    },
+    "debugging": {
+      "summary": "Extend a single-node-only resilience analysis to the actual two-substation scenario.",
+      "content": "A resilience analysis only checks single-node articulation points and concludes the grid is 'resilient' because none exist individually, missing a pair of non-critical-alone substations whose simultaneous failure does disconnect the network. Identify the gap and extend the analysis to the actual two-substation scenario the mission asked about.",
+      "estimatedMinutes": 8
+    },
+    "reflection": {
+      "summary": "Single-node articulation points don't answer the mission's actual question.",
+      "content": "Why isn't checking single-node articulation points sufficient to answer the mission's actual 'what if two substations fail' question?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain the difference between an articulation point and a damaging non-critical pair.",
+      "content": "Explain to someone the difference between an articulation point and a pair of non-critical nodes whose simultaneous failure is still damaging, using your own simulated two-substation contingency as the example.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Produce a full contingency-analysis report with a resilience ranking.",
+      "content": "Produce a full contingency-analysis report for your grid topology: all articulation points and bridges, plus the results of simulating at least 3 different two-substation simultaneous-failure scenarios, ranking substations by an overall resilience/criticality score.",
+      "estimatedMinutes": 18
+    },
+    "portfolioEvidence": {
+      "summary": "This is a direct, working answer to a founding question of the mission.",
+      "content": "This is a direct, working answer to one of the founding questions of the entire AI Energy OS mission, computed rigorously rather than guessed at.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-graphs-resilience-critical-nodes-contingency-analysis",
+      "title": "Contingency Analysis",
+      "description": "Sandboxed exercise computing articulation points, bridges, and multi-node contingency simulations on a grid topology, requiring extension beyond single-node analysis to a two-substation scenario.",
+      "starterCodePath": "labs/09-graph-algorithms/contingency-analysis/starter.py",
+      "testCasesPath": "labs/09-graph-algorithms/contingency-analysis/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "node-removal-resilience-visualizer",
+      "title": "Node Removal Resilience Visualizer",
+      "description": "Click-to-remove interactive grid graph showing connectivity and max-flow impact of single or multiple node failures."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-graphs-resilience-critical-nodes-1",
+      "front": "What is an articulation point in a grid topology graph?",
+      "back": "A node whose removal disconnects the graph into multiple components — a substation whose failure would isolate part of the network entirely, not just degrade routing.",
+      "conceptNodeId": "graphs.resilience-critical-nodes"
+    },
+    {
+      "id": "fc-graphs-resilience-critical-nodes-2",
+      "front": "Why can two substations, neither of which is individually an articulation point, still cause a disconnection if they fail simultaneously?",
+      "back": "Articulation points only capture single-node failures; two non-critical-alone nodes can together cover all alternate paths around a region, so their combined removal disconnects the network even though neither one does so alone.",
+      "conceptNodeId": "graphs.resilience-critical-nodes"
+    }
+  ],
+  "assessment": {
+    "primaryType": "research",
+    "rubric": [
+      "Correctly computes articulation points and bridges for the grid topology",
+      "Simulates genuine multi-node contingency scenarios, not just single-node articulation-point checks",
+      "Resilience ranking is based on a stated, defensible metric, not intuition alone"
+    ]
+  },
+  "references": [
+    {
+      "title": "NetworkX — Components",
+      "url": "https://networkx.org/documentation/stable/reference/algorithms/components.html",
+      "type": "officialDocs",
+      "versionOrDate": "NetworkX 3.3",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Biconnected component",
+      "url": "https://en.wikipedia.org/wiki/Biconnected_component",
+      "type": "other",
+      "versionOrDate": "Wikipedia, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

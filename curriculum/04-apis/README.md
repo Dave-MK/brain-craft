@@ -23,4 +23,4 @@ Weather and electricity price data ingestion — the AI Energy OS's forecasting 
 
 ## Status
 
-Skeleton only.
+Complete. All 6 lessons authored and schema-validated in [`lessons/04-apis/`](../../lessons/04-apis/): HTTP Fundamentals → Authentication → Consuming REST/JSON → {Rate Limits & Retries, Pagination} → Resilient Ingestion Client (boss battle).

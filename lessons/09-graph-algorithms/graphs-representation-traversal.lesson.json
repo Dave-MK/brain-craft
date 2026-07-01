@@ -1,0 +1,137 @@
+{
+  "id": "graphs-representation-traversal",
+  "title": "Representing the Grid: Graphs, Adjacency, and Traversal",
+  "skillFolder": "09-graph-algorithms",
+  "missionId": "M5",
+  "concept": "Graph Representations and Traversal (BFS/DFS)",
+  "knowledgeGraphNodeId": "graphs.representation-traversal",
+  "difficulty": "introductory",
+  "dependencies": ["python.dictionaries"],
+  "learningObjectives": [
+    "Represent a network as a graph using an adjacency list",
+    "Explain the difference between a directed and undirected graph, and which fits an electricity network",
+    "Implement breadth-first search (BFS) and depth-first search (DFS) traversals",
+    "Use traversal to answer a real connectivity question: can power reach every substation from the main feed"
+  ],
+  "whyItMatters": "Every reading and forecast in this curriculum so far has treated the grid as a flat collection of independent substations. It isn't — substations are physically connected by transmission lines, and any question about routing, loss, or resilience requires modeling that actual network structure, not a list of unrelated points.",
+  "capstoneContribution": "The Digital Twin's grid topology model — the graph representation every routing, flow, and resilience calculation in this skill folder will be computed against.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Nothing captures which substations are physically connected to which others.",
+      "content": "Your Digital Twin currently has a table of substations and a table of readings, but nothing capturing which substations are actually physically connected to which others by a transmission line — a question no amount of SQL joins or pandas merges can answer, because that information is structural, not tabular.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Routing, loss, and resilience questions only make sense once the network is a graph.",
+      "content": "Grid routing, loss minimization, and contingency planning are all fundamentally graph problems: nodes are substations, edges are transmission lines, and the questions you'll eventually answer ('what's the cheapest path,' 'what fails if this line goes down') only make sense once the network is represented as a graph.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Adjacency lists represent sparse networks; BFS explores level by level, DFS dives along branches.",
+      "content": "A graph is a set of nodes (substations) connected by edges (transmission lines). An adjacency list — a dictionary mapping each node to a list of its directly connected neighbors — is usually the most practical representation for a sparse network like a power grid, where most substations connect to only a handful of others. Electricity can typically flow in either direction along a transmission line, so a grid is usually modeled as an undirected graph, unlike, say, a one-way dependency graph. Breadth-first search (BFS) explores a graph level by level using a queue, useful for finding the shortest path in terms of number of hops; depth-first search (DFS) explores as far as possible along one branch before backtracking, useful for exhaustively checking connectivity or finding cycles.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "BFS's expanding rings and DFS's branch-diving pattern animated on the same graph.",
+      "content": "A small grid topology appears as a node-and-edge diagram, with BFS's expanding-ring exploration pattern animated alongside DFS's branch-diving pattern on the exact same graph, visually contrasting the two traversal orders.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Step through BFS and DFS from a chosen starting node.",
+      "content": "Click a starting substation node and step through BFS and DFS traversals one step at a time on a live grid diagram, watching visited nodes highlight in the order each algorithm actually visits them.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: represent a grid as an adjacency list and traverse it with BFS.",
+      "content": "```python\ngrid = {\n    \"substation-1\": [\"substation-2\", \"substation-3\"],\n    \"substation-2\": [\"substation-1\", \"substation-4\"],\n    \"substation-3\": [\"substation-1\"],\n    \"substation-4\": [\"substation-2\"],\n}\n\ndef bfs(grid, start):\n    visited, queue = {start}, [start]\n    order = []\n    while queue:\n        node = queue.pop(0)\n        order.append(node)\n        for neighbor in grid[node]:\n            if neighbor not in visited:\n                visited.add(neighbor)\n                queue.append(neighbor)\n    return order\n\nprint(bfs(grid, \"substation-1\"))\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Implement DFS and use it to check whether the full grid is connected.",
+      "content": "Implement DFS using either recursion or an explicit stack, then use it to check whether the full grid is connected (every substation reachable from a given starting node) or whether some substation is isolated.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a visited check performed after popping instead of before enqueueing.",
+      "content": "A BFS checks visited status after popping from the queue rather than before adding to it, causing the same node to be added to the queue multiple times and processed redundantly. Identify and fix the visited-check ordering.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "A misordered visited check causes redundant work, and sometimes worse.",
+      "content": "Why does checking 'visited' at the wrong point in BFS cause redundant work rather than an outright incorrect traversal order in most cases — and when would it actually produce a wrong answer?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain when to reach for BFS versus DFS with a concrete example each.",
+      "content": "Explain to someone when you'd reach for BFS versus DFS for a grid-connectivity question, using a concrete example of a question each is naturally suited to.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Build a real grid graph from your SQL sources table and verify connectivity.",
+      "content": "Build a graph representation of a small realistic grid topology (at least 8 substations) from your SQL sources table, and use BFS to verify every substation is reachable from the main feed, reporting any that aren't.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This is the actual topology model every subsequent lesson will run against.",
+      "content": "This graph representation is the actual topology model every subsequent lesson's routing and resilience calculations will run against.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-graphs-representation-traversal-grid-connectivity",
+      "title": "Grid Connectivity",
+      "description": "Sandboxed exercise building an adjacency-list graph from a provided substation dataset and verifying connectivity via BFS/DFS, with a planted redundant-visit bug to fix.",
+      "starterCodePath": "labs/09-graph-algorithms/grid-connectivity/starter.py",
+      "testCasesPath": "labs/09-graph-algorithms/grid-connectivity/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "bfs-dfs-traversal-visualizer",
+      "title": "BFS/DFS Traversal Visualizer",
+      "description": "Step-through animation contrasting BFS's expanding-ring order against DFS's branch-diving order on the same grid graph."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-graphs-representation-traversal-1",
+      "front": "Why is an adjacency list usually preferred over an adjacency matrix for a power grid?",
+      "back": "A power grid is sparse — most substations connect to only a few others — so an adjacency list uses far less memory than an adjacency matrix, which stores a value for every possible pair of nodes regardless of whether they're connected.",
+      "conceptNodeId": "graphs.representation-traversal"
+    },
+    {
+      "id": "fc-graphs-representation-traversal-2",
+      "front": "Which traversal, BFS or DFS, is naturally suited to finding the fewest-hops path between two nodes?",
+      "back": "BFS — it explores level by level, so the first time it reaches a target node, that's guaranteed to be via the fewest possible edges.",
+      "conceptNodeId": "graphs.representation-traversal"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly diagnoses and fixes the misordered visited-check bug in BFS",
+      "DFS implementation correctly detects disconnected/isolated substations in a real topology",
+      "Grid graph built from the SQL sources table accurately reflects the actual intended topology"
+    ]
+  },
+  "references": [
+    {
+      "title": "Breadth-first search",
+      "url": "https://en.wikipedia.org/wiki/Breadth-first_search",
+      "type": "other",
+      "versionOrDate": "Wikipedia, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Depth-first search",
+      "url": "https://en.wikipedia.org/wiki/Depth-first_search",
+      "type": "other",
+      "versionOrDate": "Wikipedia, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

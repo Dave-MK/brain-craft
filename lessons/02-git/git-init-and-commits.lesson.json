@@ -1,0 +1,137 @@
+{
+  "id": "git-init-and-commits",
+  "title": "Init & Commits: Giving Your Code a History",
+  "skillFolder": "02-git",
+  "missionId": "M1",
+  "concept": "Git Init, Staging, and Commits",
+  "knowledgeGraphNodeId": "git.init-and-commits",
+  "difficulty": "introductory",
+  "dependencies": ["python.oop-basics"],
+  "learningObjectives": [
+    "Initialize a Git repository and explain what .git/ actually stores",
+    "Stage specific files/changes with git add before committing",
+    "Write a commit message that explains why a change was made, not just what changed",
+    "Use git log and git diff to inspect history instead of guessing what changed"
+  ],
+  "whyItMatters": "The digital_twin/ package you just built across the Python lessons has no history — if you break it tomorrow, you have no way back to today's working version. Every AI Energy OS module from here on is real, evolving software; software without version history is one accidental edit away from being unrecoverable.",
+  "capstoneContribution": "The first commit of the Digital Twin's actual version history — the point where 'a folder of Python files' becomes 'a project with a recoverable past.'",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Working code with no recorded history has no way back if you break it.",
+      "content": "Your `digital_twin/` package works right now. If you make a risky change tomorrow and break it, you have no way to get back to today's exact working version.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Unrecorded work is one accidental edit away from being lost.",
+      "content": "This is the single most common reason engineers lose work: an edit that seemed safe, followed by no way back. Git's entire value proposition is that every meaningful state of your code is recoverable, as long as you actually commit it.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "init creates history tracking; add stages deliberate changes; commit records a permanent snapshot.",
+      "content": "`git init` creates a `.git/` folder that tracks history for the current directory. `git add <file>` stages specific changes for the next commit — staging lets you commit a deliberate, reviewed set of changes rather than 'everything that happens to be different right now.' `git commit -m \"message\"` records a permanent snapshot of the staged changes. A good commit message explains *why*, not just *what*: 'fix classify_demand off-by-one at exactly 5000kW' beats 'fix bug.'",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "Working directory, staging area, and history are three distinct zones files move through.",
+      "content": "The working directory, the staging area, and the commit history are shown as three distinct zones, with files moving left-to-right as `git add` then `git commit` are run — clarifying that editing a file doesn't automatically stage or commit it.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Edit, stage, and commit a file and watch it move through all three zones.",
+      "content": "Edit a file in a simulated working directory, watch it appear as 'modified, not staged,' run a staging command and watch it move to 'staged,' then commit and watch it appear in a growing commit history timeline.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: initialize a repo and make your first real commit.",
+      "content": "```bash\ngit init\ngit add digital_twin/\ngit commit -m \"Add initial digital_twin package: ingestion, classification, reporting\"\n\ngit log --oneline\ngit diff HEAD~1 HEAD\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Make and commit a real, explained change to your own package.",
+      "content": "Make a small, real change to one file in your `digital_twin/` package (e.g. adjust a threshold constant), stage only that file, and commit it with a message that explains why the threshold changed.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Diagnose a commit that reports 'nothing to commit' because staging was skipped.",
+      "content": "A learner ran `git commit -m \"update thresholds\"` and got `nothing to commit, working tree clean` even though they'd clearly edited a file. Identify the missing step and fix the workflow.",
+      "estimatedMinutes": 5
+    },
+    "reflection": {
+      "summary": "Staging is a deliberate checkpoint, not busywork.",
+      "content": "Why does Git require an explicit staging step instead of just committing whatever is different in the working directory?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain modified vs. staged vs. committed using your own repository.",
+      "content": "Explain to someone the difference between 'modified,' 'staged,' and 'committed' using your own `digital_twin/` package as the example.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Turn the accumulated 01-python project into a real Git repository.",
+      "content": "Turn your entire accumulated 01-python mini project into a real Git repository: `git init`, an initial commit of everything as it stands today, and one follow-up commit making and recording a real improvement.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This is the first commit in the Digital Twin's permanent history.",
+      "content": "This is the first commit in the Digital Twin's permanent, recoverable history — everything from here on has a paper trail.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-git-init-commits-first-history",
+      "title": "First History",
+      "description": "Sandboxed exercise requiring the learner to initialize a repository, stage specific files deliberately, and produce a commit history with meaningful, why-focused messages.",
+      "starterCodePath": "labs/02-git/first-history/starter/",
+      "testCasesPath": "labs/02-git/first-history/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "staging-area-visualizer",
+      "title": "Staging Area Visualizer",
+      "description": "Shows files moving between working directory, staging area, and commit history as add/commit commands run."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-git-init-commits-1",
+      "front": "What does git add actually do, if it doesn't create a commit?",
+      "back": "It stages a specific file's current changes for the next commit, letting you build a deliberate, reviewed set of changes instead of committing everything different in the working directory at once.",
+      "conceptNodeId": "git.init-and-commits"
+    },
+    {
+      "id": "fc-git-init-commits-2",
+      "front": "What makes 'fix classify_demand off-by-one at exactly 5000kW' a better commit message than 'fix bug'?",
+      "back": "It explains what specifically was wrong and where, so anyone reading the history later (including future you) understands why the change happened without having to re-derive it from the diff alone.",
+      "conceptNodeId": "git.init-and-commits"
+    }
+  ],
+  "assessment": {
+    "primaryType": "codeReview",
+    "rubric": [
+      "Commit messages explain why a change was made, not just restate what files changed",
+      "Only deliberately intended changes are staged and committed, not incidental unrelated edits",
+      "Learner can correctly use git log and git diff to answer 'what changed and why' about their own history"
+    ]
+  },
+  "references": [
+    {
+      "title": "Git Reference — git-commit",
+      "url": "https://git-scm.com/docs/git-commit",
+      "type": "officialDocs",
+      "versionOrDate": "Git 2.44",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Pro Git — Getting Started: Git Basics",
+      "url": "https://git-scm.com/book/en/v2/Getting-Started-Git-Basics",
+      "type": "officialDocs",
+      "versionOrDate": "Pro Git 2nd Edition",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

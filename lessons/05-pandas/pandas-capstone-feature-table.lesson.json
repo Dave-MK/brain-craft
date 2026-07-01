@@ -1,0 +1,137 @@
+{
+  "id": "pandas-capstone-feature-table",
+  "title": "The Feature Table: Mission 2's Final Deliverable",
+  "skillFolder": "05-pandas",
+  "missionId": "M2",
+  "concept": "Building the Final Feature Table (capstone synthesis)",
+  "knowledgeGraphNodeId": "pandas.capstone-feature-table",
+  "difficulty": "intermediate",
+  "dependencies": ["pandas.data-cleaning"],
+  "learningObjectives": [
+    "Synthesize ingestion (Python), storage (SQL), live data (APIs), and analysis (pandas) into one reproducible pipeline",
+    "Engineer at least one new feature, not just a raw column, that a forecasting model could plausibly benefit from",
+    "Document a feature table's provenance well enough that someone else could trust and reproduce it",
+    "Evaluate whether the finished feature table is actually ready for Mission 3, or has a gap that needs fixing first"
+  ],
+  "whyItMatters": "This is the actual handoff point of Mission 2 to Mission 3. Every capability built across four skill folders — Python ingestion, SQL storage, API fetching, pandas analysis — exists to produce exactly one thing: a clean, documented, feature-rich table that a forecasting model can be trained on starting in the very next mission.",
+  "capstoneContribution": "The Digital Twin's Mission 2 deliverable: a single, reproducible, documented feature table combining demand, weather, and price data, engineered and cleaned, ready to train Mission 3's first forecasting model.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Four skill folders produced pieces, but nothing ties them into one reproducible pipeline.",
+      "content": "Every skill folder in Mission 2 produced a piece — ingestion scripts, SQL tables, an API client, cleaning logic — but nothing yet ties all four together into one reproducible pipeline that ends in a table a model could actually train on.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is where four skill folders' work either comes together, or reveals a gap.",
+      "content": "This is the point where four skill folders' worth of work either genuinely comes together into something usable, or reveals a gap you didn't know was there. Either outcome is valuable, but only if you actually try to assemble the whole thing rather than assuming the pieces fit.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Engineer features deliberately and document provenance so the table is trustworthy and reproducible.",
+      "content": "A feature is a column engineered specifically to help a model learn a pattern, distinct from a raw measurement — e.g. `hour_of_day` extracted from the timestamp (demand has a strong daily pattern), or `temp_c_lag_1h` (last hour's temperature, since weather has momentum a model can exploit). Documenting provenance means recording, for the finished table, exactly which raw sources fed into it, what cleaning decisions were applied and why, and when it was last regenerated — the same discipline the Living Curriculum system applies to lesson content, now applied to your own data. A feature table is 'ready' when it's reproducible from raw sources on demand, documented enough for someone else to trust, and free of the missingness/duplication/outlier problems from the previous lesson.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "The full Mission 2 pipeline flows end to end into a documented final table.",
+      "content": "The full Mission 2 pipeline is shown end to end: Python ingestion script → SQL storage → API client → pandas merge/clean → engineered features → final feature table, with a documentation panel attached to the final table listing its sources and decisions.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Walk through a diagram of the assembled pipeline, verifying nothing is missing.",
+      "content": "Walk through a live diagram of your own assembled pipeline, clicking each stage to see what it actually produced, verifying nothing is silently missing before the final table is declared ready.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: engineer features and persist the final table.",
+      "content": "```python\ncombined[\"hour_of_day\"] = combined.index.hour\ncombined[\"temp_c_lag_1h\"] = combined[\"temp_c\"].shift(1)\ncombined[\"demand_kw_rolling_3h\"] = combined[\"demand_kw\"].rolling(window=3).mean()\n\ncombined.to_csv(\"feature_table_v1.csv\")\nprint(combined.describe())\n```",
+      "estimatedMinutes": 10
+    },
+    "independentCoding": {
+      "summary": "Engineer a new feature with a stated hypothesis for why it might help.",
+      "content": "Engineer one additional feature of your own choosing (e.g. `is_weekend`, `price_change_1h`) with a specific, stated hypothesis for why it might help a forecasting model, and add it to the feature table.",
+      "estimatedMinutes": 15
+    },
+    "debugging": {
+      "summary": "Trace a row-count discrepancy back to an unnoticed intermediate step.",
+      "content": "The final feature table's row count doesn't match expectations because an intermediate resample step silently changed the row count and nobody checked. Trace the discrepancy back to its source stage and fix it.",
+      "estimatedMinutes": 8
+    },
+    "reflection": {
+      "summary": "Could a stranger reproduce and trust this table with zero added context?",
+      "content": "If you handed this feature table to someone else with zero context, could they figure out where every column came from and why it's shaped the way it is? What's missing if not?",
+      "estimatedMinutes": 5
+    },
+    "teachBack": {
+      "summary": "Synthesize all of Mission 2: walk through the full pipeline end to end.",
+      "content": "As the synthesis of Mission 2 entirely: walk someone through the full pipeline from raw ingestion to final feature table, explaining what each of the four skill folders contributed and why the order mattered.",
+      "estimatedMinutes": 6
+    },
+    "miniProject": {
+      "summary": "Assemble and document the final Mission 2 feature table end to end.",
+      "content": "Assemble and document the Digital Twin's final Mission 2 feature table end to end: real ingestion, real (or realistically simulated) API data, real SQL storage, real pandas cleaning and feature engineering — with a written data-provenance summary a stranger could follow.",
+      "estimatedMinutes": 25
+    },
+    "portfolioEvidence": {
+      "summary": "This is the tangible proof Mission 2 is finished, not a series of disconnected exercises.",
+      "content": "This feature table is the literal deliverable Mission 3's first forecasting lesson will load and train against — the tangible proof Mission 2 is actually finished, not just a series of disconnected exercises.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": true,
+  "labs": [
+    {
+      "id": "lab-pandas-capstone-feature-table-full-pipeline",
+      "title": "Full Pipeline",
+      "description": "Sandboxed exercise requiring assembly of the complete Mission 2 pipeline end to end — ingestion, storage, API fetch, merge, clean, feature-engineer — into one documented, reproducible feature table.",
+      "starterCodePath": "labs/05-pandas/full-pipeline/starter.py",
+      "testCasesPath": "labs/05-pandas/full-pipeline/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "mission-2-pipeline-visualizer",
+      "title": "Mission 2 Pipeline Visualizer",
+      "description": "Clickable end-to-end diagram of the assembled Mission 2 pipeline, showing what each stage actually produced."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-pandas-capstone-feature-table-1",
+      "front": "What makes a column a 'feature' rather than just a raw measurement?",
+      "back": "A feature is deliberately engineered to help a model learn a specific pattern — e.g. hour_of_day to capture a daily cycle, or a lagged value to capture momentum — rather than being a value collected directly from a sensor or API.",
+      "conceptNodeId": "pandas.capstone-feature-table"
+    },
+    {
+      "id": "fc-pandas-capstone-feature-table-2",
+      "front": "What does it mean for a feature table to have documented provenance?",
+      "back": "Someone else could tell exactly which raw sources fed into it, what cleaning and merging decisions were applied and why, and when it was last regenerated — without needing to ask the original author.",
+      "conceptNodeId": "pandas.capstone-feature-table"
+    }
+  ],
+  "assessment": {
+    "primaryType": "research",
+    "rubric": [
+      "Feature table is fully reproducible from raw sources, with no manual undocumented steps",
+      "At least one engineered feature includes a specific, falsifiable hypothesis for why it should help a forecasting model",
+      "Provenance documentation is complete enough that a stranger could trust and reproduce the table without asking the author questions"
+    ]
+  },
+  "references": [
+    {
+      "title": "pandas User Guide — Descriptive statistics",
+      "url": "https://pandas.pydata.org/docs/user_guide/basics.html#descriptive-statistics",
+      "type": "officialDocs",
+      "versionOrDate": "pandas 2.2",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "scikit-learn — Preprocessing data",
+      "url": "https://scikit-learn.org/stable/modules/preprocessing.html",
+      "type": "officialDocs",
+      "versionOrDate": "scikit-learn 1.5",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

@@ -1,0 +1,137 @@
+{
+  "id": "rl-policy-gradient-methods",
+  "title": "Policy Gradient Methods: Learning to Act Directly",
+  "skillFolder": "08-reinforcement-learning",
+  "missionId": "M5",
+  "concept": "Policy Gradient RL",
+  "knowledgeGraphNodeId": "rl.policy-gradient-methods",
+  "difficulty": "foundational",
+  "dependencies": ["rl.reward-design"],
+  "learningObjectives": [
+    "Explain the difference between learning a value function and learning a policy directly",
+    "Explain why policy gradient methods matter for continuous or large action spaces where Q-learning's table becomes impractical",
+    "Describe, at a conceptual level, how a policy gradient update increases the probability of actions that led to higher reward",
+    "Recognize the higher variance / sample-inefficiency tradeoff of policy gradient methods compared to value-based methods"
+  ],
+  "whyItMatters": "Real battery scheduling isn't just charge/discharge/hold — a real system might choose a continuous charge rate (e.g. 0-100% of maximum), and Q-learning's table-based approach doesn't scale to a continuous or very large action space. Policy gradient methods learn a policy directly, sidestepping that limitation.",
+  "capstoneContribution": "An alternative battery-scheduling policy learned via a fundamentally different mechanism than Q-learning — the comparison point for deciding which family of RL algorithm actually suits this specific problem better.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A Q-table doesn't scale to a continuous charge-rate action space.",
+      "content": "Your Q-learning agent from the last lesson only works because you discretized the battery's charge/discharge action into a few fixed levels. A real system could charge at any rate from 0-100%, and a Q-table with a row for every possible fine-grained action doesn't scale.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Policy gradient methods handle exactly the continuous-action case Q-learning struggles with.",
+      "content": "This is exactly the kind of limitation that pushes real RL practitioners toward policy gradient methods — not because they're 'more advanced' for its own sake, but because they handle exactly the continuous-action case Q-learning structurally struggles with.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "A policy network is trained directly, increasing the probability of actions that led to higher-than-expected reward.",
+      "content": "Instead of learning Q(state, action) values and picking the best one, a policy gradient method directly parameterizes a policy — e.g. a neural network that outputs a probability distribution over actions (or, for continuous actions, parameters of a distribution like a mean and standard deviation) given a state. Training adjusts the network's parameters to increase the probability of actions that led to higher-than-expected reward, and decrease the probability of ones that led to lower-than-expected reward, using gradients computed via a policy gradient theorem (conceptually: nudge the policy toward what worked, away from what didn't, weighted by how much better or worse than expected it was). Policy gradient methods tend to have higher variance and need more training samples than value-based methods for problems where a table-based approach is actually feasible, because they estimate gradients from sampled trajectories rather than propagating information through a table update rule.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "A policy network's action-probability distribution shifts toward better-performing actions over training.",
+      "content": "A policy network's output probability distribution over actions shifts — increasing probability mass on actions that led to good outcomes, decreasing it on actions that led to poor outcomes — across successive training updates.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Watch action-probability bars shift live as training progresses.",
+      "content": "Watch a policy network's action-probability bars shift live across simulated training episodes, directly observing probability mass move toward whichever actions produced better-than-expected reward.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: define a policy network and sample an action from it.",
+      "content": "```python\nclass PolicyNetwork(nn.Module):\n    def __init__(self, state_size, n_actions):\n        super().__init__()\n        self.fc = nn.Linear(state_size, n_actions)\n\n    def forward(self, state):\n        return torch.softmax(self.fc(state), dim=-1)\n\npolicy = PolicyNetwork(state_size=4, n_actions=3)\naction_probs = policy(state_tensor)\naction = torch.multinomial(action_probs, num_samples=1)\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Compute a policy gradient loss weighted by observed episode reward.",
+      "content": "Implement the log-probability computation for a sampled action from the policy network above, and compute a simple policy gradient loss (negative log-probability weighted by the observed episode reward) for a single training step.",
+      "estimatedMinutes": 14
+    },
+    "debugging": {
+      "summary": "Fix a policy gradient loss that ignores the observed reward entirely.",
+      "content": "A policy gradient implementation forgets to weight the log-probability by the observed reward, effectively training the policy to maximize the probability of every action taken regardless of whether it led to good or bad outcomes. Identify the missing reward weighting and fix it.",
+      "estimatedMinutes": 7
+    },
+    "reflection": {
+      "summary": "Ignoring reward reinforces bad actions as strongly as good ones.",
+      "content": "Why would a policy gradient update that ignores the actual observed reward end up reinforcing bad actions just as strongly as good ones?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain what it means to increase probability of good actions, without equations.",
+      "content": "Explain to someone, without equations, what it means for a policy gradient update to 'increase the probability of good actions and decrease the probability of bad ones.'",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Train a policy gradient agent on a continuous-action battery MDP.",
+      "content": "Train a simple policy gradient agent on a continuous-action version of the battery MDP (a charge rate between 0 and 1, rather than three discrete choices), and compare its behavior qualitatively against the discrete Q-learning agent from the previous lesson.",
+      "estimatedMinutes": 18
+    },
+    "portfolioEvidence": {
+      "summary": "This is the answer to a continuous action space Q-learning couldn't handle.",
+      "content": "This policy-gradient agent is the Digital Twin's answer to a continuous action space Q-learning couldn't handle — a genuinely different tool for a genuinely different version of the same problem.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-rl-policy-gradient-methods-continuous-battery",
+      "title": "Continuous Battery",
+      "description": "Sandboxed exercise training a policy gradient agent on a continuous-action battery MDP, requiring a correctly reward-weighted loss and a fix for a planted unweighted-loss bug.",
+      "starterCodePath": "labs/08-reinforcement-learning/continuous-battery/starter.py",
+      "testCasesPath": "labs/08-reinforcement-learning/continuous-battery/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "policy-probability-shift-visualizer",
+      "title": "Policy Probability Shift Visualizer",
+      "description": "Live action-probability bars shifting across training episodes as the policy network updates."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-rl-policy-gradient-methods-1",
+      "front": "Why doesn't a Q-table scale to a continuous action space like a 0-100% charge rate?",
+      "back": "A Q-table needs a row for every discrete action; a continuous action space has infinitely many possible actions, making a table-based representation impossible without discretizing (and losing precision).",
+      "conceptNodeId": "rl.policy-gradient-methods"
+    },
+    {
+      "id": "fc-rl-policy-gradient-methods-2",
+      "front": "What happens if a policy gradient update doesn't weight the log-probability by the observed reward?",
+      "back": "The update reinforces whichever action was taken, regardless of whether it led to a good or bad outcome, since nothing distinguishes a good trajectory from a bad one in the loss.",
+      "conceptNodeId": "rl.policy-gradient-methods"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly diagnoses and fixes the unweighted policy gradient loss bug",
+      "Policy gradient agent trains successfully on the continuous-action battery MDP",
+      "Correctly explains, without equations, why the update increases probability of good actions and decreases it for bad ones"
+    ]
+  },
+  "references": [
+    {
+      "title": "PyTorch Tutorials — Reinforcement Learning (DQN)",
+      "url": "https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html",
+      "type": "officialDocs",
+      "versionOrDate": "PyTorch 2.3",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Sutton & Barto — Reinforcement Learning: An Introduction",
+      "url": "http://incompleteideas.net/book/RLbook2020.pdf",
+      "type": "other",
+      "versionOrDate": "2nd Edition, 2020",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

@@ -1,0 +1,137 @@
+{
+  "id": "pandas-merging-datasets",
+  "title": "Merging Datasets: Weather, Demand, and Price in One Table",
+  "skillFolder": "05-pandas",
+  "missionId": "M2",
+  "concept": "Merging/Joining DataFrames",
+  "knowledgeGraphNodeId": "pandas.merging-datasets",
+  "difficulty": "foundational",
+  "dependencies": ["pandas.time-series"],
+  "learningObjectives": [
+    "Merge two time-indexed DataFrames on their shared timestamp using pd.merge",
+    "Choose the correct merge type (inner/left/outer) based on whether unmatched timestamps should be dropped or kept",
+    "Align datasets recorded at different frequencies before merging them, e.g. hourly demand with daily price",
+    "Detect and handle a merge that silently drops or duplicates rows due to timestamp misalignment"
+  ],
+  "whyItMatters": "A forecasting model needs demand, weather, and price as columns in one table, aligned by time — not three separate DataFrames the model has no way to relate to each other. This is the pandas equivalent of the SQL JOIN lesson, applied across genuinely different data sources rather than one database's tables.",
+  "capstoneContribution": "The Digital Twin's first unified feature table — demand, weather, and price combined into a single, time-aligned DataFrame, the direct input every Mission 3 forecasting model will train on.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Three separate DataFrames can't be fed to a model as one input.",
+      "content": "You have three separate DataFrames — hourly demand, hourly weather, and daily price — and a forecasting model can't take three disconnected tables as one input; it needs them combined into a single row-per-timestamp table.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is the SQL JOIN lesson's equivalent, now across genuinely different sources.",
+      "content": "This is the pandas equivalent of the SQL JOIN lesson, except now you're combining genuinely different data sources — not two tables in the same database, but a demand feed, a weather API, and a price feed that were never designed to line up automatically.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "pd.merge mirrors SQL JOIN types; mismatched frequencies need alignment first.",
+      "content": "`pd.merge(demand_df, weather_df, on='timestamp', how='inner')` combines rows where the timestamp matches on both sides, exactly like a SQL INNER JOIN — dropping timestamps present in only one DataFrame. `how='left'` keeps every row from the left DataFrame, filling `NaN` where the right side has no match, mirroring the SQL LEFT JOIN lesson. When two datasets have different frequencies (hourly demand, daily price), the lower-frequency one typically needs to be resampled or forward-filled (`.ffill()`) to align before merging, or the merge will produce mostly `NaN` price values for hours that don't exactly match a daily timestamp.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "Two timelines merge at matching timestamps; a lower-frequency series must be stretched first.",
+      "content": "Demand and weather DataFrames appear as two separate timelines merging at matching timestamps into one combined table, with a third, lower-frequency price timeline needing to be stretched/forward-filled before it lines up with the hourly grid.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Merge two live DataFrames with adjustable merge type and alignment.",
+      "content": "Merge two live sample DataFrames with adjustable merge type (inner/left/outer) and timestamp alignment, watching the combined result's row count and NaN pattern change live.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: merge hourly sources, then align and merge a daily one.",
+      "content": "```python\ncombined = pd.merge(demand_hourly, weather_hourly, on=\"timestamp\", how=\"inner\")\n\nprice_daily_ffilled = price_daily.resample(\"1h\").ffill()\ncombined = pd.merge(combined, price_daily_ffilled, on=\"timestamp\", how=\"left\")\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Merge hourly and daily data with correct alignment, unaided.",
+      "content": "Merge a provided hourly demand DataFrame with a daily price DataFrame, correctly aligning frequencies first, and report how many hourly rows ended up with a missing price value and why.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Diagnose an inner merge silently dropping more rows than expected.",
+      "content": "A merge using `how='inner'` on demand and weather DataFrames with slightly misaligned timestamps (one has a few missing hours) silently drops far more rows than expected. Diagnose the row-count discrepancy and decide whether inner or left join is actually correct here.",
+      "estimatedMinutes": 7
+    },
+    "reflection": {
+      "summary": "Row-count checks are how you notice a merge silently dropped data.",
+      "content": "How would you have noticed the merge was silently dropping rows if you hadn't checked the row count before and after?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why unaligned daily data merged onto hourly data produces gaps.",
+      "content": "Explain to someone why merging a daily price DataFrame directly onto an hourly demand DataFrame without resampling first produces mostly missing price values.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Build the first unified feature table with justified merge decisions.",
+      "content": "Build the Digital Twin's first unified feature table: demand, weather, and price merged into one time-aligned DataFrame, with a clear justification for every merge type and alignment choice made.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This is the direct input every Mission 3 forecasting model will train on.",
+      "content": "This unified feature table is the direct input every Mission 3 forecasting model will train on.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-pandas-merging-datasets-unified-table",
+      "title": "Unified Table",
+      "description": "Sandboxed exercise merging hourly and daily-frequency datasets, requiring correct alignment before merging and justified choice of merge type.",
+      "starterCodePath": "labs/05-pandas/unified-table/starter.py",
+      "testCasesPath": "labs/05-pandas/unified-table/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "merge-alignment-visualizer",
+      "title": "Merge Alignment Visualizer",
+      "description": "Shows two DataFrames merging with adjustable merge type and frequency alignment, updating row count and NaN pattern live."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-pandas-merging-datasets-1",
+      "front": "Why does merging a daily price series directly onto an hourly demand series produce mostly missing prices?",
+      "back": "Only the hours that happen to exactly match a daily timestamp get a price value; every other hour has no matching row in the daily data unless the daily series is first resampled/forward-filled to hourly frequency.",
+      "conceptNodeId": "pandas.merging-datasets"
+    },
+    {
+      "id": "fc-pandas-merging-datasets-2",
+      "front": "What's the pandas equivalent of a SQL LEFT JOIN?",
+      "back": "pd.merge(left_df, right_df, on='key', how='left') — keeps every row from left_df, filling NaN where right_df has no matching key.",
+      "conceptNodeId": "pandas.merging-datasets"
+    }
+  ],
+  "assessment": {
+    "primaryType": "architectureDesign",
+    "rubric": [
+      "Correctly aligns mismatched-frequency datasets before merging, rather than merging raw and accepting gaps",
+      "Merge type (inner/left/outer) is chosen deliberately and justified, not defaulted to without reasoning",
+      "Verifies the merged result's row count and NaN pattern rather than assuming the merge worked as intended"
+    ]
+  },
+  "references": [
+    {
+      "title": "pandas User Guide — Merge, join, concatenate and compare",
+      "url": "https://pandas.pydata.org/docs/user_guide/merging.html",
+      "type": "officialDocs",
+      "versionOrDate": "pandas 2.2",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "pandas API Reference — DataFrame.ffill",
+      "url": "https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.ffill.html",
+      "type": "officialDocs",
+      "versionOrDate": "pandas 2.2",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

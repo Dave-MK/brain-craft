@@ -1,0 +1,137 @@
+{
+  "id": "pandas-data-cleaning",
+  "title": "Data Cleaning: Real Data Is Never This Clean",
+  "skillFolder": "05-pandas",
+  "missionId": "M2",
+  "concept": "Data Cleaning (missing values, duplicates, outliers)",
+  "knowledgeGraphNodeId": "pandas.data-cleaning",
+  "difficulty": "foundational",
+  "dependencies": ["pandas.merging-datasets"],
+  "learningObjectives": [
+    "Detect and handle missing values deliberately (drop, fill, or flag) rather than ignoring them",
+    "Detect and remove duplicate rows introduced by a merge or a re-ingested API response",
+    "Identify outliers that are likely sensor errors rather than genuine extreme readings, and decide what to do with them",
+    "Justify a cleaning decision with a specific reason rather than applying a default blindly"
+  ],
+  "whyItMatters": "The unified feature table you just built almost certainly has gaps, duplicates, and a few physically implausible values (a negative demand reading, a 90°C temperature) — and every one of those, left unaddressed, quietly degrades every forecasting model trained on top of it in Mission 3.",
+  "capstoneContribution": "The Digital Twin's data-quality gate — the step that stands between raw merged data and anything a model is allowed to train on, catching exactly the kind of corrupted input that produces confidently wrong forecasts.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "The merged table has gaps, duplicates, and an implausible reading.",
+      "content": "Your unified feature table has some `NaN` values where the merge didn't find a match, a few duplicate rows from a re-run ingestion job, and at least one demand reading of -400 kW that's clearly a sensor error, not a real measurement.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "A model trained on dirty data fails silently, producing confidently wrong forecasts.",
+      "content": "A forecasting model trained on dirty data doesn't fail loudly — it just learns the wrong patterns and produces confidently wrong forecasts, which is worse than an obvious crash because nobody notices until real decisions are already being made on bad predictions.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Handle missingness deliberately, remove duplicates after inspection, and catch outliers with domain knowledge first.",
+      "content": "`df.isna().sum()` counts missing values per column, the first step before deciding what to do about them: `df.dropna()` removes rows with any missing value (only appropriate when missingness is rare and dropping won't bias the data), `df.fillna(...)` fills gaps (forward-fill for slowly-changing values like price, a computed mean for noisy sensor gaps), or leaving a flag column marking rows as imputed so a model can account for the uncertainty later. `df.duplicated()` flags duplicate rows so they can be inspected before removal with `df.drop_duplicates()`. Outliers are best identified with domain knowledge first (a demand reading can't be negative) and statistical methods second (values many standard deviations from the mean) — domain knowledge alone would catch the -400 kW reading; statistics alone might not flag it if it happens to fall within a plausible-looking range for a different sensor.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "Missing-value gaps, duplicate rows, and an outlier are each addressed by a distinct fix.",
+      "content": "The unified feature table shows missing-value gaps, duplicate row highlights, and an outlier reading flagged in red, each addressed by a distinct visual 'fix' operation (fill, drop, cap/flag) side by side.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Apply cleaning operations to a live messy table and watch problems get fixed.",
+      "content": "Apply `dropna`/`fillna`/`drop_duplicates` operations to a live messy sample table and watch the row count and highlighted problem cells update after each operation.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: quantify missingness, fill deliberately, dedupe, and filter an outlier.",
+      "content": "```python\nprint(combined.isna().sum())\n\ncombined[\"price_per_kwh\"] = combined[\"price_per_kwh\"].ffill()\ncombined = combined.drop_duplicates(subset=[\"timestamp\", \"source\"])\n\ncombined = combined[combined[\"demand_kw\"] >= 0]\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Apply and justify a full cleaning pass on a provided messy table.",
+      "content": "Given a provided messy feature table with missing weather values, duplicate rows, and at least one implausible reading, apply and justify a cleaning strategy for each problem you find.",
+      "estimatedMinutes": 14
+    },
+    "debugging": {
+      "summary": "Fix an overly broad dropna() call that deletes far more rows than necessary.",
+      "content": "Cleaning code calls `.dropna()` on the entire table as a first step, silently deleting far more rows than necessary because one rarely-populated column had lots of missing values. Identify the overly broad drop and replace it with a more targeted fix.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "An unnoticed extreme outlier can cause real downstream harm.",
+      "content": "What real, later damage could an unnoticed -400 kW reading do if it made it into a model's training data unaddressed?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why blanket dropna() is usually the wrong default.",
+      "content": "Explain to someone why 'just drop every row with any missing value' is usually the wrong default cleaning strategy, using the overly broad `dropna()` bug as your example.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Run a full, documented data-quality pass on the feature table.",
+      "content": "Run a full data-quality pass on the Digital Twin's unified feature table: quantify missingness, remove duplicates, flag and handle at least one outlier, and document every decision with a specific reason.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This is the data-quality gate every future model training run depends on.",
+      "content": "This cleaned feature table is what actually gets handed to Mission 3's forecasting models — the data-quality gate every future model training run depends on having passed.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-pandas-data-cleaning-quality-pass",
+      "title": "Quality Pass",
+      "description": "Sandboxed exercise on a deliberately messy feature table requiring justified handling of missing values, duplicates, and at least one physically implausible outlier.",
+      "starterCodePath": "labs/05-pandas/quality-pass/starter.py",
+      "testCasesPath": "labs/05-pandas/quality-pass/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "data-quality-fix-visualizer",
+      "title": "Data Quality Fix Visualizer",
+      "description": "Shows a messy table's missing values, duplicates, and outliers each resolved by a distinct fix operation, tracked live."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-pandas-data-cleaning-1",
+      "front": "Why check domain knowledge (e.g. 'demand can't be negative') before relying purely on statistical outlier detection?",
+      "back": "A statistically 'normal-looking' value can still be physically impossible, and a genuinely extreme but real value might get flagged by statistics alone. Domain knowledge catches errors that pure statistics would miss or wrongly flag.",
+      "conceptNodeId": "pandas.data-cleaning"
+    },
+    {
+      "id": "fc-pandas-data-cleaning-2",
+      "front": "Why is calling df.dropna() on the whole table often the wrong first move?",
+      "back": "If even one column is sparsely populated, a blanket dropna() removes every row missing any value in any column, potentially discarding far more good data than necessary — a targeted, column-specific strategy is usually better.",
+      "conceptNodeId": "pandas.data-cleaning"
+    }
+  ],
+  "assessment": {
+    "primaryType": "codeReview",
+    "rubric": [
+      "Each cleaning decision (fill, drop, flag) is justified with a specific reason, not applied as an unexamined default",
+      "Correctly identifies at least one outlier using domain knowledge, not just statistical thresholds",
+      "Avoids overly broad dropna()/drop_duplicates() calls that discard more data than necessary"
+    ]
+  },
+  "references": [
+    {
+      "title": "pandas User Guide — Working with missing data",
+      "url": "https://pandas.pydata.org/docs/user_guide/missing_data.html",
+      "type": "officialDocs",
+      "versionOrDate": "pandas 2.2",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "pandas API Reference — DataFrame.duplicated",
+      "url": "https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.duplicated.html",
+      "type": "officialDocs",
+      "versionOrDate": "pandas 2.2",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

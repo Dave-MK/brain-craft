@@ -18,4 +18,30 @@ Per [`CLAUDE.md`](../CLAUDE.md), lessons are structured data first. This directo
 
 ## Status
 
-Empty. Populated starting Phase 1, after `schemas/lesson.schema.json` exists (see [`docs/20-roadmap/overview.md`](../docs/20-roadmap/overview.md)).
+`01-python/` is complete: 11 lessons, all validated against `schemas/lesson.schema.json`, forming one continuous path —
+
+```
+variables → control-flow → lists → loops → functions → dictionaries
+                                                              ↓
+                                            sets, error-handling → files-io → modules → oop-basics (boss battle)
+```
+
+(see each lesson's `dependencies` field for the exact knowledge-graph edges; the full chain was verified programmatically for missing edges and cycles). Organized as `lessons/<skillFolder>/<lesson-id>.lesson.json`, mirroring `curriculum/`.
+
+`02-git/` is also complete: 6 lessons — `git-init-and-commits` (depends on `python.oop-basics`, tying the two skill folders together) → `git-branches` → `git-merging` → {`git-resolving-conflicts`, `git-remote-collaboration`} → `git-rebasing-basics` (boss battle). 17 lessons total across both folders; the combined dependency graph has been checked for missing edges and cycles.
+
+**Mission 1 ("Learn Programming") is fully authored.** `03-sql/` is also complete: 6 lessons — `sql-select-where` (depends on `python.files-io`) → `sql-joins` → `sql-aggregation` → `sql-schema-design` → `sql-window-functions` → `sql-indexing-performance` (boss battle). 23 lessons total across `01-python` + `02-git` + `03-sql`; the combined dependency graph has no missing edges or cycles.
+
+`04-apis/` is also complete: 6 lessons — `apis-http-fundamentals` (depends on `python.error-handling`) → `apis-authentication` → `apis-consuming-rest` → {`apis-rate-limits-retries`, `apis-pagination`} → `apis-resilient-ingestion` (boss battle). 29 lessons total across `01-python` + `02-git` + `03-sql` + `04-apis`; combined graph re-checked — clean.
+
+`05-pandas/` is also complete: 6 lessons — `pandas-dataframes-basics` (depends on `sql.aggregation`) → `pandas-filtering-aggregation` → `pandas-time-series` → `pandas-merging-datasets` → `pandas-data-cleaning` → `pandas-capstone-feature-table` (boss battle — Mission 2's final deliverable, the actual feature table Mission 3 trains on). 35 lessons total; combined graph re-checked — clean.
+
+**Missions 1 ("Learn Programming") and 2 ("Manipulate Data") are both fully authored.** `06-scikit-learn/` is also complete: 6 lessons — `sklearn-regression-basics` (depends on `pandas.capstone-feature-table`) → `sklearn-baselines-and-leakage` → `sklearn-time-series-cv` and `sklearn-classification-basics` (parallel) → `sklearn-feature-importance-evaluation` → `sklearn-demand-forecaster` (boss battle — the Digital Twin's first production-shaped forecasting model). 41 lessons total; combined graph re-checked — clean.
+
+`07-pytorch/` is also complete: 6 lessons — `pytorch-tensors-autograd` (depends on `sklearn.demand-forecaster`) → `pytorch-building-networks` → `pytorch-training-loop` → `pytorch-overfitting-regularization` → `pytorch-sequence-models` → `pytorch-neural-forecaster` (boss battle — the honest neural-vs-classical verdict that decides what feeds Mission 5). 47 lessons total across Missions 1-4; combined graph re-checked — clean.
+
+**Missions 1-4 are fully authored.** `08-reinforcement-learning/` is also complete: 6 lessons — `rl-mdp-fundamentals` (depends on `pytorch.neural-forecaster`) → `rl-reward-design` → {`rl-value-based-methods`, `rl-policy-gradient-methods`} → `rl-training-evaluation-safety` → `rl-battery-scheduler` (boss battle — the literal "Grid Copilot" behavior from the original mission vision, now built as an explainable decision-maker). 53 lessons total; combined graph re-checked — clean.
+
+`09-graph-algorithms/` is also complete: 6 lessons — `graphs-representation-traversal` (depends on `python.dictionaries`) → `graphs-shortest-path` → {`graphs-flow-algorithms`, `graphs-resilience-critical-nodes`} → `graphs-rl-combination` (depends on `rl.battery-scheduler` + both graph-algorithm branches — the actual convergence point of Mission 5's two parallel skill folders) → `graphs-grid-router` (boss battle — concrete numeric answers to both of the mission's founding example questions). 59 lessons total; combined graph re-checked — clean.
+
+**Missions 1-5 are fully authored.** None of `10-power-systems` onward has lessons yet.

@@ -1,0 +1,130 @@
+{
+  "id": "git-branches",
+  "title": "Branches: Working on Risky Changes Without Breaking main",
+  "skillFolder": "02-git",
+  "missionId": "M1",
+  "concept": "Branches",
+  "knowledgeGraphNodeId": "git.branches",
+  "difficulty": "introductory",
+  "dependencies": ["git.init-and-commits"],
+  "learningObjectives": [
+    "Create and switch between branches without disturbing main's history",
+    "Explain what a branch actually is: a movable pointer to a commit, not a copy of the codebase",
+    "Choose branch names that describe the change being made",
+    "Delete a branch safely once its work has landed elsewhere"
+  ],
+  "whyItMatters": "You're about to try a genuinely risky change to the classification thresholds — one that might not work. Committing risky, half-finished experiments directly onto main would leave the Digital Twin in a broken state every time you're mid-experiment. Branches let you experiment freely without that risk.",
+  "capstoneContribution": "The branching discipline every future feature of the AI Energy OS (a new forecasting model, a new RL policy) will be built and tested on before it's trusted enough to reach main.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "An unproven experiment would put main's working state at risk if committed directly.",
+      "content": "You want to try a different set of demand thresholds, but you're not sure it'll actually be better, and main currently works. Committing the experiment directly onto main would put the working version at risk while you're still figuring it out.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Isolating risky work is how main stays known-good at all times.",
+      "content": "Every serious engineering team isolates risky, in-progress work on a branch precisely so main always stays in a known-good state. This becomes non-negotiable once more than one thing is being built at once — which starts as soon as this mission ends.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "A branch is a lightweight, movable pointer to a commit, not a copy of the project.",
+      "content": "A branch is a movable, lightweight pointer to a specific commit — not a copy of the entire codebase. `git branch new-thresholds` creates the pointer; `git switch new-thresholds` moves your working directory to follow it. Commits made while on a branch only affect that branch's history until it's merged elsewhere. `git branch -d <name>` deletes a branch once you're done with it, refusing to do so if it has unmerged work Git thinks you'd lose.",
+      "estimatedMinutes": 6
+    },
+    "visualExplanation": {
+      "summary": "main's history runs as a straight line; a new branch forks off and grows independently.",
+      "content": "main's commit history is a straight line, with a new branch diagram forking off partway along it as `new-thresholds` commits are added, visually distinct from main's continuing line.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Create a branch, commit on it, and watch the commit graph fork and grow.",
+      "content": "Create a branch, make commits on it, and watch a live commit-graph diagram fork away from main and grow independently, then switch back to main and watch the working directory's files change to match main's last commit.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: branch off, experiment, then switch back to an unaffected main.",
+      "content": "```bash\ngit branch new-thresholds\ngit switch new-thresholds\n\n# edit classification.py, changing warning_kw\ngit add classification.py\ngit commit -m \"Experiment: lower warning threshold to 4200kW\"\n\ngit switch main\n# classification.py is back to its original threshold here\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Branch, commit an experiment, then confirm main is unaffected.",
+      "content": "Create a branch for a real experiment of your own (e.g. changing the battery LOW threshold), commit at least one change on it, then switch back to main and confirm the change isn't there.",
+      "estimatedMinutes": 10
+    },
+    "debugging": {
+      "summary": "Diagnose why Git refused to switch branches with uncommitted changes.",
+      "content": "A learner tried to switch branches with uncommitted changes still in their working directory and Git refused with a warning. Explain why Git refused, and identify the safe next step (commit, stash, or deliberately discard).",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Git protects uncommitted work rather than silently discarding it.",
+      "content": "Why did Git refuse to switch branches with uncommitted changes still sitting in your working directory, instead of just discarding them silently?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why a branch is a pointer, not a copy.",
+      "content": "Explain to someone why a branch is 'a pointer to a commit,' not 'a full copy of the whole project,' and why that distinction matters for how fast branching actually is.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Adopt branching as a habit for your next real improvement.",
+      "content": "Create a branch for the next real improvement you want to try in the Digital Twin package, and commit your work there instead of directly on main, as a habit you'll continue for the rest of this curriculum.",
+      "estimatedMinutes": 10
+    },
+    "portfolioEvidence": {
+      "summary": "Branching habit protects every future experiment on the Digital Twin.",
+      "content": "This branching habit is what will let every future mission's experimental model or algorithm be tried safely against the Digital Twin without risking the last known-good version.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-git-branches-safe-experiment",
+      "title": "Safe Experiment",
+      "description": "Sandboxed exercise requiring the learner to branch, commit an experimental change, switch back to main, and verify main was unaffected throughout.",
+      "starterCodePath": "labs/02-git/safe-experiment/starter/",
+      "testCasesPath": "labs/02-git/safe-experiment/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "branch-graph-visualizer",
+      "title": "Branch Graph Visualizer",
+      "description": "Live commit-graph diagram showing branches forking from and switching between each other as commands run."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-git-branches-1",
+      "front": "Is a Git branch a copy of the entire codebase?",
+      "back": "No — it's a lightweight, movable pointer to a specific commit. That's why creating a branch is nearly instantaneous even in a large repository.",
+      "conceptNodeId": "git.branches"
+    },
+    {
+      "id": "fc-git-branches-2",
+      "front": "Why does Git refuse to switch branches when you have uncommitted changes that would be overwritten?",
+      "back": "To prevent silently losing work — Git only lets the switch proceed once those changes are committed, stashed, or you explicitly confirm discarding them.",
+      "conceptNodeId": "git.branches"
+    }
+  ],
+  "assessment": {
+    "primaryType": "teachBack",
+    "rubric": [
+      "Correctly explains a branch as a pointer to a commit, not a full copy, with a concrete supporting example",
+      "Demonstrates branching, committing, and switching back to main without disturbing main's state",
+      "Branch names describe the change being made rather than being generic (e.g. 'test', 'branch1')"
+    ]
+  },
+  "references": [
+    {
+      "title": "Pro Git — Git Branching: Branches in a Nutshell",
+      "url": "https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell",
+      "type": "officialDocs",
+      "versionOrDate": "Pro Git 2nd Edition",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

@@ -1,0 +1,137 @@
+{
+  "id": "sklearn-time-series-cv",
+  "title": "Time-Series Cross-Validation: Testing Like You'll Actually Deploy",
+  "skillFolder": "06-scikit-learn",
+  "missionId": "M3",
+  "concept": "Time-Series Cross-Validation (walk-forward validation)",
+  "knowledgeGraphNodeId": "sklearn.time-series-cv",
+  "difficulty": "foundational",
+  "dependencies": ["sklearn.baselines-and-leakage"],
+  "learningObjectives": [
+    "Explain why standard k-fold cross-validation is inappropriate for time-series data",
+    "Use scikit-learn's TimeSeriesSplit to perform walk-forward validation",
+    "Interpret cross-validated results across multiple folds rather than trusting a single train/test split",
+    "Decide how many splits and what gap, if any, between train and test are appropriate for a given forecasting horizon"
+  ],
+  "whyItMatters": "A single chronological train/test split (from the last lesson) only tells you how the model performs on one specific stretch of time. The Digital Twin needs to know the model is reliable across many different periods — including ones with different seasons, weather patterns, and demand levels — before it can be trusted.",
+  "capstoneContribution": "The Digital Twin's proper model-validation methodology — the actual standard every forecasting model in this mission, and Mission 4's neural models, will be evaluated against before being considered trustworthy.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "One split only tells you about one specific stretch of time.",
+      "content": "Your one chronological train/test split from the last lesson happened to land on a mild spring month. You don't actually know if the model performs just as well during a summer heatwave or a winter cold snap.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Testing across many periods reveals whether a model generalizes, not just fits one stretch.",
+      "content": "A single lucky (or unlucky) split can make a mediocre model look great, or a good model look bad. Testing across multiple different time periods is what actually tells you whether a model generalizes, rather than whether it happened to fit one specific stretch of history well.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "TimeSeriesSplit produces walk-forward folds, always training only on the past relative to each test period.",
+      "content": "Standard k-fold cross-validation randomly assigns rows to folds, which for time series causes the exact same leakage problem as a shuffled train/test split — some folds would train on data chronologically after their own test data. `TimeSeriesSplit(n_splits=5)` instead produces walk-forward folds: fold 1 trains on the earliest data and tests on the next chunk, fold 2 trains on everything up to that point (including fold 1's test data) and tests on the next chunk after that, and so on — always training only on the past relative to each fold's test period, exactly mirroring how the model would be retrained and deployed in production over time.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "Growing train blocks each followed by a small test block just ahead, moving forward in time.",
+      "content": "A timeline splits into growing train blocks each followed by a small test block just ahead of it, repeated across several folds moving forward in time — visually distinct from k-fold's randomly scattered fold assignments.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Adjust the number of splits and watch walk-forward blocks resize and shift.",
+      "content": "Adjust the number of splits on a live timeline and watch the walk-forward train/test blocks resize and shift accordingly, with each fold's score displayed as it's computed.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: cross-validate with TimeSeriesSplit and report per-fold scores.",
+      "content": "```python\nfrom sklearn.model_selection import TimeSeriesSplit, cross_val_score\n\ntscv = TimeSeriesSplit(n_splits=5)\nscores = cross_val_score(model, X, y, cv=tscv, scoring=\"neg_mean_absolute_error\")\nprint(-scores)\nprint(f\"Mean MAE across folds: {-scores.mean():.2f}\")\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Cross-validate the solar model and identify its weakest fold.",
+      "content": "Run `TimeSeriesSplit` cross-validation with 5 folds on your solar-output model, report the MAE for each fold individually, and identify which fold performed worst and hypothesize why.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a default k-fold cross-validation reintroducing leakage on time-series data.",
+      "content": "Code uses plain `cross_val_score(model, X, y, cv=5)` (default k-fold) on time-series data instead of `TimeSeriesSplit`. Identify the leakage this reintroduces and fix it.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "A weak fold reveals a specific, concrete model limitation.",
+      "content": "Why might the fold covering a heatwave or a cold snap perform noticeably worse than the others, and what would that actually tell you about your model's current limitations?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why TimeSeriesSplit's folds grow forward instead of being independent random splits.",
+      "content": "Explain to someone why `TimeSeriesSplit`'s folds always grow the training set forward in time instead of just being 5 independent random splits.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Cross-validate the demand model against the baseline and report per-fold weaknesses.",
+      "content": "Cross-validate your demand-forecasting model with `TimeSeriesSplit`, report the per-fold and mean MAE compared against the naive baseline computed the same way, and identify whether any fold reveals a systematic weakness.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This is the validation standard every later forecasting model will be held to.",
+      "content": "This cross-validated result is the actual validation standard every subsequent forecasting model in this mission and the next will be held to.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-sklearn-time-series-cv-walk-forward",
+      "title": "Walk-Forward",
+      "description": "Sandboxed exercise requiring correct TimeSeriesSplit cross-validation, per-fold reporting, and a fix for a planted default-k-fold leakage bug.",
+      "starterCodePath": "labs/06-scikit-learn/walk-forward/starter.py",
+      "testCasesPath": "labs/06-scikit-learn/walk-forward/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "walk-forward-cv-visualizer",
+      "title": "Walk-Forward CV Visualizer",
+      "description": "Adjustable-fold-count timeline showing walk-forward train/test blocks growing and shifting forward, with live per-fold scores."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-sklearn-time-series-cv-1",
+      "front": "Why is standard k-fold cross-validation inappropriate for time-series data?",
+      "back": "It randomly assigns rows to folds, which can place chronologically later data into a fold's training set while chronologically earlier data ends up in that fold's test set — the same leakage problem as a shuffled train/test split.",
+      "conceptNodeId": "sklearn.time-series-cv"
+    },
+    {
+      "id": "fc-sklearn-time-series-cv-2",
+      "front": "How does TimeSeriesSplit's training set change from fold to fold?",
+      "back": "It grows forward in time — each successive fold's training set includes all data up through the previous fold's test period, and tests on the next chunk after that, mirroring how a model would actually be retrained over time in production.",
+      "conceptNodeId": "sklearn.time-series-cv"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly identifies and fixes a default k-fold cross-validation used on time-series data",
+      "Reports and interprets per-fold results individually, not just a single averaged score",
+      "Correctly identifies a plausible reason for the weakest-performing fold's underperformance"
+    ]
+  },
+  "references": [
+    {
+      "title": "scikit-learn — TimeSeriesSplit",
+      "url": "https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html",
+      "type": "officialDocs",
+      "versionOrDate": "scikit-learn 1.5",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "scikit-learn — Cross-validation: Time Series Split",
+      "url": "https://scikit-learn.org/stable/modules/cross_validation.html#time-series-split",
+      "type": "officialDocs",
+      "versionOrDate": "scikit-learn 1.5",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

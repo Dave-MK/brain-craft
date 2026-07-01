@@ -1,0 +1,137 @@
+{
+  "id": "sql-indexing-performance",
+  "title": "Indexing & Performance: Making the Database Fast on Purpose",
+  "skillFolder": "03-sql",
+  "missionId": "M2",
+  "concept": "Indexing and Query Performance",
+  "knowledgeGraphNodeId": "sql.indexing-performance",
+  "difficulty": "intermediate",
+  "dependencies": ["sql.window-functions"],
+  "learningObjectives": [
+    "Explain what an index actually is and why it speeds up some queries without changing their results",
+    "Use EXPLAIN ANALYZE to see whether a query is using an index or scanning the whole table",
+    "Add an appropriate index to a slow query and measure the improvement",
+    "Recognize when adding an index is the wrong fix, e.g. on a rarely-queried column or a heavy-write table"
+  ],
+  "whyItMatters": "Every query built across this skill folder works correctly on a small seeded table. On a year of every-minute readings across hundreds of substations — tens of millions of rows — several of those same queries would become unacceptably slow without the right indexes, and 'correct but too slow to actually use' is a real failure mode for the AI Energy OS.",
+  "capstoneContribution": "The performance discipline that keeps the Digital Twin's queries usable at real scale — tens of millions of readings, not the seeded thousands used throughout this skill folder — the difference between a demo and a system that survives production data volumes.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A query that's instant on a seeded table becomes slow at real scale.",
+      "content": "Your WHERE-based query from the very first SQL lesson runs instantly against a thousand seeded rows. Run the exact same query against a simulated ten-million-row table, and it takes several seconds — scanning every single row to find the few that match.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Correct but unusably slow is still a failure, just a delayed one.",
+      "content": "A query that's correct but unusably slow at real scale is still a failure, just a delayed one. This is the skill that keeps everything built in this folder from quietly becoming unusable the moment the Digital Twin's data grows past a toy dataset.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "An index lets the database jump to matching rows instead of scanning every one; EXPLAIN ANALYZE reveals which is happening.",
+      "content": "An index is a separate, ordered structure the database maintains alongside a table, letting it jump directly to matching rows instead of scanning every one (a 'sequential scan'). `CREATE INDEX idx_readings_source_time ON readings (source_id, timestamp);` speeds up queries that filter or sort by those columns, at the cost of extra storage and slightly slower writes, since the index must be updated on every insert. `EXPLAIN ANALYZE <query>` shows the database's actual execution plan, including whether it used an index scan or a sequential scan, and how long each step took — the only reliable way to know if an index is actually helping, rather than guessing.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "A sequential scan sweeps every row; an index scan jumps straight to matches.",
+      "content": "A sequential scan (an arrow sweeping across every row of a table) is contrasted against an index scan (a direct jump straight to the matching rows via a separate sorted lookup structure).",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Run the same query against a large simulated table with and without an index.",
+      "content": "Run the same query against a simulated large table with and without an index applied, watching a live 'rows scanned' counter and elapsed-time comparison update for each version.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: measure before and after adding an index.",
+      "content": "```sql\nEXPLAIN ANALYZE\nSELECT * FROM readings WHERE source_id = 'substation-12' ORDER BY timestamp;\n\nCREATE INDEX idx_readings_source_time ON readings (source_id, timestamp);\n\nEXPLAIN ANALYZE\nSELECT * FROM readings WHERE source_id = 'substation-12' ORDER BY timestamp;\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Diagnose, fix, and re-verify a slow query using EXPLAIN ANALYZE.",
+      "content": "Given a slow query filtering on a different column combination, use `EXPLAIN ANALYZE` to confirm it's doing a sequential scan, add an appropriate index, and confirm with `EXPLAIN ANALYZE` again that it now uses an index scan.",
+      "estimatedMinutes": 14
+    },
+    "debugging": {
+      "summary": "Recognize an index that's the wrong fix and should be removed.",
+      "content": "A learner added an index on a column that's rarely filtered on and almost never helps, while write performance visibly degraded. Identify that the index was the wrong fix and should be removed, rather than adding more indexes to compensate.",
+      "estimatedMinutes": 7
+    },
+    "reflection": {
+      "summary": "Indexing every column is not a good default strategy.",
+      "content": "Why isn't 'just add an index to every column' a good default strategy, given what you now know about the tradeoff an index makes?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Synthesize the whole skill folder: explain a real before/after performance result.",
+      "content": "As the synthesis of this entire skill folder: explain to someone, using your own EXPLAIN ANALYZE before/after results, exactly what changed about how the database answered the same query, and why that matters once the Digital Twin's data grows past a toy dataset.",
+      "estimatedMinutes": 6
+    },
+    "miniProject": {
+      "summary": "Profile and optimize the summary and rolling-average queries built earlier.",
+      "content": "Take the daily summary report and rolling-average queries built earlier in this skill folder, run each through `EXPLAIN ANALYZE` against a simulated large table, add indexes where they measurably help, and document the before/after performance difference for each.",
+      "estimatedMinutes": 20
+    },
+    "portfolioEvidence": {
+      "summary": "This performance pass makes every query in this folder reliable at real scale.",
+      "content": "This performance pass is what makes every query built across this entire skill folder something the Digital Twin can actually rely on at real data scale, not just in a small seeded demo.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": true,
+  "labs": [
+    {
+      "id": "lab-sql-indexing-performance-explain-analyze",
+      "title": "EXPLAIN ANALYZE",
+      "description": "Sandboxed exercise against a large simulated table requiring the learner to diagnose sequential scans, add appropriate indexes, and confirm measurable improvement via EXPLAIN ANALYZE, including a deliberately unhelpful index to identify and remove.",
+      "starterCodePath": "labs/03-sql/explain-analyze/starter.sql",
+      "testCasesPath": "labs/03-sql/explain-analyze/test_cases.sql"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "scan-vs-index-visualizer",
+      "title": "Scan vs. Index Visualizer",
+      "description": "Side-by-side animation contrasting a sequential scan across every row with an index scan jumping directly to matches, with live timing comparison."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-sql-indexing-performance-1",
+      "front": "What does EXPLAIN ANALYZE actually tell you that just running the query doesn't?",
+      "back": "It shows the database's real execution plan — whether it used an index scan or a sequential scan, and how long each step actually took — rather than just returning results with no visibility into how they were produced.",
+      "conceptNodeId": "sql.indexing-performance"
+    },
+    {
+      "id": "fc-sql-indexing-performance-2",
+      "front": "Why isn't adding an index always a free performance win?",
+      "back": "Every index adds storage overhead and slows down writes, since the index must be updated on every insert/update. An index on a rarely-queried column adds that cost with little to no query benefit in return.",
+      "conceptNodeId": "sql.indexing-performance"
+    }
+  ],
+  "assessment": {
+    "primaryType": "research",
+    "rubric": [
+      "Uses EXPLAIN ANALYZE evidence, not guesswork, to decide where an index is actually needed",
+      "Measured before/after performance difference is reported concretely, not just asserted as 'faster'",
+      "Correctly identifies at least one case where an index would be the wrong fix and explains why"
+    ]
+  },
+  "references": [
+    {
+      "title": "PostgreSQL Documentation — Indexes",
+      "url": "https://www.postgresql.org/docs/current/indexes.html",
+      "type": "officialDocs",
+      "versionOrDate": "PostgreSQL 16",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "PostgreSQL Documentation — Using EXPLAIN",
+      "url": "https://www.postgresql.org/docs/current/using-explain.html",
+      "type": "officialDocs",
+      "versionOrDate": "PostgreSQL 16",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

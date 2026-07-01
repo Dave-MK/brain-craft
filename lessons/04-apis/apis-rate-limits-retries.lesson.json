@@ -1,0 +1,137 @@
+{
+  "id": "apis-rate-limits-retries",
+  "title": "Rate Limits & Retries: Being a Good, Resilient Client",
+  "skillFolder": "04-apis",
+  "missionId": "M2",
+  "concept": "Rate Limiting and Retry Strategies",
+  "knowledgeGraphNodeId": "apis.rate-limits-retries",
+  "difficulty": "foundational",
+  "dependencies": ["apis.consuming-rest"],
+  "learningObjectives": [
+    "Recognize a 429 Too Many Requests response and respond to it correctly instead of retrying immediately",
+    "Implement exponential backoff for transient failures",
+    "Distinguish which failures are worth retrying (timeouts, 429, 500) from which aren't (401, 404)",
+    "Avoid accidentally hammering an API into a worse rate-limit response through naive retry logic"
+  ],
+  "whyItMatters": "The Digital Twin will eventually poll weather and price APIs continuously, not once. A naive retry loop that immediately re-requests on every failure can turn a temporary hiccup into a sustained rate-limit ban, or worse, contribute to overloading a real service other people depend on.",
+  "capstoneContribution": "The Digital Twin's resilient polling client — the difference between a script that works once in a demo and a service that can run continuously against a real, rate-limited API without getting itself banned.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Immediately retrying a 429 makes the problem worse, not better.",
+      "content": "Your weather-fetching script occasionally gets a `429` response during testing, and your first instinct — just call `requests.get()` again immediately — makes the problem worse, not better.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Handling this correctly lets the Digital Twin run unattended for days.",
+      "content": "A real API you'll poll continuously has a rate limit for a reason, and violating it repeatedly can get your access revoked entirely. Handling 429s and other transient failures correctly is what lets the Digital Twin run unattended for hours or days without needing a human to notice it broke.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Exponential backoff handles transient failures; not every failure is worth retrying.",
+      "content": "A `429 Too Many Requests` response often includes a `Retry-After` header telling you exactly how long to wait. Exponential backoff — waiting progressively longer between retries (1s, 2s, 4s, 8s...) — handles transient failures generally, including timeouts and `500` server errors, without needing an explicit `Retry-After` value. Not every failure should be retried: a `401` or `404` won't succeed no matter how many times you ask, since the problem is with the request itself, not a temporary condition — retrying those just wastes time and requests.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "Retry gaps grow exponentially after 429/500; 401/404 skip straight to a logged failure.",
+      "content": "A timeline of retry attempts shows exponentially growing gaps between them after a 429/500, contrasted with a 401/404 response that goes straight to a logged failure with zero retries.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Trigger simulated failures and watch the retry-timeline decide correctly.",
+      "content": "Trigger simulated 429/500/401 responses from a mock endpoint and watch a retry-timeline visualization decide, correctly, whether and how long to wait before the next attempt.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: implement exponential backoff that distinguishes retryable failures.",
+      "content": "```python\nimport time\n\ndef fetch_with_backoff(url, headers, params, max_retries=4):\n    for attempt in range(max_retries):\n        response = requests.get(url, headers=headers, params=params)\n        if response.status_code == 200:\n            return response\n        if response.status_code in (401, 404):\n            raise RuntimeError(f\"Non-retryable error: {response.status_code}\")\n        wait_seconds = 2 ** attempt\n        time.sleep(wait_seconds)\n    raise RuntimeError(\"Max retries exceeded\")\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Respect a Retry-After header when present, falling back to backoff otherwise.",
+      "content": "Extend the backoff function to respect a `Retry-After` header when present on a 429 response, falling back to exponential backoff only when the header is absent.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Stop retrying non-retryable failures as aggressively as transient ones.",
+      "content": "A retry loop retries a `404` response just as aggressively as a `429`, wasting attempts and time on a request that will never succeed. Fix by separating retryable from non-retryable status codes.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Retrying non-retryable failures wastes both your time and the provider's resources.",
+      "content": "What's the actual cost, to both your program and the API provider, of retrying a 401 or 404 five times before giving up?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why exponential backoff exists instead of tight-loop retrying.",
+      "content": "Explain to someone why exponential backoff exists instead of just retrying immediately in a tight loop.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Build a shared resilient-fetch function and prove it against simulated failures.",
+      "content": "Wrap your weather and price API calls in a shared resilient-fetch function with correct retry/backoff behavior, and demonstrate it surviving a simulated string of transient failures without giving up too early or hammering the endpoint.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This becomes the standard way every future API call in the Digital Twin is made.",
+      "content": "This resilient-fetch function becomes the standard way every future API call in the Digital Twin is made.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-apis-rate-limits-retries-backoff",
+      "title": "Backoff",
+      "description": "Sandboxed exercise against a simulated flaky endpoint requiring correct exponential backoff, Retry-After handling, and clean separation of retryable from non-retryable failures.",
+      "starterCodePath": "labs/04-apis/backoff/starter.py",
+      "testCasesPath": "labs/04-apis/backoff/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "retry-timeline-visualizer",
+      "title": "Retry Timeline Visualizer",
+      "description": "Shows a timeline of retry attempts with correctly growing gaps for transient failures, and an immediate stop for non-retryable ones."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-apis-rate-limits-retries-1",
+      "front": "Why is retrying a 404 error pointless?",
+      "back": "A 404 means the resource doesn't exist at that URL — that fact won't change no matter how many times or how long you wait between retries, since the problem is the request itself, not a temporary condition.",
+      "conceptNodeId": "apis.rate-limits-retries"
+    },
+    {
+      "id": "fc-apis-rate-limits-retries-2",
+      "front": "What should you check for before falling back to a fixed exponential backoff schedule after a 429?",
+      "back": "A Retry-After header, which tells you exactly how long the server wants you to wait — using that value is more precise than guessing with a generic backoff schedule.",
+      "conceptNodeId": "apis.rate-limits-retries"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly separates retryable failures (429, 500, timeouts) from non-retryable ones (401, 404) in the retry logic",
+      "Exponential backoff timing is implemented correctly and respects Retry-After when present",
+      "Resilient-fetch function survives a simulated string of transient failures without failing prematurely or hammering the endpoint"
+    ]
+  },
+  "references": [
+    {
+      "title": "MDN — 429 Too Many Requests",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429",
+      "type": "officialDocs",
+      "versionOrDate": "MDN, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "AWS Builders' Library — Timeouts, retries, and backoff with jitter",
+      "url": "https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/",
+      "type": "other",
+      "versionOrDate": "AWS Builders' Library, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

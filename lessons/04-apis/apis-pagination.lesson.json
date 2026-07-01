@@ -1,0 +1,130 @@
+{
+  "id": "apis-pagination",
+  "title": "Pagination: Getting All of a Dataset, Not Just the First Page",
+  "skillFolder": "04-apis",
+  "missionId": "M2",
+  "concept": "Pagination",
+  "knowledgeGraphNodeId": "apis.pagination",
+  "difficulty": "foundational",
+  "dependencies": ["apis.consuming-rest"],
+  "learningObjectives": [
+    "Recognize when an API response is paginated rather than complete",
+    "Follow a next-page cursor or offset/limit pattern to retrieve every page",
+    "Combine multiple pages of results into one complete structured dataset",
+    "Avoid an infinite pagination loop caused by misreading the 'no more pages' signal"
+  ],
+  "whyItMatters": "A full year of historical price data will never arrive in a single API response — real APIs cap how much they return per call and expect you to ask for more, page by page. Missing this means the Digital Twin silently works with only the first page of data and never notices the rest is missing.",
+  "capstoneContribution": "The Digital Twin's historical backfill capability — the ability to pull a complete year of price/weather history, not just whatever fits in one response, to properly train the forecasting models coming in Mission 3.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A suspiciously round result count usually means more pages exist.",
+      "content": "You requested a year of historical price data and got back exactly 100 records — a suspiciously round number — with no obvious sign that thousands more exist unless you know to look.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Incomplete data can silently 'work' without ever raising an error.",
+      "content": "This is one of the easiest ways to silently build on incomplete data — no error is raised, no crash occurs, the code 'works,' and yet it's only ever seeing a fraction of what actually exists.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Follow offset/limit or cursor tokens until the API signals no more pages remain.",
+      "content": "Most REST APIs paginate results using either offset/limit parameters (`?offset=100&limit=100` for the next 100 after the first 100) or a cursor/next-page-token returned in the response itself, which you pass back in the next request. A pagination loop keeps requesting subsequent pages until the API signals there are no more — either an empty result set, a missing `next` token, or an explicit `has_more: false` flag — and combines every page's results into one complete list. Misreading that stop signal (e.g. checking the wrong field, or checking for an empty string instead of `None`) is the classic cause of an infinite pagination loop that never terminates.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "Each page's records accumulate until a page arrives with no further next token.",
+      "content": "A request retrieves page 1 with a 'next' token, following that token to page 2, page 3, and so on, with each page's records accumulating into one growing combined list until a page arrives with no further 'next' token.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Step through a simulated paginated endpoint and watch results accumulate.",
+      "content": "Step through a simulated paginated endpoint one page at a time, watching the accumulated result list grow and the stop condition finally trigger correctly.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: paginate with a next-page token until it's exhausted.",
+      "content": "```python\nall_records = []\nnext_token = None\n\nwhile True:\n    params = {\"limit\": 100}\n    if next_token:\n        params[\"page_token\"] = next_token\n    response = requests.get(url, headers=headers, params=params)\n    data = response.json()\n    all_records.extend(data[\"records\"])\n    next_token = data.get(\"next_page_token\")\n    if not next_token:\n        break\n\nprint(len(all_records))\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Implement offset/limit pagination and correctly detect the last page.",
+      "content": "Implement pagination for a sandbox endpoint that uses offset/limit instead of a next-page token, correctly detecting when the last page has been reached.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a stop condition checking the wrong value for 'no more pages'.",
+      "content": "A pagination loop checks `if next_token == \"\":` to detect the end, but the API actually returns `None` (not an empty string) when there are no more pages, causing an infinite loop. Fix the stop condition.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "An unterminated pagination bug can ship silently if not caught in testing.",
+      "content": "What would have happened, silently, if this bug had shipped without you noticing the loop never terminated in testing?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain that a successful response doesn't guarantee complete data.",
+      "content": "Explain to someone why 'the request succeeded and returned data' doesn't mean 'you got all the data,' using the round-number-of-results observation as your example.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Implement full pagination and verify the total against the API's reported count.",
+      "content": "Implement full pagination for the price-history endpoint and confirm the total record count matches the API's own reported total, rather than assuming your loop got everything.",
+      "estimatedMinutes": 14
+    },
+    "portfolioEvidence": {
+      "summary": "This enables a genuine historical backfill for Mission 3's forecasting work.",
+      "content": "This pagination-aware fetch is what makes a genuine historical backfill possible — a real prerequisite for training any forecasting model in Mission 3.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-apis-pagination-full-backfill",
+      "title": "Full Backfill",
+      "description": "Sandboxed exercise against a simulated multi-page endpoint requiring the learner to retrieve every page and verify the total count matches the API's own reported total.",
+      "starterCodePath": "labs/04-apis/full-backfill/starter.py",
+      "testCasesPath": "labs/04-apis/full-backfill/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "pagination-loop-visualizer",
+      "title": "Pagination Loop Visualizer",
+      "description": "Shows a growing accumulated result list as pages are fetched one at a time, ending when the stop condition correctly triggers."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-apis-pagination-1",
+      "front": "Why might a request that returns exactly 100 records be a red flag rather than a coincidence?",
+      "back": "Many APIs cap page size at a round number like 100; getting exactly that many is a strong hint that more pages exist beyond the first, not that the dataset happens to contain precisely 100 records.",
+      "conceptNodeId": "apis.pagination"
+    },
+    {
+      "id": "fc-apis-pagination-2",
+      "front": "What's a common cause of an infinite pagination loop?",
+      "back": "Checking for the wrong 'no more pages' signal — e.g. comparing a next-page token to an empty string when the API actually returns None, so the loop's stop condition never triggers.",
+      "conceptNodeId": "apis.pagination"
+    }
+  ],
+  "assessment": {
+    "primaryType": "teachBack",
+    "rubric": [
+      "Correctly explains why a successful response doesn't guarantee complete data, with a concrete example",
+      "Pagination implementation correctly terminates and doesn't loop infinitely under either token-based or offset/limit pagination",
+      "Verifies completeness against the API's own reported total rather than assuming the loop worked"
+    ]
+  },
+  "references": [
+    {
+      "title": "JSON:API — Pagination",
+      "url": "https://jsonapi.org/format/#fetching-pagination",
+      "type": "standard",
+      "versionOrDate": "JSON:API 1.1",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

@@ -1,0 +1,137 @@
+{
+  "id": "graphs-flow-algorithms",
+  "title": "Flow Algorithms: How Much Power Can Actually Get Through",
+  "skillFolder": "09-graph-algorithms",
+  "missionId": "M5",
+  "concept": "Max-Flow / Min-Cut Algorithms",
+  "knowledgeGraphNodeId": "graphs.flow-algorithms",
+  "difficulty": "foundational",
+  "dependencies": ["graphs.shortest-path"],
+  "learningObjectives": [
+    "Explain the difference between finding the shortest path and finding the maximum flow through a network",
+    "Explain what a transmission line's capacity constraint means for a flow network model",
+    "Implement or apply a max-flow algorithm to determine the maximum deliverable power between two points",
+    "Identify the min-cut (the bottleneck) that limits a network's maximum flow, and explain the max-flow min-cut relationship"
+  ],
+  "whyItMatters": "Dijkstra's algorithm found the lowest-loss path, but it silently assumed transmission lines have unlimited capacity — real lines have a maximum safe carrying capacity, and knowing the cheapest route doesn't tell you whether enough power can actually get through it during peak demand.",
+  "capstoneContribution": "The Digital Twin's capacity-aware routing calculation — answering not just 'what's the cheapest path' but 'how much power can actually reach this substation given real line capacity limits,' the exact gap Dijkstra's algorithm alone leaves open.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "The cheapest route might not have enough capacity to carry actual demand.",
+      "content": "Your minimum-loss route from the last lesson might pass through a transmission line rated for only 3000 kW, but the actual demand you need to route through it is 5000 kW — the cheapest path isn't useful if it can't carry enough power.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Max flow asks a fundamentally different question than shortest path.",
+      "content": "This is a fundamentally different question from shortest path: not 'what's the cheapest way to send power' but 'what's the most power that can possibly get from A to B given every line's capacity limit' — exactly the question that matters when demand approaches a network's real limits.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Max-flow finds the greatest deliverable flow; max-flow min-cut identifies the true bottleneck.",
+      "content": "A flow network assigns each edge a capacity — the maximum amount that can flow through it — and the max-flow problem asks for the greatest total flow achievable from a source to a sink without exceeding any edge's capacity. The Ford-Fulkerson approach (and refinements like Edmonds-Karp) repeatedly finds an 'augmenting path' with spare capacity from source to sink and pushes more flow along it, until no augmenting path remains. The max-flow min-cut theorem states that the maximum achievable flow exactly equals the capacity of the network's min-cut — the smallest total capacity of edges that, if removed, would disconnect the source from the sink — meaning the min-cut identifies the actual bottleneck limiting the whole network's throughput.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "Water-pipe-style flow through capacity-labeled edges, converging on the highlighted min-cut bottleneck.",
+      "content": "A flow network with capacity labels on each edge shows water-pipe-style flow volume animated through the network, converging on a highlighted min-cut set of edges that represents the network's true bottleneck.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Adjust edge capacities and watch max-flow and the min-cut edges update live.",
+      "content": "Adjust individual edge capacities on a live flow network and watch the computed max-flow value and the highlighted min-cut edges update accordingly, directly observing which edge is currently the bottleneck.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: compute max-flow on a capacity-constrained network.",
+      "content": "```python\nimport networkx as nx\n\nG = nx.DiGraph()\nG.add_edge(\"main-feed\", \"substation-1\", capacity=4000)\nG.add_edge(\"substation-1\", \"substation-4\", capacity=3000)\nG.add_edge(\"main-feed\", \"substation-2\", capacity=3000)\nG.add_edge(\"substation-2\", \"substation-4\", capacity=2500)\n\nmax_flow_value, flow_dict = nx.maximum_flow(G, \"main-feed\", \"substation-4\")\nprint(max_flow_value)\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Model realistic capacities and identify the min-cut for a specific substation.",
+      "content": "Model your grid topology as a capacity-constrained flow network with realistic line capacities, compute the maximum deliverable power to a specific substation, and identify the min-cut edges limiting it.",
+      "estimatedMinutes": 14
+    },
+    "debugging": {
+      "summary": "Fix a bidirectional line modeled with mismatched directed-edge capacities.",
+      "content": "A bidirectional transmission line was modeled as two separate directed edges with mismatched capacities in each direction, producing an unrealistic max-flow result. Identify the modeling error and fix the capacity assignment.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "The min-cut tells you where infrastructure investment matters most.",
+      "content": "Once you know the min-cut for a critical substation, what does that actually tell you about where infrastructure investment would have the biggest impact on how much power can reach it?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain the max-flow min-cut relationship using your own topology's bottleneck.",
+      "content": "Explain to someone the max-flow min-cut relationship using your own grid topology's computed bottleneck as the concrete example.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Report capacity-constrained substations and their min-cut bottlenecks under peak demand.",
+      "content": "Compute the maximum deliverable power to each substation in your grid under realistic capacity constraints, identify which substations are capacity-constrained during peak demand (per your Mission 3/4 forecasts), and report the specific min-cut bottleneck for each.",
+      "estimatedMinutes": 18
+    },
+    "portfolioEvidence": {
+      "summary": "This connects grid capacity analysis back to Mission 3/4's demand predictions.",
+      "content": "This capacity-aware analysis directly answers whether the grid can actually deliver what the forecasting models predict will be needed — connecting this skill folder's work back to Mission 3 and 4's demand predictions.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-graphs-flow-algorithms-max-flow-capacity",
+      "title": "Max-Flow Capacity",
+      "description": "Sandboxed exercise modeling a capacity-constrained grid as a flow network and computing max-flow/min-cut, with a planted mismatched-bidirectional-capacity bug to fix.",
+      "starterCodePath": "labs/09-graph-algorithms/max-flow-capacity/starter.py",
+      "testCasesPath": "labs/09-graph-algorithms/max-flow-capacity/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "max-flow-min-cut-visualizer",
+      "title": "Max-Flow Min-Cut Visualizer",
+      "description": "Live flow network with adjustable capacities, showing computed max-flow value and highlighted min-cut bottleneck edges."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-graphs-flow-algorithms-1",
+      "front": "What does the max-flow min-cut theorem state?",
+      "back": "The maximum achievable flow through a network exactly equals the total capacity of the network's min-cut — the smallest set of edges that, if removed, would disconnect the source from the sink.",
+      "conceptNodeId": "graphs.flow-algorithms"
+    },
+    {
+      "id": "fc-graphs-flow-algorithms-2",
+      "front": "Why is a modeling mistake likely if a bidirectional transmission line's two directed edges have different capacities?",
+      "back": "A physical bidirectional line typically has the same carrying capacity in either direction; mismatched capacities usually indicate an error in how the line was translated into the directed-edge flow model, not a real asymmetry.",
+      "conceptNodeId": "graphs.flow-algorithms"
+    }
+  ],
+  "assessment": {
+    "primaryType": "codeReview",
+    "rubric": [
+      "Correctly identifies and fixes the mismatched bidirectional-capacity modeling error",
+      "Computed max-flow and min-cut are correctly interpreted in terms of real infrastructure bottlenecks",
+      "Capacity-constrained substations are correctly cross-referenced against Mission 3/4 demand forecasts"
+    ]
+  },
+  "references": [
+    {
+      "title": "NetworkX — Flow algorithms",
+      "url": "https://networkx.org/documentation/stable/reference/algorithms/flow.html",
+      "type": "officialDocs",
+      "versionOrDate": "NetworkX 3.3",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "Max-flow min-cut theorem",
+      "url": "https://en.wikipedia.org/wiki/Max-flow_min-cut_theorem",
+      "type": "other",
+      "versionOrDate": "Wikipedia, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

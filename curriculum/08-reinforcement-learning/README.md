@@ -24,4 +24,4 @@ Battery and EV charging scheduling optimisation — the core "Act" decision-make
 
 ## Status
 
-Skeleton only.
+Complete. All 6 lessons authored and schema-validated in [`lessons/08-reinforcement-learning/`](../../lessons/08-reinforcement-learning/): MDP Fundamentals → Reward Design → {Value-Based Methods, Policy Gradient Methods} → Training/Evaluation/Safety → The Battery Scheduler (boss battle — the first AI Energy OS component that recommends and explains a decision, not just predicts one).
