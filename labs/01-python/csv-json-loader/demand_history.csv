@@ -1,0 +1,4 @@
+timestamp,demand_kw,source
+2026-07-01T09:00,4821,substation-12
+2026-07-01T10:00,4790,substation-12
+2026-07-01T11:00,5100,substation-12

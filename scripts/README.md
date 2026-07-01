@@ -10,4 +10,6 @@ Build, content-generation, and living-curriculum update scripts.
 
 ## Status
 
-Empty. First scripts are the schema validators, written alongside `schemas/` in the remainder of Phase 0.
+[`generate_knowledge_graph.py`](generate_knowledge_graph.py) is written and run: it validates every lesson in `lessons/**/*.lesson.json` against `schemas/lesson.schema.json`, derives a `concept-node.schema.json`-conformant node per lesson, checks the whole graph for missing prerequisite edges and cycles, and writes [`docs/08-knowledge-graph/knowledge-graph.json`](../docs/08-knowledge-graph/knowledge-graph.json). This is the script that formalizes the ad-hoc validation run by hand after every lesson added during curriculum authoring — re-run it after any future lesson change.
+
+Remaining: a CI wrapper that runs this on every commit (see [`docs/18-testing/overview.md`](../docs/18-testing/overview.md)) rather than manually.

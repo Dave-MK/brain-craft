@@ -1,0 +1,137 @@
+{
+  "id": "power-generation-transmission-distribution",
+  "title": "Generation, Transmission, Distribution: Where the Losses Actually Come From",
+  "skillFolder": "10-power-systems",
+  "missionId": "M6",
+  "concept": "Grid Structure (generation, transmission, distribution)",
+  "knowledgeGraphNodeId": "power.generation-transmission-distribution",
+  "difficulty": "introductory",
+  "dependencies": ["graphs.grid-router"],
+  "learningObjectives": [
+    "Describe the three-stage structure of a real electricity grid: generation, transmission, distribution",
+    "Explain why transmission uses very high voltage and distribution uses much lower voltage",
+    "Explain physically why transmission loss happens (resistive/I-squared-R loss) and why it scales with current, not just distance",
+    "Map your Mission 5 graph edges onto real transmission/distribution line types and reconsider whether your loss-weight assumptions were realistic"
+  ],
+  "whyItMatters": "Every 'transmission loss percentage' you assigned as an edge weight in Mission 5 was a number you invented for the exercise. This lesson grounds that number in actual physics, so the Digital Twin's routing calculations reflect something real rather than a plausible-looking placeholder.",
+  "capstoneContribution": "Physically grounded transmission-loss modeling for the Digital Twin's graph edges — replacing invented loss percentages with values derived from real voltage/current/distance relationships.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Mission 5's loss percentages were invented, not physically grounded.",
+      "content": "Your grid-routing graph from Mission 5 has edges with loss percentages you assigned somewhat arbitrarily. Real transmission loss follows specific physical laws, and if your model doesn't reflect them even approximately, its routing recommendations aren't grounded in anything real.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Every algorithm is only as good as the numbers you feed it.",
+      "content": "This is the first lesson in the entire curriculum where you're required to understand physical reality, not just computational technique — every algorithm from Missions 1-5 is only as good as the numbers you feed it, and this lesson is where those numbers start meaning something.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "High voltage minimizes current, and loss scales with current squared, not distance alone.",
+      "content": "A real grid has three structural stages: generation (power plants producing electricity), transmission (high-voltage, long-distance lines moving bulk power from generation sites to regional substations), and distribution (lower-voltage, local lines moving power from substations to individual consumers). Transmission uses very high voltage specifically because power loss in a line is proportional to the square of the current (P_loss = I squared times R) — for a fixed amount of power delivered, higher voltage means proportionally lower current, and therefore dramatically lower resistive loss, which is why long-distance transmission is only practical at high voltage. Distribution uses much lower voltage because it's inherently short-distance and lower-power per line, and high voltage close to consumers would be needlessly dangerous and expensive to insulate for.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "The three-stage pipeline with voltage levels labeled, alongside the loss formula scaling with current.",
+      "content": "The three-stage pipeline (generation, transmission, distribution) shows voltage levels labeled at each stage, with a side panel showing the resistive loss formula visually scaling as current changes at a fixed power level.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Adjust voltage and power and watch current and loss recompute live.",
+      "content": "Adjust a line's voltage and power level and watch the resulting current and resistive loss recompute live, directly observing why doubling voltage roughly quarters the loss for the same delivered power.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: compute transmission loss from voltage, current, and resistance.",
+      "content": "```python\ndef transmission_loss_kw(power_kw, voltage_kv, resistance_ohms):\n    current_amps = (power_kw * 1000) / (voltage_kv * 1000)\n    loss_watts = (current_amps ** 2) * resistance_ohms\n    return loss_watts / 1000\n\nloss_at_11kv = transmission_loss_kw(5000, 11, 0.5)\nloss_at_400kv = transmission_loss_kw(5000, 400, 0.5)\nprint(loss_at_11kv, loss_at_400kv)\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Compare loss across three real-world voltage levels for the same delivered power.",
+      "content": "Using the function above, compute and compare transmission loss for the same power delivered at three different real-world voltage levels (11kV distribution, 132kV sub-transmission, 400kV transmission), and explain in your own words why the grid uses different voltages for different purposes rather than one voltage everywhere.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a loss calculation that skips converting power to current first.",
+      "content": "A loss calculation uses power directly in the resistive-loss formula instead of first converting to current, silently producing a physically nonsensical loss value. Identify the missing current-conversion step and fix it.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "A flat loss percentage hides a real dependency on actual power flow.",
+      "content": "Given what you now know about resistive loss, was your Mission 5 assumption of a single flat 'loss percentage' per graph edge realistic, or did it hide a dependency on how much power is actually flowing through that edge at a given moment?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why transmission uses high voltage using the physics, not just the fact.",
+      "content": "Explain to someone why long-distance transmission uses very high voltage, using the resistive-loss relationship as your evidence rather than just stating it as a fact.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Recompute Mission 5's edge weights using physically grounded loss calculations.",
+      "content": "Recompute your Mission 5 grid topology's edge weights using physically grounded loss calculations (voltage, resistance, and actual power flow) instead of the flat assumed percentages, and report how much the recommended minimum-loss routes change, if at all.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This is the first real upgrade to the Digital Twin's physical fidelity.",
+      "content": "This physically grounded loss model is the first real upgrade to the Digital Twin's fidelity — the beginning of Mission 6's stated goal of replacing plausible-looking placeholders with real physics.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-power-generation-transmission-distribution-real-loss",
+      "title": "Real Loss",
+      "description": "Sandboxed exercise computing physically grounded transmission loss across multiple voltage levels, with a planted missing-current-conversion bug to fix.",
+      "starterCodePath": "labs/10-power-systems/real-loss/starter.py",
+      "testCasesPath": "labs/10-power-systems/real-loss/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "voltage-current-loss-visualizer",
+      "title": "Voltage/Current/Loss Visualizer",
+      "description": "Adjustable voltage and power level showing live-recomputed current and resistive loss."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-power-generation-transmission-distribution-1",
+      "front": "Why does transmission use very high voltage for long-distance power delivery?",
+      "back": "Loss is proportional to current squared; for a fixed delivered power, higher voltage means lower current, and therefore dramatically lower resistive loss over long distances.",
+      "conceptNodeId": "power.generation-transmission-distribution"
+    },
+    {
+      "id": "fc-power-generation-transmission-distribution-2",
+      "front": "Why was Mission 5's flat 'loss percentage per edge' an oversimplification?",
+      "back": "Real transmission loss depends on the actual current flowing through a line, which depends on how much power is being transmitted at that moment — a flat percentage ignores that the loss rate itself changes with load, not just distance.",
+      "conceptNodeId": "power.generation-transmission-distribution"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly diagnoses and fixes the missing current-conversion step in the loss calculation",
+      "Correctly compares loss across different voltage levels for identical delivered power",
+      "Recomputed Mission 5 edge weights are grounded in actual voltage/resistance/flow data, not re-guessed percentages"
+    ]
+  },
+  "references": [
+    {
+      "title": "U.S. EIA — How electricity is generated",
+      "url": "https://www.eia.gov/energyexplained/electricity/how-electricity-is-generated.php",
+      "type": "officialDocs",
+      "versionOrDate": "EIA, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "U.S. EIA — Delivery to consumers",
+      "url": "https://www.eia.gov/energyexplained/electricity/delivery-to-consumers.php",
+      "type": "officialDocs",
+      "versionOrDate": "EIA, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

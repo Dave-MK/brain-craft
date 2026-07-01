@@ -1,0 +1,130 @@
+{
+  "id": "capstone-dashboard",
+  "title": "The Dashboard: Where the Grid Copilot Actually Meets a Human",
+  "skillFolder": "11-capstone-ai-energy-os",
+  "missionId": "M8",
+  "concept": "Grid Copilot Dashboard",
+  "knowledgeGraphNodeId": "capstone.dashboard",
+  "difficulty": "intermediate",
+  "dependencies": ["capstone.carbon-optimisation", "capstone.explainability-layer"],
+  "learningObjectives": [
+    "Design a dashboard information hierarchy that surfaces the most operationally urgent information first",
+    "Present a unified explanation (from the previous lesson) in a form a non-technical grid operator could actually use under time pressure",
+    "Apply the platform's own design principles (dark-mode-first, minimal, animation only where educational) to a real operational tool, not a learning interface",
+    "Evaluate whether your dashboard actually reduces the time and effort needed to understand a recommendation compared to reading the raw explanation JSON"
+  ],
+  "whyItMatters": "Every explanation your integrated system now produces is technically complete and checkable — but a JSON object is not a decision-support tool a grid operator can use during an actual overload event. The entire Grid Copilot vision from the mission's origin depends on this information actually reaching a human in a usable form, under real time pressure.",
+  "capstoneContribution": "The Digital Twin's actual Grid Copilot dashboard — the human-facing surface where every forecast, recommendation, and explanation this curriculum built becomes something a real operator could act on.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A checkable JSON explanation isn't usable during a real, time-pressured incident.",
+      "content": "Your unified explainability layer produces technically excellent, checkable explanations — as structured data. A grid operator responding to a developing overload has neither the time nor the need to parse a JSON object; they need the critical information surfaced immediately, in an order that matches how urgently each piece matters.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is where the curriculum's output finally becomes usable by a human.",
+      "content": "This is the moment the entire curriculum's technical output finally becomes something a human being could actually use to make a faster, better decision — which was always the actual point, not an afterthought tacked onto the end.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Surface safety status first, then the recommendation, then supporting detail — applying the platform's own design principles.",
+      "content": "An operational dashboard's information hierarchy should surface the most time-critical information first: is anything currently unsafe (per the safety constraints from Mission 5), what's the recommended action right now, and only then the supporting detail (cost/emissions quantities, alternatives considered, confidence limitations) for someone who wants to dig deeper. This directly applies the platform's own design principles from the learning platform's design-principles documentation: dark-mode-first (operators often work in control rooms with dimmed lighting), minimal (no decorative clutter competing for attention during a real incident), and animation only where it communicates something real (a trend line moving, not a decorative transition). A genuinely useful dashboard is validated the same way any other claim in this curriculum is validated: by measuring something concrete, like how long it takes a test user to correctly identify the recommended action and its main trade-off, compared to reading the raw explanation object.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "An information-hierarchy pyramid maps directly onto the dashboard's actual layout priority.",
+      "content": "An information-hierarchy pyramid with 'is anything unsafe right now' at the top, 'recommended action' just below, and supporting detail at the base, mapped onto an actual dashboard wireframe layout reflecting that priority order.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Rearrange dashboard panels by priority and test reaction time on a mocked overload scenario.",
+      "content": "Rearrange dashboard panels by priority on a live wireframe and receive feedback on whether the resulting layout actually surfaces the most time-critical information first, then compare reaction time on a mocked overload scenario against a version with a poorly-ordered layout.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: render a dashboard summary prioritizing safety status.",
+      "content": "```python\ndef render_dashboard_summary(unified_explanation, safety_status):\n    return {\n        \"alert_banner\": \"UNSAFE\" if not safety_status[\"is_safe\"] else None,\n        \"primary_recommendation\": unified_explanation[\"recommendation\"],\n        \"key_trade_off\": summarize_top_two_quantities(unified_explanation[\"supporting_quantities\"]),\n        \"details_expandable\": unified_explanation,\n    }\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Implement panel layout ensuring safety status is always visually distinguishable.",
+      "content": "Design and implement the layout logic for a dashboard panel that surfaces a battery-scheduling recommendation, ensuring the safety status is always visually distinguishable from the routine recommendation even at a glance.",
+      "estimatedMinutes": 14
+    },
+    "debugging": {
+      "summary": "Fix a layout giving equal visual weight to every field, burying the safety alert.",
+      "content": "A dashboard layout displays the full unified explanation object with equal visual weight given to every field, burying the safety-critical alert banner among routine cost/emissions details. Identify the missing visual hierarchy and fix the layout priority.",
+      "estimatedMinutes": 7
+    },
+    "reflection": {
+      "summary": "Equal visual weight functionally hides the most important information.",
+      "content": "Why does giving every piece of information equal visual weight functionally hide the most important piece, even though technically nothing is missing from the display?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why the learning platform's own design principles apply to an operational dashboard too.",
+      "content": "Explain to someone why the platform's own dark-mode-first, minimal design principles from the learning platform itself apply just as directly to an operational grid dashboard, not just to educational content.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Build the dashboard's core view and test it against a mocked overload scenario.",
+      "content": "Build the Grid Copilot dashboard's core view: safety status, primary recommendation, and expandable supporting detail, applying the platform's design principles, and test it against at least one mocked overload scenario for how quickly the critical information can be identified.",
+      "estimatedMinutes": 20
+    },
+    "portfolioEvidence": {
+      "summary": "This is the literal Grid Copilot the mission's founding conversation envisioned.",
+      "content": "This dashboard is the actual human-facing surface of the AI Energy OS — the literal Grid Copilot the mission's founding conversation envisioned, now built on top of everything else in this curriculum.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-capstone-dashboard-grid-copilot-view",
+      "title": "Grid Copilot View",
+      "description": "Sandboxed exercise implementing a priority-ordered dashboard layout for a battery-scheduling recommendation, requiring a fix for a planted equal-visual-weight layout bug and validation against a mocked overload scenario.",
+      "starterCodePath": "labs/11-capstone-ai-energy-os/grid-copilot-view/starter.py",
+      "testCasesPath": "labs/11-capstone-ai-energy-os/grid-copilot-view/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "dashboard-information-hierarchy-visualizer",
+      "title": "Dashboard Information Hierarchy Visualizer",
+      "description": "Draggable dashboard panel layout with feedback on whether the arrangement surfaces the most time-critical information first."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-capstone-dashboard-1",
+      "front": "Why must a dashboard's safety status be visually distinguishable at a glance, not just present?",
+      "back": "Under real time pressure, a grid operator needs to instantly identify whether anything is unsafe without reading every field; if safety status has the same visual weight as routine detail, it's effectively hidden even though it's technically displayed.",
+      "conceptNodeId": "capstone.dashboard"
+    },
+    {
+      "id": "fc-capstone-dashboard-2",
+      "front": "How should a dashboard's usefulness actually be validated?",
+      "back": "By measuring something concrete, like how long it takes a test user to correctly identify the recommended action and its main trade-off, compared against reading the raw explanation data directly.",
+      "conceptNodeId": "capstone.dashboard"
+    }
+  ],
+  "assessment": {
+    "primaryType": "projectWork",
+    "rubric": [
+      "Safety status is always visually distinguishable from routine recommendation detail, even at a glance",
+      "Layout correctly applies the platform's dark-mode-first, minimal design principles rather than defaulting to generic UI",
+      "Dashboard is tested against a mocked scenario with a measured, not just asserted, usability outcome"
+    ]
+  },
+  "references": [
+    {
+      "title": "Nielsen Norman Group — Dashboard Design",
+      "url": "https://www.nngroup.com/articles/dashboard-design/",
+      "type": "officialDocs",
+      "versionOrDate": "NN/g, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

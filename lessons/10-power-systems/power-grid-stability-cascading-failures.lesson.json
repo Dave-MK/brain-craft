@@ -1,0 +1,137 @@
+{
+  "id": "power-grid-stability-cascading-failures",
+  "title": "Cascading Failures: Why One Substation Going Down Can Take Down Ten",
+  "skillFolder": "10-power-systems",
+  "missionId": "M6",
+  "concept": "Grid Stability, N-1 Contingency, and Cascading Failure Mechanics",
+  "knowledgeGraphNodeId": "power.grid-stability-cascading-failures",
+  "difficulty": "foundational",
+  "dependencies": ["power.load-balancing"],
+  "learningObjectives": [
+    "Explain, mechanically, how a single line/substation failure can overload neighboring lines and trigger a cascade",
+    "Explain the N-1 contingency criterion real grid operators plan against, and how it relates to Mission 5's articulation-point analysis",
+    "Distinguish a localized outage from a cascading, wide-area blackout in terms of underlying cause",
+    "Evaluate whether your Mission 5 resilience analysis would actually have caught a realistic cascading scenario"
+  ],
+  "whyItMatters": "Mission 5's resilience lesson checked whether removing substations disconnects the graph — but real cascading blackouts often happen even when the graph stays technically connected, because the failure rerouting overloads a neighboring line beyond its capacity, which then also fails, and so on. This is the physical mechanism your graph-only analysis couldn't fully capture without the capacity constraints and physical grounding from this mission.",
+  "capstoneContribution": "The Digital Twin's cascading-failure model — extending Mission 5's connectivity-only resilience check with the capacity-overload mechanism that causes most real large-scale blackouts.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "A cascade can start even when the graph stays technically connected.",
+      "content": "Your Mission 5 resilience analysis checked whether the grid graph stays connected after a substation fails, but a real cascading blackout can start even when the graph technically stays connected — because the remaining lines, now carrying rerouted power, exceed their capacity and fail too, in a chain reaction your Mission 5 analysis never modeled.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Real large-scale blackouts are usually cascades, not single catastrophic failures.",
+      "content": "The largest real-world blackouts in history were rarely caused by a single catastrophic failure — they were caused by one failure overloading a neighbor, which failed and overloaded another, cascading far beyond the original problem. Understanding this mechanism is what separates a resilience analysis that looks rigorous from one that actually reflects how real grids fail.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "N-1 planning guards against single failures; cascades happen when rerouted flow overloads neighbors.",
+      "content": "The N-1 contingency criterion is the real-world planning standard requiring a grid to remain stable — no line overloaded beyond capacity — even if any single component fails; well-run grids plan routing and capacity so N-1 always holds, and this is the actual real-world engineering counterpart to the single-substation-failure check from Mission 5's resilience lesson. A cascading failure begins when a failure (a line trip, a substation outage) forces its power to reroute through remaining lines; if that rerouted power exceeds a neighboring line's capacity, that line also trips (often automatically, via protective relays, to prevent equipment damage), forcing yet more rerouting onto other remaining lines — a chain reaction that can rapidly grow from one failure into a wide-area blackout. This mechanism means resilience checking that only asks 'does the graph stay connected' misses the actual failure mode — the correct check also asks 'do the remaining lines, given plausible rerouted flow, stay within capacity,' directly connecting back to Mission 5's max-flow work.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "An initial failure reroutes flow, overloading and tripping a neighbor, spreading the chain reaction.",
+      "content": "An initial line failure reroutes flow onto a neighboring line, that line's capacity being exceeded causes it to also fail, rerouting flow yet again onto a third line, animated as a spreading chain reaction across the grid.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Trigger a line failure and watch the simulator reroute flow and flag overloads.",
+      "content": "Trigger a single line failure on a live capacity-labeled grid graph and watch the simulator automatically reroute flow and flag any newly-overloaded line, optionally letting the cascade continue automatically to see how far it spreads.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: simulate a cascade recursively as reroutes trigger further overloads.",
+      "content": "```python\ndef simulate_cascade(grid_with_capacities, failed_edge, current_flows):\n    rerouted_flows = reroute_flow(grid_with_capacities, failed_edge, current_flows)\n    newly_overloaded = [\n        edge for edge, flow in rerouted_flows.items()\n        if flow > grid_with_capacities[edge][\"capacity\"]\n    ]\n    if not newly_overloaded:\n        return {\"cascade_stopped\": True, \"affected_edges\": [failed_edge]}\n    return simulate_cascade(grid_with_capacities, newly_overloaded[0], rerouted_flows)\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Run the cascade simulation against a real grid topology and report the spread.",
+      "content": "Run the cascade simulation against your Mission 5 grid topology with realistic capacities, starting from a single line failure, and report how many additional lines fail before the cascade stops, if any.",
+      "estimatedMinutes": 14
+    },
+    "debugging": {
+      "summary": "Fix an unrealistic even-rerouting assumption in the cascade simulation.",
+      "content": "A cascade simulation reroutes failed flow evenly across all remaining edges rather than along the shortest/lowest-loss available alternative paths, producing an unrealistic cascade pattern. Identify the unrealistic rerouting assumption and fix it to use actual routing logic from Mission 5.",
+      "estimatedMinutes": 8
+    },
+    "reflection": {
+      "summary": "A connectivity-only check can miss a real cascading vulnerability.",
+      "content": "Why might a grid that passes Mission 5's 'stays connected after 2 substations fail' check still be vulnerable to a cascading failure that a connectivity-only analysis would never catch?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain the N-1 criterion and how it goes beyond articulation-point analysis.",
+      "content": "Explain to someone the N-1 contingency criterion and how it connects to, but goes beyond, Mission 5's articulation-point analysis.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Find a non-disconnecting failure that still triggers a capacity-driven cascade.",
+      "content": "Extend your Mission 5 resilience report with a cascading-failure simulation: for your grid topology, identify at least one single-line failure that would NOT disconnect the graph but WOULD trigger a capacity-driven cascade, and report how far it spreads.",
+      "estimatedMinutes": 18
+    },
+    "portfolioEvidence": {
+      "summary": "This closes the gap between connectivity checks and how real grids actually fail.",
+      "content": "This cascading-failure model closes the actual gap between Mission 5's graph-connectivity resilience check and how real grids actually fail — a more complete answer to the mission's founding resilience question.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-power-grid-stability-cascading-failures-simulation",
+      "title": "Cascade Simulation",
+      "description": "Sandboxed exercise simulating capacity-driven cascading failure across a grid topology, requiring realistic rerouting logic and a fix for a planted even-rerouting bug.",
+      "starterCodePath": "labs/10-power-systems/cascade-simulation/starter.py",
+      "testCasesPath": "labs/10-power-systems/cascade-simulation/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "cascading-failure-spread-visualizer",
+      "title": "Cascading Failure Spread Visualizer",
+      "description": "Animated spread of a cascading failure across a capacity-labeled grid graph, triggered from a single initial line failure."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-power-grid-stability-cascading-failures-1",
+      "front": "What does the N-1 contingency criterion require of a well-planned grid?",
+      "back": "That the grid remains stable — no line overloaded beyond capacity — even if any single component fails, meaning routing and capacity are planned with that single-failure scenario always in mind.",
+      "conceptNodeId": "power.grid-stability-cascading-failures"
+    },
+    {
+      "id": "fc-power-grid-stability-cascading-failures-2",
+      "front": "Why can a grid that stays 'connected' after a substation fails still be at risk of a blackout?",
+      "back": "Staying connected only means a path still exists between nodes; it says nothing about whether the rerouted power flow along that path exceeds a remaining line's capacity, which is the actual trigger for a cascading failure.",
+      "conceptNodeId": "power.grid-stability-cascading-failures"
+    }
+  ],
+  "assessment": {
+    "primaryType": "research",
+    "rubric": [
+      "Cascade simulation uses realistic rerouting logic consistent with Mission 5's routing algorithms, not an even-split shortcut",
+      "Correctly identifies at least one failure scenario that passes connectivity but fails a capacity-driven cascade check",
+      "Explains clearly why connectivity-only resilience analysis is insufficient on its own"
+    ]
+  },
+  "references": [
+    {
+      "title": "U.S. DOE — Electric Grid 101",
+      "url": "https://www.energy.gov/oe/information-center/educational-resources/electric-grid-101",
+      "type": "officialDocs",
+      "versionOrDate": "U.S. DOE, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "NERC — Reliability Assessments",
+      "url": "https://www.nerc.com/pa/rrm/ea/Pages/default.aspx",
+      "type": "officialDocs",
+      "versionOrDate": "NERC, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

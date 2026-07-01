@@ -84,7 +84,7 @@
       "title": "EXPLAIN ANALYZE",
       "description": "Sandboxed exercise against a large simulated table requiring the learner to diagnose sequential scans, add appropriate indexes, and confirm measurable improvement via EXPLAIN ANALYZE, including a deliberately unhelpful index to identify and remove.",
       "starterCodePath": "labs/03-sql/explain-analyze/starter.sql",
-      "testCasesPath": "labs/03-sql/explain-analyze/test_cases.sql"
+      "testCasesPath": "labs/03-sql/explain-analyze/test_cases.py"
     }
   ],
   "simulations": [

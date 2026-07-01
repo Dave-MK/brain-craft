@@ -16,9 +16,13 @@ Python → Variables → Functions → Objects → DataFrames → Feature Engine
 - Determining what they're ready for next (all prerequisite edges satisfied).
 - Explaining gaps causally: "you cannot yet understand reinforcement learning because you're weak on probability" — a real inference over the graph, not a canned message.
 
-## Data model (sketch)
+## Data model
 
-Each node stores: concept identifier, skill-folder membership, prerequisite edges, mastery threshold definition, current mastery/confidence/retention state per learner, and links to the lesson(s)/lab(s)/assessment(s) that teach and test it. See [`schemas/`](../../schemas/) for the eventual formal schema, and [`docs/12-database/overview.md`](../12-database/overview.md) for storage.
+Implemented in [`schemas/concept-node.schema.json`](../../schemas/concept-node.schema.json): concept identifier, skill-folder membership, prerequisite edges, mastery threshold definition, and a link to the lesson that teaches it. Per-learner mastery/confidence/retention state is deliberately excluded from this static structure — per [`docs/12-database/overview.md`](../12-database/overview.md), that's high-write data keyed by `(learner, nodeId)` that belongs in Postgres, not duplicated into the graph's reference data.
+
+The graph is never hand-authored — [`scripts/generate_knowledge_graph.py`](../../scripts/generate_knowledge_graph.py) derives it directly from every lesson's own `knowledgeGraphNodeId`, `dependencies`, and related fields, validates each derived node against the schema, and checks the whole graph for missing prerequisite edges and cycles before writing [`knowledge-graph.json`](knowledge-graph.json). This is the same file this overview once sketched by hand — as of the full 71-lesson curriculum, it contains **71 nodes and 81 edges spanning missions M1–M6 and M8**, with the script reporting zero missing edges and zero cycles.
+
+Re-run `python scripts/generate_knowledge_graph.py` from the repo root any time lesson content changes; it will fail loudly (non-zero exit, no file written) if a new lesson breaks graph consistency.
 
 ## Who reads/writes it
 

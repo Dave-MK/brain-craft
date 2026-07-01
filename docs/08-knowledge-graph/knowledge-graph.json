@@ -1,0 +1,1238 @@
+{
+  "generatedFrom": "lessons/**/*.lesson.json",
+  "generatedOn": "2026-07-01",
+  "nodeCount": 71,
+  "edgeCount": 81,
+  "nodesByMission": {
+    "M1": 17,
+    "M2": 18,
+    "M3": 6,
+    "M4": 6,
+    "M5": 12,
+    "M6": 6,
+    "M8": 6
+  },
+  "validation": {
+    "allLessonsSchemaValid": true,
+    "missingPrerequisiteEdges": [],
+    "cycleDetected": false
+  },
+  "nodes": [
+    {
+      "id": "apis.authentication",
+      "title": "API Authentication (keys, headers)",
+      "skillFolder": "04-apis",
+      "missionId": "M2",
+      "prerequisites": [
+        "apis.http-fundamentals"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "apis-authentication",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's credential-handling convention — every API key it ever uses, for weather, price, or eventually anything else, follows the same never-hard-coded pattern established here."
+    },
+    {
+      "id": "apis.consuming-rest",
+      "title": "Consuming REST APIs",
+      "skillFolder": "04-apis",
+      "missionId": "M2",
+      "prerequisites": [
+        "apis.authentication"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "apis-consuming-rest",
+      "isBossBattle": false,
+      "capstoneContribution": "The real weather-API-to-structured-record converter — the piece that lets a live API response slot directly into the same ingestion, classification, and storage pipeline built throughout Mission 1 and the SQL skill folder."
+    },
+    {
+      "id": "apis.http-fundamentals",
+      "title": "HTTP Fundamentals (methods, status codes, requests/responses)",
+      "skillFolder": "04-apis",
+      "missionId": "M2",
+      "prerequisites": [
+        "python.error-handling"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "apis-http-fundamentals",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's first live network call — replacing a static CSV snapshot with an actual request to a real weather API, landing eventually in the tables designed in the SQL skill folder."
+    },
+    {
+      "id": "apis.pagination",
+      "title": "Pagination",
+      "skillFolder": "04-apis",
+      "missionId": "M2",
+      "prerequisites": [
+        "apis.consuming-rest"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "apis-pagination",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's historical backfill capability — the ability to pull a complete year of price/weather history, not just whatever fits in one response, to properly train the forecasting models coming in Mission 3."
+    },
+    {
+      "id": "apis.rate-limits-retries",
+      "title": "Rate Limiting and Retry Strategies",
+      "skillFolder": "04-apis",
+      "missionId": "M2",
+      "prerequisites": [
+        "apis.consuming-rest"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "apis-rate-limits-retries",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's resilient polling client — the difference between a script that works once in a demo and a service that can run continuously against a real, rate-limited API without getting itself banned."
+    },
+    {
+      "id": "apis.resilient-ingestion",
+      "title": "Building a Resilient API Ingestion Client",
+      "skillFolder": "04-apis",
+      "missionId": "M2",
+      "prerequisites": [
+        "apis.pagination",
+        "apis.rate-limits-retries"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.9,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "apis-resilient-ingestion",
+      "isBossBattle": true,
+      "capstoneContribution": "The Digital Twin's actual, production-shaped weather and price ingestion client — the single piece of code every later mission's live-data assumption rests on."
+    },
+    {
+      "id": "capstone.ai-energy-os",
+      "title": "Final AI Energy Operating System Delivery (mission-wide capstone synthesis)",
+      "skillFolder": "11-capstone-ai-energy-os",
+      "missionId": "M8",
+      "prerequisites": [
+        "capstone.dashboard",
+        "capstone.research-workspace"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.9,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "capstone-ai-energy-os",
+      "isBossBattle": true,
+      "capstoneContribution": "The complete AI Energy Operating System — the full realization of the mission first scoped in a single conversation about AI and electricity generation, now an actual working system with real, checkable evidence behind every claim it makes."
+    },
+    {
+      "id": "capstone.carbon-optimisation",
+      "title": "Carbon/Emissions Optimisation Layer",
+      "skillFolder": "11-capstone-ai-energy-os",
+      "missionId": "M8",
+      "prerequisites": [
+        "capstone.system-integration"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "capstone-carbon-optimisation",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's carbon-intensity signal and emissions-aware optimisation layer — the piece that makes 'reduce emissions' a real, quantified objective the integrated system can actually act on, not just a reward term with an arbitrary weight."
+    },
+    {
+      "id": "capstone.dashboard",
+      "title": "Grid Copilot Dashboard",
+      "skillFolder": "11-capstone-ai-energy-os",
+      "missionId": "M8",
+      "prerequisites": [
+        "capstone.carbon-optimisation",
+        "capstone.explainability-layer"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "capstone-dashboard",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's actual Grid Copilot dashboard — the human-facing surface where every forecast, recommendation, and explanation this curriculum built becomes something a real operator could act on."
+    },
+    {
+      "id": "capstone.explainability-layer",
+      "title": "System-Wide Explainability Layer",
+      "skillFolder": "11-capstone-ai-energy-os",
+      "missionId": "M8",
+      "prerequisites": [
+        "capstone.system-integration"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "capstone-explainability-layer",
+      "isBossBattle": false,
+      "capstoneContribution": "The AI Energy OS's unified explainability layer — the single, consistent mechanism every subsystem's recommendation passes through before reaching a human, directly implementing the original Grid Copilot vision's core requirement."
+    },
+    {
+      "id": "capstone.research-workspace",
+      "title": "Research Workspace for Hypothesis Testing",
+      "skillFolder": "11-capstone-ai-energy-os",
+      "missionId": "M8",
+      "prerequisites": [
+        "capstone.carbon-optimisation",
+        "capstone.explainability-layer"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "capstone-research-workspace",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's Research Workspace — a structured environment for testing hypotheses about grid changes safely in simulation, delivering on the original mission's explicit strategy of proving value in simulation before approaching real infrastructure."
+    },
+    {
+      "id": "capstone.system-integration",
+      "title": "Full AI Energy OS System Integration",
+      "skillFolder": "11-capstone-ai-energy-os",
+      "missionId": "M8",
+      "prerequisites": [
+        "power.digital-twin-fidelity"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "capstone-system-integration",
+      "isBossBattle": false,
+      "capstoneContribution": "The actual AI Energy OS codebase — one integrated system where the Digital Twin, forecasters, RL agent, and router all run together and can answer a question that spans more than one of them."
+    },
+    {
+      "id": "git.branches",
+      "title": "Branches",
+      "skillFolder": "02-git",
+      "missionId": "M1",
+      "prerequisites": [
+        "git.init-and-commits"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "git-branches",
+      "isBossBattle": false,
+      "capstoneContribution": "The branching discipline every future feature of the AI Energy OS (a new forecasting model, a new RL policy) will be built and tested on before it's trusted enough to reach main."
+    },
+    {
+      "id": "git.init-and-commits",
+      "title": "Git Init, Staging, and Commits",
+      "skillFolder": "02-git",
+      "missionId": "M1",
+      "prerequisites": [
+        "python.oop-basics"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "git-init-and-commits",
+      "isBossBattle": false,
+      "capstoneContribution": "The first commit of the Digital Twin's actual version history — the point where 'a folder of Python files' becomes 'a project with a recoverable past.'"
+    },
+    {
+      "id": "git.merging",
+      "title": "Merging",
+      "skillFolder": "02-git",
+      "missionId": "M1",
+      "prerequisites": [
+        "git.branches"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "git-merging",
+      "isBossBattle": false,
+      "capstoneContribution": "The mechanism by which every validated improvement — a better forecasting model, a safer battery policy — actually lands in the AI Energy OS's trusted main line, rather than staying stranded on an experimental branch forever."
+    },
+    {
+      "id": "git.rebasing-basics",
+      "title": "Rebasing",
+      "skillFolder": "02-git",
+      "missionId": "M1",
+      "prerequisites": [
+        "git.remote-collaboration",
+        "git.resolving-conflicts"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.9,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "git-rebasing-basics",
+      "isBossBattle": true,
+      "capstoneContribution": "The Digital Twin's history-hygiene discipline — every future contributor's branch history stays legible enough that a reviewer (human or, eventually, the AI Tutor examining your work) can actually follow what happened and why."
+    },
+    {
+      "id": "git.remote-collaboration",
+      "title": "Remotes, Push/Pull, and Pull Requests",
+      "skillFolder": "02-git",
+      "missionId": "M1",
+      "prerequisites": [
+        "git.merging"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "git-remote-collaboration",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's move from 'a local folder of code' to 'a real, remotely hosted, reviewable project' — the point where it becomes something a collaborator, researcher, or future you could actually pick up."
+    },
+    {
+      "id": "git.resolving-conflicts",
+      "title": "Resolving Merge Conflicts",
+      "skillFolder": "02-git",
+      "missionId": "M1",
+      "prerequisites": [
+        "git.merging"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "git-resolving-conflicts",
+      "isBossBattle": false,
+      "capstoneContribution": "The discipline that keeps the AI Energy OS's shared logic (thresholds, reward functions, shared utilities) correct even when two lines of work touch the same code at the same time."
+    },
+    {
+      "id": "graphs.flow-algorithms",
+      "title": "Max-Flow / Min-Cut Algorithms",
+      "skillFolder": "09-graph-algorithms",
+      "missionId": "M5",
+      "prerequisites": [
+        "graphs.shortest-path"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "graphs-flow-algorithms",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's capacity-aware routing calculation — answering not just 'what's the cheapest path' but 'how much power can actually reach this substation given real line capacity limits,' the exact gap Dijkstra's algorithm alone leaves open."
+    },
+    {
+      "id": "graphs.grid-router",
+      "title": "Final Grid Routing and Contingency Module (capstone synthesis)",
+      "skillFolder": "09-graph-algorithms",
+      "missionId": "M5",
+      "prerequisites": [
+        "graphs.rl-combination"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.9,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "graphs-grid-router",
+      "isBossBattle": true,
+      "capstoneContribution": "The Digital Twin's complete grid-routing and contingency module — topology, routing, flow, resilience, and adaptive candidate selection combined into the system that directly answers the mission's founding questions with real numbers from your own topology."
+    },
+    {
+      "id": "graphs.representation-traversal",
+      "title": "Graph Representations and Traversal (BFS/DFS)",
+      "skillFolder": "09-graph-algorithms",
+      "missionId": "M5",
+      "prerequisites": [
+        "python.dictionaries"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "graphs-representation-traversal",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's grid topology model — the graph representation every routing, flow, and resilience calculation in this skill folder will be computed against."
+    },
+    {
+      "id": "graphs.resilience-critical-nodes",
+      "title": "Network Resilience and Critical Node/Edge Identification",
+      "skillFolder": "09-graph-algorithms",
+      "missionId": "M5",
+      "prerequisites": [
+        "graphs.shortest-path"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "graphs-resilience-critical-nodes",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's contingency-analysis module — directly implementing the founding 'what if two substations fail' question from the mission's original scoping conversation, using precise graph-structural criteria rather than guesswork."
+    },
+    {
+      "id": "graphs.rl-combination",
+      "title": "Combining Reinforcement Learning with Graph-Structured Problems",
+      "skillFolder": "09-graph-algorithms",
+      "missionId": "M5",
+      "prerequisites": [
+        "graphs.flow-algorithms",
+        "graphs.resilience-critical-nodes",
+        "rl.battery-scheduler"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "graphs-rl-combination",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's routing-decision layer — the actual convergence point of this mission's two skill folders, where graph algorithms define the feasible action space and reinforcement learning chooses adaptively within it."
+    },
+    {
+      "id": "graphs.shortest-path",
+      "title": "Shortest-Path Algorithms (Dijkstra's algorithm)",
+      "skillFolder": "09-graph-algorithms",
+      "missionId": "M5",
+      "prerequisites": [
+        "graphs.representation-traversal"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "graphs-shortest-path",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's minimum-loss routing calculation — directly answering the mission's original example question, 'how do I reduce energy costs by routing more efficiently.'"
+    },
+    {
+      "id": "pandas.capstone-feature-table",
+      "title": "Building the Final Feature Table (capstone synthesis)",
+      "skillFolder": "05-pandas",
+      "missionId": "M2",
+      "prerequisites": [
+        "pandas.data-cleaning"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.9,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "pandas-capstone-feature-table",
+      "isBossBattle": true,
+      "capstoneContribution": "The Digital Twin's Mission 2 deliverable: a single, reproducible, documented feature table combining demand, weather, and price data, engineered and cleaned, ready to train Mission 3's first forecasting model."
+    },
+    {
+      "id": "pandas.data-cleaning",
+      "title": "Data Cleaning (missing values, duplicates, outliers)",
+      "skillFolder": "05-pandas",
+      "missionId": "M2",
+      "prerequisites": [
+        "pandas.merging-datasets"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "pandas-data-cleaning",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's data-quality gate — the step that stands between raw merged data and anything a model is allowed to train on, catching exactly the kind of corrupted input that produces confidently wrong forecasts."
+    },
+    {
+      "id": "pandas.dataframes-basics",
+      "title": "DataFrames (creation, indexing, selection)",
+      "skillFolder": "05-pandas",
+      "missionId": "M2",
+      "prerequisites": [
+        "sql.aggregation"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "pandas-dataframes-basics",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's analysis layer — the DataFrame that sits between 'query the database' and 'feed a model,' where the actual feature engineering for Mission 3 will happen."
+    },
+    {
+      "id": "pandas.filtering-aggregation",
+      "title": "Boolean Filtering and GroupBy Aggregation",
+      "skillFolder": "05-pandas",
+      "missionId": "M2",
+      "prerequisites": [
+        "pandas.dataframes-basics"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "pandas-filtering-aggregation",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's in-memory analysis layer — the same daily-summary and threshold-filtering logic built in SQL, now available directly on a DataFrame for feature engineering."
+    },
+    {
+      "id": "pandas.merging-datasets",
+      "title": "Merging/Joining DataFrames",
+      "skillFolder": "05-pandas",
+      "missionId": "M2",
+      "prerequisites": [
+        "pandas.time-series"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "pandas-merging-datasets",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's first unified feature table — demand, weather, and price combined into a single, time-aligned DataFrame, the direct input every Mission 3 forecasting model will train on."
+    },
+    {
+      "id": "pandas.time-series",
+      "title": "Time-Series Operations (datetime index, resample, rolling)",
+      "skillFolder": "05-pandas",
+      "missionId": "M2",
+      "prerequisites": [
+        "pandas.filtering-aggregation"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "pandas-time-series",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's time-series feature layer — hourly-resampled, rolling-averaged demand and weather data, in the exact shape scikit-learn's forecasting models expect as input in Mission 3."
+    },
+    {
+      "id": "power.digital-twin-fidelity",
+      "title": "Upgrading the Digital Twin with Physical and Economic Realism (capstone synthesis)",
+      "skillFolder": "10-power-systems",
+      "missionId": "M6",
+      "prerequisites": [
+        "power.energy-markets-pricing",
+        "power.grid-stability-cascading-failures"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.9,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "power-digital-twin-fidelity",
+      "isBossBattle": true,
+      "capstoneContribution": "The Digital Twin's fidelity upgrade — the version of the simulation that actually reflects real transmission physics, balancing constraints, renewable variability, cascading-failure risk, and market pricing, ready to be the actual foundation for the final Mission 8 integration."
+    },
+    {
+      "id": "power.energy-markets-pricing",
+      "title": "Energy Markets and Pricing (wholesale markets, marginal pricing, time-of-use)",
+      "skillFolder": "10-power-systems",
+      "missionId": "M6",
+      "prerequisites": [
+        "power.renewable-intermittency"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "power-energy-markets-pricing",
+      "isBossBattle": false,
+      "capstoneContribution": "A physically and economically grounded price model for the Digital Twin — replacing the flat or simplistically time-varying price assumptions used since Mission 1 with a marginal-pricing model that responds to actual supply/demand/renewable conditions."
+    },
+    {
+      "id": "power.generation-transmission-distribution",
+      "title": "Grid Structure (generation, transmission, distribution)",
+      "skillFolder": "10-power-systems",
+      "missionId": "M6",
+      "prerequisites": [
+        "graphs.grid-router"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "power-generation-transmission-distribution",
+      "isBossBattle": false,
+      "capstoneContribution": "Physically grounded transmission-loss modeling for the Digital Twin's graph edges — replacing invented loss percentages with values derived from real voltage/current/distance relationships."
+    },
+    {
+      "id": "power.grid-stability-cascading-failures",
+      "title": "Grid Stability, N-1 Contingency, and Cascading Failure Mechanics",
+      "skillFolder": "10-power-systems",
+      "missionId": "M6",
+      "prerequisites": [
+        "power.load-balancing"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "power-grid-stability-cascading-failures",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's cascading-failure model — extending Mission 5's connectivity-only resilience check with the capacity-overload mechanism that causes most real large-scale blackouts."
+    },
+    {
+      "id": "power.load-balancing",
+      "title": "Grid Balancing and Frequency",
+      "skillFolder": "10-power-systems",
+      "missionId": "M6",
+      "prerequisites": [
+        "power.generation-transmission-distribution"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "power-load-balancing",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's balancing-awareness layer — grounding the battery scheduler's role in the real physical requirement it would actually be serving: absorbing second-to-second imbalance, not just shifting cost over hours."
+    },
+    {
+      "id": "power.renewable-intermittency",
+      "title": "Renewable Generation Variability and Capacity Factor",
+      "skillFolder": "10-power-systems",
+      "missionId": "M6",
+      "prerequisites": [
+        "power.load-balancing"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "power-renewable-intermittency",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's renewable-generation realism layer — grounding the solar/wind features used throughout Missions 3-4 in the actual physical variability those sources exhibit, rather than treating them as smoothly predictable inputs."
+    },
+    {
+      "id": "python.control-flow",
+      "title": "Control Flow (if/elif/else)",
+      "skillFolder": "01-python",
+      "missionId": "M1",
+      "prerequisites": [
+        "python.variables"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "python-control-flow",
+      "isBossBattle": false,
+      "capstoneContribution": "Digital Twin threshold logic — the first branch of the overload/safety checks the Grid Copilot dashboard will later rely on."
+    },
+    {
+      "id": "python.dictionaries",
+      "title": "Dictionaries",
+      "skillFolder": "01-python",
+      "missionId": "M1",
+      "prerequisites": [
+        "python.lists"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "python-dictionaries",
+      "isBossBattle": false,
+      "capstoneContribution": "The structured reading-record format ({'timestamp': ..., 'demand_kw': ..., 'source': ...}) the Digital Twin uses for every ingested data point, and the direct shape Mission 2's API responses will arrive in."
+    },
+    {
+      "id": "python.error-handling",
+      "title": "Error Handling (try/except)",
+      "skillFolder": "01-python",
+      "missionId": "M1",
+      "prerequisites": [
+        "python.dictionaries"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "python-error-handling",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's fault-tolerant ingestion loop — one malformed reading logs a warning and gets skipped, instead of taking down the entire pipeline."
+    },
+    {
+      "id": "python.files-io",
+      "title": "Files and I/O (CSV & JSON)",
+      "skillFolder": "01-python",
+      "missionId": "M1",
+      "prerequisites": [
+        "python.error-handling"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "python-files-io",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's actual data-loading layer — reading historical demand/weather CSV exports and JSON API captures from disk into the same structured-record shape used throughout this mission."
+    },
+    {
+      "id": "python.functions",
+      "title": "Functions",
+      "skillFolder": "01-python",
+      "missionId": "M1",
+      "prerequisites": [
+        "python.loops"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "python-functions",
+      "isBossBattle": false,
+      "capstoneContribution": "The first reusable function in the Digital Twin's codebase — classify_demand() — called from every place that previously duplicated the threshold check inline."
+    },
+    {
+      "id": "python.lists",
+      "title": "Lists",
+      "skillFolder": "01-python",
+      "missionId": "M1",
+      "prerequisites": [
+        "python.variables"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "python-lists",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's rolling window of raw sensor readings — the direct precursor to the pandas Series used from Mission 2 onward."
+    },
+    {
+      "id": "python.loops",
+      "title": "Loops (for/while)",
+      "skillFolder": "01-python",
+      "missionId": "M1",
+      "prerequisites": [
+        "python.control-flow",
+        "python.lists"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "python-loops",
+      "isBossBattle": false,
+      "capstoneContribution": "The batch-classification pass over the Digital Twin's rolling reading window — turns the single-reading threshold check into something that runs across a full day, then a full year, of data."
+    },
+    {
+      "id": "python.modules",
+      "title": "Modules & Packages",
+      "skillFolder": "01-python",
+      "missionId": "M1",
+      "prerequisites": [
+        "python.functions"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "python-modules",
+      "isBossBattle": false,
+      "capstoneContribution": "The first real package structure for the Digital Twin's codebase — separating ingestion, classification, and reporting into their own modules that the rest of the AI Energy OS imports from."
+    },
+    {
+      "id": "python.oop-basics",
+      "title": "Basic OOP (Classes)",
+      "skillFolder": "01-python",
+      "missionId": "M1",
+      "prerequisites": [
+        "python.modules"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.9,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "python-oop-basics",
+      "isBossBattle": true,
+      "capstoneContribution": "The SensorReading class — the Digital Twin's first proper object, replacing the plain dictionary used throughout this mission with something that can validate and classify itself."
+    },
+    {
+      "id": "python.sets",
+      "title": "Sets",
+      "skillFolder": "01-python",
+      "missionId": "M1",
+      "prerequisites": [
+        "python.lists"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "python-sets",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's active-source tracker — knowing which sensors/substations are currently reporting, and comparing coverage between two data feeds (e.g. weather stations vs. demand meters)."
+    },
+    {
+      "id": "python.variables",
+      "title": "Variables",
+      "skillFolder": "01-python",
+      "missionId": "M1",
+      "prerequisites": [],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "python-variables",
+      "isBossBattle": false,
+      "capstoneContribution": "Digital Twin data ingestion — the smallest unit of the weather/consumption/price data pipeline: holding one sensor reading in memory before it is stored, transformed, or forecasted."
+    },
+    {
+      "id": "pytorch.building-networks",
+      "title": "Neural Network Architecture (nn.Module, layers, activations)",
+      "skillFolder": "07-pytorch",
+      "missionId": "M4",
+      "prerequisites": [
+        "pytorch.tensors-autograd"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "pytorch-building-networks",
+      "isBossBattle": false,
+      "capstoneContribution": "The actual architecture of the Digital Twin's first neural forecaster — the specific arrangement of layers and activations that gives it more expressive power than the linear regression baseline from Mission 3."
+    },
+    {
+      "id": "pytorch.neural-forecaster",
+      "title": "Final Neural Forecasting Model and Honest Comparison (capstone synthesis)",
+      "skillFolder": "07-pytorch",
+      "missionId": "M4",
+      "prerequisites": [
+        "pytorch.sequence-models"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.9,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "pytorch-neural-forecaster",
+      "isBossBattle": true,
+      "capstoneContribution": "The Digital Twin's honest neural-vs-classical verdict — whichever model wins, this becomes the actual forecasting component feeding Mission 5's optimisation work, chosen on evidence rather than on which mission felt more impressive to build."
+    },
+    {
+      "id": "pytorch.overfitting-regularization",
+      "title": "Overfitting and Regularization (dropout, weight decay, early stopping)",
+      "skillFolder": "07-pytorch",
+      "missionId": "M4",
+      "prerequisites": [
+        "pytorch.training-loop"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "pytorch-overfitting-regularization",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's overfitting-detection discipline — the validation methodology that keeps the neural forecaster from being deployed based on a training loss number that was quietly lying about real-world performance."
+    },
+    {
+      "id": "pytorch.sequence-models",
+      "title": "Sequence Models for Time Series (RNN/LSTM)",
+      "skillFolder": "07-pytorch",
+      "missionId": "M4",
+      "prerequisites": [
+        "pytorch.overfitting-regularization"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "pytorch-sequence-models",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's sequence-aware forecaster — a model that natively consumes the last several hours of readings as an ordered sequence, rather than needing every lag manually engineered as a separate feature column."
+    },
+    {
+      "id": "pytorch.tensors-autograd",
+      "title": "Tensors and Automatic Differentiation",
+      "skillFolder": "07-pytorch",
+      "missionId": "M4",
+      "prerequisites": [
+        "sklearn.demand-forecaster"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "pytorch-tensors-autograd",
+      "isBossBattle": false,
+      "capstoneContribution": "The literal computational foundation the Digital Twin's neural forecasting model will be built on — tensors holding the feature data, and autograd computing exactly how each weight should change to reduce error."
+    },
+    {
+      "id": "pytorch.training-loop",
+      "title": "Training Loop (loss functions, backpropagation, optimizers)",
+      "skillFolder": "07-pytorch",
+      "missionId": "M4",
+      "prerequisites": [
+        "pytorch.building-networks"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "pytorch-training-loop",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's actual neural network training procedure — the loop that will run repeatedly to fit the demand forecaster's weights to real historical data."
+    },
+    {
+      "id": "rl.battery-scheduler",
+      "title": "Final Battery/EV Scheduling Agent with Explainability (capstone synthesis)",
+      "skillFolder": "08-reinforcement-learning",
+      "missionId": "M5",
+      "prerequisites": [
+        "rl.training-evaluation-safety"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.9,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "rl-battery-scheduler",
+      "isBossBattle": true,
+      "capstoneContribution": "The Digital Twin's actual battery/EV scheduling module — the first piece of the AI Energy OS that doesn't just predict or classify, but recommends and explains a decision, feeding directly into the eventual dashboard described in the capstone architecture."
+    },
+    {
+      "id": "rl.mdp-fundamentals",
+      "title": "Markov Decision Processes (states, actions, rewards, policies, value functions)",
+      "skillFolder": "08-reinforcement-learning",
+      "missionId": "M5",
+      "prerequisites": [
+        "pytorch.neural-forecaster"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "rl-mdp-fundamentals",
+      "isBossBattle": false,
+      "capstoneContribution": "The formal problem definition for the Digital Twin's battery scheduler — state, action, and reward defined precisely enough that an RL algorithm can actually be applied to it in the following lessons."
+    },
+    {
+      "id": "rl.policy-gradient-methods",
+      "title": "Policy Gradient RL",
+      "skillFolder": "08-reinforcement-learning",
+      "missionId": "M5",
+      "prerequisites": [
+        "rl.reward-design"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "rl-policy-gradient-methods",
+      "isBossBattle": false,
+      "capstoneContribution": "An alternative battery-scheduling policy learned via a fundamentally different mechanism than Q-learning — the comparison point for deciding which family of RL algorithm actually suits this specific problem better."
+    },
+    {
+      "id": "rl.reward-design",
+      "title": "Reward Function Design",
+      "skillFolder": "08-reinforcement-learning",
+      "missionId": "M5",
+      "prerequisites": [
+        "rl.mdp-fundamentals"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "rl-reward-design",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's actual reward function for battery scheduling — the single most consequential design decision in this entire skill folder, since every algorithm downstream will optimize exactly what this function rewards, nothing more and nothing less."
+    },
+    {
+      "id": "rl.training-evaluation-safety",
+      "title": "RL Training Evaluation and Safe Deployment Practices",
+      "skillFolder": "08-reinforcement-learning",
+      "missionId": "M5",
+      "prerequisites": [
+        "rl.policy-gradient-methods",
+        "rl.value-based-methods"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "rl-training-evaluation-safety",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's RL safety and evaluation gate — the discipline that stands between a training reward curve going up and any claim that the battery scheduler is actually trustworthy, echoing the Grid Copilot's designed path from decision support to earned autonomy."
+    },
+    {
+      "id": "rl.value-based-methods",
+      "title": "Value-Based RL (Q-learning)",
+      "skillFolder": "08-reinforcement-learning",
+      "missionId": "M5",
+      "prerequisites": [
+        "rl.reward-design"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "rl-value-based-methods",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's first learned (not hand-coded) battery-scheduling policy — a Q-table the agent has built entirely from trial and error against the reward function from the previous lesson."
+    },
+    {
+      "id": "sklearn.baselines-and-leakage",
+      "title": "Naive Baselines and Time-Series Data Leakage",
+      "skillFolder": "06-scikit-learn",
+      "missionId": "M3",
+      "prerequisites": [
+        "sklearn.regression-basics"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "sklearn-baselines-and-leakage",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's baseline-comparison discipline — no forecasting model is considered validated in this mission until it's been shown to beat the naive baseline on a properly time-ordered split, not just to have 'a good score.'"
+    },
+    {
+      "id": "sklearn.classification-basics",
+      "title": "Supervised Learning: Classification",
+      "skillFolder": "06-scikit-learn",
+      "missionId": "M3",
+      "prerequisites": [
+        "sklearn.regression-basics"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "sklearn-classification-basics",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's first overload-risk classifier — predicting whether tomorrow's peak demand will exceed a substation's safe limit, a direct input to the Grid Copilot's early-warning behavior described in the capstone vision."
+    },
+    {
+      "id": "sklearn.demand-forecaster",
+      "title": "Building a Validated Demand Forecasting Model (capstone synthesis)",
+      "skillFolder": "06-scikit-learn",
+      "missionId": "M3",
+      "prerequisites": [
+        "sklearn.feature-importance-evaluation"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.9,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "sklearn-demand-forecaster",
+      "isBossBattle": true,
+      "capstoneContribution": "The Digital Twin's first production-shaped forecasting model — the actual 'Predict' layer deliverable this entire mission has been building toward, ready to feed Mission 4's neural forecasting comparison and Mission 5's optimisation work."
+    },
+    {
+      "id": "sklearn.feature-importance-evaluation",
+      "title": "Model Evaluation Metrics and Feature Importance",
+      "skillFolder": "06-scikit-learn",
+      "missionId": "M3",
+      "prerequisites": [
+        "sklearn.classification-basics",
+        "sklearn.time-series-cv"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "sklearn-feature-importance-evaluation",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's model-evaluation and feature-selection discipline — the standard every forecasting and classification model going forward will be assessed against, and the tool that will guide which features Mission 4's neural models should also receive."
+    },
+    {
+      "id": "sklearn.regression-basics",
+      "title": "Supervised Learning: Linear Regression",
+      "skillFolder": "06-scikit-learn",
+      "missionId": "M3",
+      "prerequisites": [
+        "pandas.capstone-feature-table"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "sklearn-regression-basics",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's first predictive model — a linear regression baseline predicting demand_kw from temperature and hour_of_day, the simplest member of the forecasting family this mission builds toward."
+    },
+    {
+      "id": "sklearn.time-series-cv",
+      "title": "Time-Series Cross-Validation (walk-forward validation)",
+      "skillFolder": "06-scikit-learn",
+      "missionId": "M3",
+      "prerequisites": [
+        "sklearn.baselines-and-leakage"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "sklearn-time-series-cv",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's proper model-validation methodology — the actual standard every forecasting model in this mission, and Mission 4's neural models, will be evaluated against before being considered trustworthy."
+    },
+    {
+      "id": "sql.aggregation",
+      "title": "Aggregation (GROUP BY, aggregate functions)",
+      "skillFolder": "03-sql",
+      "missionId": "M2",
+      "prerequisites": [
+        "sql.joins"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "sql-aggregation",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's first real summary reporting — average, peak, and total demand per substation per day, the exact shape of report the Grid Copilot dashboard will eventually surface."
+    },
+    {
+      "id": "sql.indexing-performance",
+      "title": "Indexing and Query Performance",
+      "skillFolder": "03-sql",
+      "missionId": "M2",
+      "prerequisites": [
+        "sql.window-functions"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.9,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "sql-indexing-performance",
+      "isBossBattle": true,
+      "capstoneContribution": "The performance discipline that keeps the Digital Twin's queries usable at real scale — tens of millions of readings, not the seeded thousands used throughout this skill folder — the difference between a demo and a system that survives production data volumes."
+    },
+    {
+      "id": "sql.joins",
+      "title": "JOIN",
+      "skillFolder": "03-sql",
+      "missionId": "M2",
+      "prerequisites": [
+        "sql.select-where"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "sql-joins",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's ability to answer questions that span both readings and metadata — e.g. 'which substations exceeded 90% of their rated capacity today' — which requires combining two tables, not just querying one."
+    },
+    {
+      "id": "sql.schema-design",
+      "title": "Schema Design for Time-Series Data",
+      "skillFolder": "03-sql",
+      "missionId": "M2",
+      "prerequisites": [
+        "sql.aggregation"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "sql-schema-design",
+      "isBossBattle": false,
+      "capstoneContribution": "The actual table definitions (readings, sources, and soon weather and price tables) the rest of the Digital Twin's SQL layer is built on top of."
+    },
+    {
+      "id": "sql.select-where",
+      "title": "SELECT and WHERE",
+      "skillFolder": "03-sql",
+      "missionId": "M2",
+      "prerequisites": [
+        "python.files-io"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "sql-select-where",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's first real query layer against a proper readings table — replacing 'load the whole CSV and filter in Python' with 'ask the database for exactly what's needed.'"
+    },
+    {
+      "id": "sql.window-functions",
+      "title": "Window Functions",
+      "skillFolder": "03-sql",
+      "missionId": "M2",
+      "prerequisites": [
+        "sql.schema-design"
+      ],
+      "masteryThreshold": {
+        "minAssessmentScore": 0.8,
+        "requiresTeachBack": true,
+        "requiresLabPass": true
+      },
+      "lessonId": "sql-window-functions",
+      "isBossBattle": false,
+      "capstoneContribution": "The Digital Twin's trend-detection queries — a rolling average alongside every individual reading, the SQL-level version of the smoothing Mission 3's pandas and forecasting work will build on."
+    }
+  ]
+}

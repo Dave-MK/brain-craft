@@ -1,0 +1,137 @@
+{
+  "id": "power-load-balancing",
+  "title": "Load Balancing: Why Supply Must Match Demand Every Instant",
+  "skillFolder": "10-power-systems",
+  "missionId": "M6",
+  "concept": "Grid Balancing and Frequency",
+  "knowledgeGraphNodeId": "power.load-balancing",
+  "difficulty": "foundational",
+  "dependencies": ["power.generation-transmission-distribution"],
+  "learningObjectives": [
+    "Explain why electricity supply and demand must balance in real time, not just on average",
+    "Explain what grid frequency represents and why deviations from the nominal frequency (50Hz/60Hz) signal an imbalance",
+    "Describe the difference between baseload, dispatchable, and fast-response generation, and why the mix matters for balancing",
+    "Connect grid balancing to the actual role your Mission 5 battery scheduler would play in a real grid"
+  ],
+  "whyItMatters": "Your Mission 5 battery scheduler optimised cost and emissions, but a real grid operator's first and most urgent job is keeping supply and demand balanced every second — not hourly, not daily — and understanding why reveals exactly what role a battery like yours actually plays in a real system.",
+  "capstoneContribution": "The Digital Twin's balancing-awareness layer — grounding the battery scheduler's role in the real physical requirement it would actually be serving: absorbing second-to-second imbalance, not just shifting cost over hours.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Electricity can't be stored in the wires; matching must happen within fractions of a second.",
+      "content": "Your Mission 3/4 forecasts predict hourly demand, and your Mission 5 battery scheduler makes decisions on a similar timescale — but electricity can't be stored in the wires themselves, and a real grid must match supply to demand within fractions of a second, not just hour to hour.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Demand is a quantity that must be continuously matched by generation in real time.",
+      "content": "This is the physical reality behind every 'demand' number you've forecasted throughout this curriculum: it's not just a quantity to predict, it's a quantity that must be continuously matched by generation in real time, and the mechanism for detecting whether that's happening is frequency, not any of the metrics used so far.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Frequency signals imbalance; generation types differ in how quickly they can respond.",
+      "content": "Grid frequency (50Hz in most of the world, 60Hz in North America) is maintained by the balance between generation and demand: too much demand relative to generation causes frequency to drop; too much generation relative to demand causes it to rise. Grid operators watch frequency as the real-time signal of imbalance and dispatch response accordingly. Generation is categorized by how quickly and flexibly it can respond: baseload plants (nuclear, large coal) run continuously and can't ramp quickly; dispatchable plants (gas, hydro) can ramp up or down over minutes to follow demand; fast-response resources (batteries, some gas turbines) can respond within seconds to sudden imbalances — which is exactly the role a battery scheduler like your Mission 5 agent would actually play in a real deployment: fast-response balancing support, not just hourly cost optimisation.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "A frequency needle drifts with imbalance; a response-time ladder shows generation types by reaction speed.",
+      "content": "A frequency needle drifts below/above nominal as demand exceeds/falls below generation, with a response-time ladder showing baseload, dispatchable, and fast-response generation types plotted by how quickly each can react.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Trigger a demand spike and observe frequency recovery under different available responses.",
+      "content": "Adjust a simulated demand spike and watch frequency dip in real time, then enable different generation response types (slow baseload only vs. fast-response battery) and observe how quickly frequency recovers depending on what's available to respond.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: compute a simplified frequency deviation from an imbalance.",
+      "content": "```python\ndef frequency_deviation(generation_kw, demand_kw, grid_inertia_constant=5.0):\n    imbalance_kw = generation_kw - demand_kw\n    return imbalance_kw / (grid_inertia_constant * 1000)\n\ndeviation_hz = frequency_deviation(generation_kw=4950, demand_kw=5000)\nprint(f\"Frequency deviation: {deviation_hz:.4f} Hz\")\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Simulate demand-spike recovery with slow-only vs. fast-response generation available.",
+      "content": "Simulate a sudden 200kW demand spike against a fixed generation level, and compute how the frequency deviation would evolve over several seconds if the only available response is slow (dispatchable, ramping over minutes) versus if a fast-response battery matching your Mission 5 scheduler's specs is also available.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Add a missing ramp-rate constraint to a frequency-recovery simulation.",
+      "content": "A simulation treats frequency deviation as instantly correctable by any generation type, ignoring that baseload/dispatchable plants have real ramp-rate limits. Identify the missing ramp-rate constraint and add it.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Was Mission 5's reward function actually rewarding fast-response balancing behavior?",
+      "content": "Now that you understand frequency and response speed, was your Mission 5 battery scheduler's reward function actually rewarding the behavior a real fast-response balancing resource needs to exhibit, or something more like slow cost optimisation?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why frequency, not an economic metric, is the real-time balance signal.",
+      "content": "Explain to someone why grid frequency, not any economic metric, is the real-time signal operators actually watch to know whether supply and demand are balanced.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Add a frequency-deviation signal to the battery scheduler and reframe an action.",
+      "content": "Extend the Digital Twin's battery scheduler simulation with a simple frequency-deviation signal, and reframe at least one of its actions as a fast-response balancing action rather than purely a cost-optimisation action.",
+      "estimatedMinutes": 15
+    },
+    "portfolioEvidence": {
+      "summary": "This grounds the battery scheduler's real operational purpose beyond cost savings.",
+      "content": "This balancing-awareness layer grounds the battery scheduler's real operational purpose — the actual reason grids need fast-response resources like batteries, beyond just saving money.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-power-load-balancing-frequency-response",
+      "title": "Frequency Response",
+      "description": "Sandboxed exercise simulating frequency deviation and recovery under different generation response profiles, with a planted missing-ramp-rate-constraint bug to fix.",
+      "starterCodePath": "labs/10-power-systems/frequency-response/starter.py",
+      "testCasesPath": "labs/10-power-systems/frequency-response/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "frequency-response-visualizer",
+      "title": "Frequency Response Visualizer",
+      "description": "Live demand-spike simulation showing frequency dip and recovery under different available generation response types."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-power-load-balancing-1",
+      "front": "Why do grid operators watch frequency rather than a cost metric to detect imbalance?",
+      "back": "Frequency directly reflects the real-time balance between generation and demand — it drops when demand exceeds generation and rises when generation exceeds demand, making it the physical, instantaneous signal of imbalance regardless of cost.",
+      "conceptNodeId": "power.load-balancing"
+    },
+    {
+      "id": "fc-power-load-balancing-2",
+      "front": "What distinguishes a fast-response resource like a battery from baseload or dispatchable generation?",
+      "back": "A fast-response resource can react to an imbalance within seconds, while baseload plants can't ramp quickly at all and dispatchable plants (gas, hydro) typically take minutes to ramp up or down.",
+      "conceptNodeId": "power.load-balancing"
+    }
+  ],
+  "assessment": {
+    "primaryType": "codeReview",
+    "rubric": [
+      "Correctly identifies and adds the missing ramp-rate constraint to the recovery simulation",
+      "Correctly distinguishes baseload, dispatchable, and fast-response generation by reaction speed, not just by fuel type",
+      "Critically reassesses whether the Mission 5 reward function actually incentivized real balancing behavior"
+    ]
+  },
+  "references": [
+    {
+      "title": "U.S. DOE — Electric Grid 101",
+      "url": "https://www.energy.gov/oe/information-center/educational-resources/electric-grid-101",
+      "type": "officialDocs",
+      "versionOrDate": "U.S. DOE, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "U.S. EIA — Electricity in the United States",
+      "url": "https://www.eia.gov/energyexplained/electricity/electricity-in-the-us.php",
+      "type": "officialDocs",
+      "versionOrDate": "EIA, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

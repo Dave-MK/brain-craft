@@ -27,4 +27,4 @@ Digital twin fidelity — turning the simplified simulated grid used in earlier 
 
 ## Status
 
-Skeleton only.
+Complete. All 6 lessons authored and schema-validated in [`lessons/10-power-systems/`](../../lessons/10-power-systems/): Generation/Transmission/Distribution → Load Balancing → {Renewable Intermittency, Grid Stability & Cascading Failures} → Energy Markets & Pricing → Digital Twin Fidelity (boss battle). This folder goes back and grounds every physics/economics assumption used casually since Mission 1 — invented loss percentages, ungrounded price features, connectivity-only resilience — in real, cited domain knowledge, then upgrades the Digital Twin and re-validates at least one earlier mission's result against it. **Mission 6 ("Understand Energy") is fully authored.**

@@ -1,0 +1,130 @@
+{
+  "id": "capstone-research-workspace",
+  "title": "The Research Workspace: Asking 'What If' Safely",
+  "skillFolder": "11-capstone-ai-energy-os",
+  "missionId": "M8",
+  "concept": "Research Workspace for Hypothesis Testing",
+  "knowledgeGraphNodeId": "capstone.research-workspace",
+  "difficulty": "intermediate",
+  "dependencies": ["capstone.carbon-optimisation", "capstone.explainability-layer"],
+  "learningObjectives": [
+    "Design an experiment structure for testing a specific hypothesis against the Digital Twin (e.g. 'would adding 20% more solar capacity reduce cost by more than it would destabilize the grid')",
+    "Run a controlled comparison between a baseline scenario and a modified scenario using the integrated system",
+    "Report an experiment's result with the same rigor established throughout the curriculum: a specific claim, the evidence for it, and its limitations",
+    "Distinguish a research question the Digital Twin can actually answer from one that would require data or capabilities the system doesn't have"
+  ],
+  "whyItMatters": "The dashboard answers 'what should I do right now.' A grid operator, researcher, or investor also needs to ask 'what if we changed something structural' — more solar capacity, a different battery size, a new substation — and testing that safely, in simulation, before touching anything real, is exactly the original mission's stated advantage: you don't need permission from a utility to start proving value in simulation.",
+  "capstoneContribution": "The Digital Twin's Research Workspace — a structured environment for testing hypotheses about grid changes safely in simulation, delivering on the original mission's explicit strategy of proving value in simulation before approaching real infrastructure.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Nothing yet lets you ask 'what if the grid were different' rigorously.",
+      "content": "Every capability built so far answers operational questions about the current grid as it exists. Nobody has built a way to ask 'what if the grid were different' — more solar, a bigger battery, an additional substation — and get a rigorous, comparable answer.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Simulated evidence is the exact strategic advantage the mission was scoped around.",
+      "content": "This is precisely the strategic advantage the mission's original scoping conversation identified: you don't need utility company permission to test hypotheses in your own simulator, and once you can demonstrate a consistent, well-evidenced improvement in simulation, that becomes real evidence to bring to an actual conversation with a utility, researcher, or investor.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "A rigorous experiment needs a hypothesis, a controlled baseline/modified comparison, and honest scope limits.",
+      "content": "A rigorous simulated experiment needs a clearly stated hypothesis, a baseline scenario (the current grid configuration, run through the full integrated system), a modified scenario (the same system with one specific structural change), and a controlled comparison holding everything else constant — reusing the exact same evaluation discipline from Mission 3's baseline-and-leakage lesson and Mission 4's honest-verdict lesson, now applied to structural 'what if' questions rather than model comparisons. A well-scoped research question is one the Digital Twin's actual data and models can address — 'would 20% more solar reduce cost' is testable with what you've built; 'would this policy change consumer behavior' is not, because nothing in the Digital Twin models consumer behavioral response, and a rigorous research workspace should say so explicitly rather than attempting an answer beyond its actual scope.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "Baseline and modified scenarios run through the identical pipeline; out-of-scope questions get flagged.",
+      "content": "A baseline scenario and a modified scenario run through the identical integrated-system pipeline side by side, with their outputs (cost, emissions, resilience) compared in a results panel, and an 'out of scope' flag shown for a question the twin's data can't actually address.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Define a structural change, run both scenarios, and see an out-of-scope question flagged.",
+      "content": "Define a structural change (adjust solar capacity, battery size) on a live twin, run both baseline and modified scenarios, and inspect a generated comparison report, then attempt a question the twin can't actually answer and observe the workspace correctly flag it as out of scope.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: run a controlled baseline-vs-modified experiment.",
+      "content": "```python\ndef run_experiment(hypothesis, baseline_config, modified_config, ai_energy_os):\n    baseline_results = ai_energy_os.simulate(baseline_config)\n    modified_results = ai_energy_os.simulate(modified_config)\n    return {\n        \"hypothesis\": hypothesis,\n        \"cost_change\": modified_results[\"total_cost\"] - baseline_results[\"total_cost\"],\n        \"emissions_change\": modified_results[\"total_emissions\"] - baseline_results[\"total_emissions\"],\n        \"resilience_change\": modified_results[\"min_cut_capacity\"] - baseline_results[\"min_cut_capacity\"],\n    }\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Design and run a real battery-capacity resilience experiment.",
+      "content": "Design and run an experiment testing whether increasing battery capacity at your grid's most capacity-constrained substation (identified back in Mission 5) measurably improves resilience without significantly increasing cost.",
+      "estimatedMinutes": 16
+    },
+    "debugging": {
+      "summary": "Fix a confounded comparison using different underlying demand data for each scenario.",
+      "content": "An experiment comparison runs the baseline and modified scenarios against different underlying demand data (one used raw historical data, the other used a resampled version), invalidating the comparison despite both individually looking correct. Identify the confound and fix the experiment to hold everything but the tested variable constant.",
+      "estimatedMinutes": 8
+    },
+    "reflection": {
+      "summary": "A confounded comparison is as useless as no experiment at all.",
+      "content": "Why does a confounded comparison — where more than one thing differs between baseline and modified scenarios — produce a result that's just as useless as no experiment at all, even if every individual number is computed correctly?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain the difference between an answerable and an unanswerable research question.",
+      "content": "Explain to someone the difference between a research question your Digital Twin can rigorously answer and one it can't, using a concrete example of each from your own experimentation.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Design, run, and report a real structural experiment with stated scope limits.",
+      "content": "Design, run, and report on a real structural 'what if' experiment using your integrated AI Energy OS, following the full baseline/modified/controlled-comparison discipline, with an explicit statement of what the result does and doesn't prove.",
+      "estimatedMinutes": 22
+    },
+    "portfolioEvidence": {
+      "summary": "This realizes the mission's original insight: proving value in simulation before approaching real infrastructure.",
+      "content": "This research workspace is the concrete realization of the mission's original strategic insight: proving value in simulation, safely, before ever needing to approach real infrastructure with anything more than an idea.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-capstone-research-workspace-controlled-experiment",
+      "title": "Controlled Experiment",
+      "description": "Sandboxed exercise designing and running a controlled baseline-vs-modified experiment against the integrated system, requiring a fix for a planted confounded-comparison bug.",
+      "starterCodePath": "labs/11-capstone-ai-energy-os/controlled-experiment/starter.py",
+      "testCasesPath": "labs/11-capstone-ai-energy-os/controlled-experiment/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "baseline-vs-modified-scenario-visualizer",
+      "title": "Baseline vs. Modified Scenario Visualizer",
+      "description": "Side-by-side simulation of a baseline and a structurally modified grid scenario, comparing cost, emissions, and resilience outputs."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-capstone-research-workspace-1",
+      "front": "Why is 'more than one thing differs between baseline and modified scenarios' a fatal flaw in an experiment, not a minor issue?",
+      "back": "It confounds the comparison — you can no longer attribute any observed difference specifically to the variable you intended to test, since something else also changed and could be the real cause.",
+      "conceptNodeId": "capstone.research-workspace"
+    },
+    {
+      "id": "fc-capstone-research-workspace-2",
+      "front": "Why should a research workspace explicitly flag an out-of-scope question rather than attempt an answer?",
+      "back": "Attempting an answer beyond what the twin's actual data and models can support would produce a result that looks like evidence but isn't grounded in anything real — explicitly flagging the limitation is more honest and more useful than a fabricated answer.",
+      "conceptNodeId": "capstone.research-workspace"
+    }
+  ],
+  "assessment": {
+    "primaryType": "research",
+    "rubric": [
+      "Experiment holds every variable but the tested one constant between baseline and modified scenarios",
+      "Correctly diagnoses and fixes the confounded-comparison bug from mismatched underlying data",
+      "Final report explicitly states what the result does and doesn't prove, including any out-of-scope aspects"
+    ]
+  },
+  "references": [
+    {
+      "title": "NIST — Design of Experiments",
+      "url": "https://www.nist.gov/itl/sed/topic-areas/design-experiments",
+      "type": "officialDocs",
+      "versionOrDate": "NIST, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

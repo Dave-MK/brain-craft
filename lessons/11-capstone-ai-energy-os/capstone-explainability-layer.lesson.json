@@ -1,0 +1,137 @@
+{
+  "id": "capstone-explainability-layer",
+  "title": "The Explainability Layer: One Standard for Every Recommendation",
+  "skillFolder": "11-capstone-ai-energy-os",
+  "missionId": "M8",
+  "concept": "System-Wide Explainability Layer",
+  "knowledgeGraphNodeId": "capstone.explainability-layer",
+  "difficulty": "intermediate",
+  "dependencies": ["capstone.system-integration"],
+  "learningObjectives": [
+    "Unify the explanation formats built separately in Mission 4 (honest verdict) and Mission 5 (explainable RL actions) into one consistent explanation schema",
+    "Generate an explanation for any recommendation the integrated system produces, regardless of which subsystem generated it",
+    "Distinguish a genuinely checkable explanation from a plausible-sounding but unverifiable one, applied across the whole system",
+    "Evaluate the integrated system's explanations against the original Grid Copilot vision's specific requirements"
+  ],
+  "whyItMatters": "Mission 4 built an honest-verdict discipline for forecasting, Mission 5 built a quantified-explanation discipline for the battery scheduler and router — but they used different formats, and a real Grid Copilot needs one consistent way to explain any recommendation, whether it came from a forecast, an RL decision, or a routing choice.",
+  "capstoneContribution": "The AI Energy OS's unified explainability layer — the single, consistent mechanism every subsystem's recommendation passes through before reaching a human, directly implementing the original Grid Copilot vision's core requirement.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Three subsystems each explain themselves differently.",
+      "content": "Your neural forecaster explains itself one way (a verdict against a baseline), your battery scheduler explains itself another way (cost/emissions/safety quantities), and your grid router explains itself yet another way (a trade-off summary) — three different explanation formats for what should feel like one coherent system to whoever is using it.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "The original vision described one coherent Grid Copilot, not three bolted-together projects.",
+      "content": "The original mission vision described a single AI Grid Copilot that explains its reasoning and quantifies trade-offs — not three different subsystems each with their own bespoke explanation style. Unifying this is what actually makes the system feel like one coherent product rather than three research projects bolted together.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "A shared schema plus per-subsystem adapters unify formats; verification ensures explanations stay checkable.",
+      "content": "A unified explanation schema defines a common structure every subsystem's output must populate: the recommendation itself, the specific quantities that justify it (cost, emissions, safety margin, forecast confidence — whichever apply), the alternatives that were considered and why they lost, and an explicit confidence/limitation statement. This doesn't require rewriting every subsystem's internal logic — it requires an adapter at each subsystem's boundary that maps its existing internal explanation data (Q-values, feature importances, baseline comparisons) onto the shared schema. A checkable explanation is one where every claim traces to a specific number a reviewer could verify against the system's own data; a plausible-sounding but unverifiable explanation is one that uses confident language ('this is clearly the best option') without ever stating the numbers behind that confidence — exactly the gap the Mission 5 explainability lesson's debugging exercise targeted, now enforced system-wide.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "Three different formats pass through adapters into one identical shared explanation schema.",
+      "content": "Three subsystems' different internal explanation formats each pass through an adapter layer into one shared explanation schema, with a final unified explanation card that looks identical in structure regardless of which subsystem produced the underlying recommendation.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Request explanations from three subsystems and verify each card's claims by hand.",
+      "content": "Request an explanation for a forecast, a battery action, and a routing decision in turn, and inspect the resulting unified explanation cards side by side, verifying each one's claims against the underlying data by hand.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: write adapters mapping two subsystems onto one shared schema.",
+      "content": "```python\ndef unify_explanation(subsystem_name, raw_explanation):\n    if subsystem_name == \"forecaster\":\n        return {\n            \"recommendation\": raw_explanation[\"model_choice\"],\n            \"supporting_quantities\": {\"mae_vs_baseline\": raw_explanation[\"mae_improvement\"]},\n            \"alternatives_considered\": raw_explanation[\"candidates\"],\n            \"confidence_statement\": raw_explanation[\"limitations\"],\n        }\n    elif subsystem_name == \"battery_scheduler\":\n        return {\n            \"recommendation\": raw_explanation[\"recommended_action\"],\n            \"supporting_quantities\": {\n                \"cost\": raw_explanation[\"estimated_cost_impact\"],\n                \"emissions\": raw_explanation[\"estimated_emissions_impact\"],\n            },\n            \"alternatives_considered\": raw_explanation.get(\"candidate_actions\", []),\n            \"confidence_statement\": raw_explanation[\"rationale\"],\n        }\n```",
+      "estimatedMinutes": 10
+    },
+    "independentCoding": {
+      "summary": "Write the adapter for the grid router and verify structural consistency across all three.",
+      "content": "Write the adapter for the grid router's explanation format, mapping its existing trade-off summary onto the same unified schema used above, and verify all three adapters produce structurally identical output.",
+      "estimatedMinutes": 15
+    },
+    "debugging": {
+      "summary": "Add a missing verification step that lets unverifiable explanations pass through unchanged.",
+      "content": "An adapter copies the `confidence_statement` field verbatim from a subsystem's plausible-sounding rationale string without checking whether it actually contains a specific checkable number, silently letting an unverifiable explanation pass through the unification layer unchanged. Identify the missing verification step and add it.",
+      "estimatedMinutes": 8
+    },
+    "reflection": {
+      "summary": "Consistent formatting without checkability verification misses the point.",
+      "content": "What's the actual point of unifying explanation formats if the unification layer doesn't also verify that each explanation is genuinely checkable, not just structurally consistent?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain the difference between consistently formatted and consistently checkable explanations.",
+      "content": "Explain to someone the difference between explanations that are 'consistently formatted' and explanations that are 'consistently checkable,' and why a real Grid Copilot needs both, not just the first.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Build the complete unified explainability layer with a checkability verification step.",
+      "content": "Build the complete unified explainability layer for the integrated AIEnergyOS, with adapters for at least three subsystems, and a verification check that flags any explanation missing a specific, checkable supporting quantity.",
+      "estimatedMinutes": 20
+    },
+    "portfolioEvidence": {
+      "summary": "This makes the system feel like one coherent Grid Copilot.",
+      "content": "This is the actual mechanism that makes the AI Energy OS feel like one coherent Grid Copilot rather than three separate research projects — the direct fulfillment of the original mission vision's core explainability requirement.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-capstone-explainability-layer-unified-schema",
+      "title": "Unified Schema",
+      "description": "Sandboxed exercise building adapters for three subsystems into one shared explanation schema with a checkability verification step, requiring a fix for a planted unverified-passthrough bug.",
+      "starterCodePath": "labs/11-capstone-ai-energy-os/unified-schema/starter.py",
+      "testCasesPath": "labs/11-capstone-ai-energy-os/unified-schema/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "explanation-unification-visualizer",
+      "title": "Explanation Unification Visualizer",
+      "description": "Shows three subsystems' distinct explanation formats passing through adapters into one identical shared explanation card structure."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-capstone-explainability-layer-1",
+      "front": "Why can a unified explainability layer avoid rewriting each subsystem's internal logic?",
+      "back": "It only needs an adapter at each subsystem's boundary that maps its existing internal explanation data onto a shared schema, not a reimplementation of how the subsystem itself reasons.",
+      "conceptNodeId": "capstone.explainability-layer"
+    },
+    {
+      "id": "fc-capstone-explainability-layer-2",
+      "front": "What makes an explanation 'checkable' rather than merely plausible-sounding?",
+      "back": "Every claim in it traces to a specific number a reviewer could verify against the system's own data — confident language alone ('clearly the best option') without stated supporting quantities is not checkable, however consistent its formatting looks.",
+      "conceptNodeId": "capstone.explainability-layer"
+    }
+  ],
+  "assessment": {
+    "primaryType": "codeReview",
+    "rubric": [
+      "All three subsystem adapters produce structurally identical unified output",
+      "The verification step correctly flags explanations missing a specific, checkable supporting quantity",
+      "Correctly diagnoses and fixes the unverified-passthrough bug rather than just adding a cosmetic check"
+    ]
+  },
+  "references": [
+    {
+      "title": "Interpretable Machine Learning",
+      "url": "https://christophm.github.io/interpretable-ml-book/",
+      "type": "other",
+      "versionOrDate": "2nd Edition, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "DARPA — Explainable Artificial Intelligence (XAI)",
+      "url": "https://www.darpa.mil/program/explainable-artificial-intelligence",
+      "type": "officialDocs",
+      "versionOrDate": "DARPA, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

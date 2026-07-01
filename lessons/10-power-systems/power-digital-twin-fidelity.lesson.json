@@ -1,0 +1,137 @@
+{
+  "id": "power-digital-twin-fidelity",
+  "title": "Digital Twin Fidelity: Making the Simulation Physically Real",
+  "skillFolder": "10-power-systems",
+  "missionId": "M6",
+  "concept": "Upgrading the Digital Twin with Physical and Economic Realism (capstone synthesis)",
+  "knowledgeGraphNodeId": "power.digital-twin-fidelity",
+  "difficulty": "intermediate",
+  "dependencies": ["power.grid-stability-cascading-failures", "power.energy-markets-pricing"],
+  "learningObjectives": [
+    "Combine physically grounded transmission loss, balancing/frequency awareness, renewable variability, cascading-failure risk, and marginal pricing into one upgraded Digital Twin",
+    "Identify which specific assumptions made in Missions 1-5 were unrealistic simplifications, now that you know better",
+    "Re-run at least one earlier mission's analysis (forecasting, RL, or routing) against the upgraded, more realistic Digital Twin and report what changes",
+    "Document the Digital Twin's current fidelity level honestly: what's now physically grounded, and what's still simplified"
+  ],
+  "whyItMatters": "Every mission from 1 through 5 was built against a simplified simulation, by design, so the computational skills could be learned without also requiring deep power-systems expertise upfront — exactly as the original mission scoping conversation intended. This lesson is where that deliberate simplification finally gets paid down, upgrading the Digital Twin with everything learned in this mission.",
+  "capstoneContribution": "The Digital Twin's fidelity upgrade — the version of the simulation that actually reflects real transmission physics, balancing constraints, renewable variability, cascading-failure risk, and market pricing, ready to be the actual foundation for the final Mission 8 integration.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Every prior mission's work was built against a deliberately simplified simulation.",
+      "content": "Every mission's model, agent, and analysis so far was built and validated against a Digital Twin that used invented loss percentages, ignored frequency/balancing entirely, treated renewable output as just another feature column, checked resilience with connectivity alone, and used price data without understanding its origin.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is the payoff of learning power systems last, exactly as originally scoped.",
+      "content": "This is the payoff of learning power systems last rather than first, exactly as the original mission-scoping conversation argued: you can now go back and upgrade the simulation with real understanding, rather than having spent five missions unable to make any computational progress while waiting to first become a power systems expert.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Systematically replace each simplification with its grounded equivalent, then validate against earlier missions' actual results.",
+      "content": "Upgrading the Digital Twin's fidelity means systematically replacing each simplified assumption identified across this mission's five lessons with its physically or economically grounded equivalent: transmission loss computed from voltage/current/resistance rather than a flat percentage, a frequency-deviation signal available to the battery scheduler rather than only cost/emissions, renewable generation modeled with realistic capacity-factor variability rather than smooth features, resilience checks extended with cascading-failure simulation rather than connectivity alone, and prices generated from a marginal-pricing model rather than replayed as an opaque external input. Each upgrade should be validated by re-running an earlier mission's actual analysis against the new, more realistic twin and comparing results — the honest question isn't just 'is the twin more realistic now' but 'did anything Missions 1-5 concluded actually change once it was.'",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "Five simplified assumptions are each replaced by their grounded equivalent, converging on one upgraded architecture.",
+      "content": "The five earlier missions' simplified assumptions are each replaced by their grounded equivalent from this mission's lessons, converging into one upgraded Digital Twin architecture diagram.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Toggle each fidelity upgrade and observe which earlier results actually change.",
+      "content": "Toggle each fidelity upgrade on and off independently on a live Digital Twin dashboard and observe which earlier mission's results (forecast accuracy, RL agent behavior, routing recommendation) change as a result, and by how much.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: wire fidelity toggles into the twin's loss and pricing calculations.",
+      "content": "```python\nclass DigitalTwinV2:\n    def __init__(self, grid_topology, use_realistic_loss=True, use_marginal_pricing=True):\n        self.grid_topology = grid_topology\n        self.use_realistic_loss = use_realistic_loss\n        self.use_marginal_pricing = use_marginal_pricing\n\n    def edge_loss(self, edge, power_flow_kw):\n        if self.use_realistic_loss:\n            return transmission_loss_kw(power_flow_kw, edge[\"voltage_kv\"], edge[\"resistance_ohms\"])\n        return power_flow_kw * edge[\"flat_loss_percent\"]\n\n    def current_price(self, demand_kw, renewable_output_kw):\n        if self.use_marginal_pricing:\n            return marginal_price(self.supply_bids, demand_kw - renewable_output_kw)\n        return self.historical_price_lookup(demand_kw)\n```",
+      "estimatedMinutes": 10
+    },
+    "independentCoding": {
+      "summary": "Re-run the Mission 5 battery scheduler against the upgraded twin and report changes.",
+      "content": "Re-run your Mission 5 battery scheduler's evaluation against the upgraded Digital Twin (with realistic pricing and frequency awareness enabled) and report whether its previously chosen actions still look reasonable, or whether the more realistic environment reveals a gap.",
+      "estimatedMinutes": 16
+    },
+    "debugging": {
+      "summary": "Fix fidelity toggles that are implemented but never actually wired into downstream code.",
+      "content": "An upgraded twin's realistic-loss and marginal-pricing toggles are implemented but never actually connected to the routing/RL code from earlier missions, meaning 'upgrading' the twin silently had zero effect on any downstream analysis. Identify the disconnected wiring and fix it so upgrades actually propagate.",
+      "estimatedMinutes": 8
+    },
+    "reflection": {
+      "summary": "No change after an upgrade could mean robustness, or a broken wiring — how do you tell?",
+      "content": "If upgrading the Digital Twin's fidelity didn't change any of Missions 1-5's conclusions at all, is that reassuring evidence the earlier work was already robust, or a sign the upgrade wasn't actually wired into anything that mattered? How do you tell the difference?",
+      "estimatedMinutes": 5
+    },
+    "teachBack": {
+      "summary": "Synthesize the mission: what's fixed, what remains, and why that's a reasonable scoping decision.",
+      "content": "As the synthesis of the entire power-systems mission: explain to someone which of the Digital Twin's simplifications from Missions 1-5 you've now fixed, which ones remain, and why leaving some unfixed for now is a reasonable scoping decision rather than an oversight.",
+      "estimatedMinutes": 6
+    },
+    "miniProject": {
+      "summary": "Deliver the fidelity-upgrade report with honest before/after comparisons.",
+      "content": "Deliver the Digital Twin's fidelity-upgrade report: document every upgrade made this mission, re-run at least one earlier mission's key analysis against the upgraded twin, report what changed (or didn't) and why, and honestly list which simplifications remain for future missions to address.",
+      "estimatedMinutes": 25
+    },
+    "portfolioEvidence": {
+      "summary": "This upgraded twin is the actual foundation the final Mission 8 integration builds on.",
+      "content": "This upgraded Digital Twin is the actual foundation the final Mission 8 integration will be built on — the point where the simulation stops being a deliberately simplified teaching tool and starts being a genuinely grounded model.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": true,
+  "labs": [
+    {
+      "id": "lab-power-digital-twin-fidelity-upgrade-report",
+      "title": "Upgrade Report",
+      "description": "Sandboxed exercise wiring fidelity toggles for loss, pricing, balancing, and renewable variability into the Digital Twin and re-running an earlier mission's analysis, requiring a fix for a planted disconnected-wiring bug.",
+      "starterCodePath": "labs/10-power-systems/upgrade-report/starter.py",
+      "testCasesPath": "labs/10-power-systems/upgrade-report/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "fidelity-upgrade-toggle-dashboard",
+      "title": "Fidelity Upgrade Toggle Dashboard",
+      "description": "Live dashboard toggling each Mission 6 fidelity upgrade independently, showing which earlier mission's results change as a result."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-power-digital-twin-fidelity-1",
+      "front": "Why validate a fidelity upgrade by re-running an earlier mission's actual analysis, rather than just checking the upgrade code runs?",
+      "back": "Because the real question isn't whether the twin looks more realistic — it's whether anything an earlier mission concluded actually changes once the more realistic model is used; that's only answered by re-running the analysis, not by inspecting the new code in isolation.",
+      "conceptNodeId": "power.digital-twin-fidelity"
+    },
+    {
+      "id": "fc-power-digital-twin-fidelity-2",
+      "front": "Why might a fidelity upgrade appear to change nothing even though it's correctly implemented?",
+      "back": "The upgrade might be correctly implemented but never actually wired into the downstream code paths that earlier missions' analyses depend on — a disconnected toggle produces zero effect regardless of how correct its internal logic is.",
+      "conceptNodeId": "power.digital-twin-fidelity"
+    }
+  ],
+  "assessment": {
+    "primaryType": "research",
+    "rubric": [
+      "Correctly diagnoses and fixes the disconnected fidelity-toggle wiring bug",
+      "At least one earlier mission's analysis is actually re-run against the upgraded twin, with a specific before/after comparison reported",
+      "Final report honestly documents which simplifications remain, not just which were fixed"
+    ]
+  },
+  "references": [
+    {
+      "title": "U.S. DOE — Electric Grid 101",
+      "url": "https://www.energy.gov/oe/information-center/educational-resources/electric-grid-101",
+      "type": "officialDocs",
+      "versionOrDate": "U.S. DOE, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "IEA — Electricity",
+      "url": "https://www.iea.org/topics/electricity",
+      "type": "officialDocs",
+      "versionOrDate": "IEA, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

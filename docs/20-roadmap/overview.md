@@ -20,7 +20,24 @@ Documentation, curriculum skeleton, and content schemas. No application code. De
 - [x] All 6 `07-pytorch` lessons authored end to end and validated: Tensors & Autograd → Building Networks → Training Loop → Overfitting & Regularization → Sequence Models → The Neural Forecaster (boss battle). **Mission 4 ("Teach Machines") is fully authored.** Combined 47-lesson graph re-checked — clean.
 - [x] All 6 `08-reinforcement-learning` lessons authored end to end and validated: MDP Fundamentals → Reward Design → {Value-Based Methods, Policy Gradient Methods} → Training/Evaluation/Safety → The Battery Scheduler (boss battle). Combined 53-lesson graph re-checked — clean.
 - [x] All 6 `09-graph-algorithms` lessons authored end to end and validated: Representation & Traversal → Shortest Path → {Flow Algorithms, Resilience & Critical Nodes} → RL + Graphs Combination → The Grid Router (boss battle). **Mission 5 ("Optimise Decisions") is fully authored** — both of its skill folders converge as designed. Combined 59-lesson graph re-checked — clean.
-- [ ] Begin Mission 6 ("Understand Energy"): `10-power-systems` lessons
+- [x] All 6 `10-power-systems` lessons authored end to end and validated: Generation/Transmission/Distribution → Load Balancing → {Renewable Intermittency, Grid Stability & Cascading Failures} → Energy Markets & Pricing → Digital Twin Fidelity (boss battle). **Mission 6 ("Understand Energy") is fully authored.** Combined 65-lesson graph re-checked — clean.
+- [x] All 6 `11-capstone-ai-energy-os` lessons authored end to end and validated: System Integration → {Carbon Optimisation, Explainability Layer} → {Dashboard, Research Workspace} → The AI Energy OS (final boss battle). **The entire 71-lesson curriculum across all 11 skill folders and 7 missions is now fully authored**, with zero missing dependency edges and zero cycles verified after every addition throughout this build.
+
+## Phase 0/1 curriculum-authoring milestone: complete
+
+Every skill folder from `01-python` through `11-capstone-ai-energy-os` now has real, schema-validated lesson content — not skeletons. What remains before this becomes a usable product (not more curriculum content):
+
+- [x] `schemas/concept-node.schema.json` written; `scripts/generate_knowledge_graph.py` derives `docs/08-knowledge-graph/knowledge-graph.json` from all 71 lessons (71 nodes, 81 edges, zero missing edges, zero cycles) — the knowledge graph is now a real, generated, re-checkable artifact, not just an implication of scattered `dependencies` fields
+- [ ] Phase 1 architecture decisions in `docs/10-frontend/`, `docs/11-backend/`, `docs/12-database/` — still open per `CLAUDE.md`'s "no `apps/`/`packages/` code until these are resolved and the roadmap calls for it"
+- [ ] `apps/web` lesson runner that can actually render this content through the 14-step lesson flow
+- [ ] The AI Tutor (`docs/03-ai-tutor/`) and Architect (`docs/04-adaptive-learning/`) — currently pure specification, no implementation
+- [x] All 11 Mission 1 lab `starter.*`/`test_cases.*` files written and verified against real reference solutions (9 Python labs + 6 Git labs with reproducible `setup_repo.py` seeding).
+- [x] All 6 `03-sql` labs written and verified using SQLite via a new [`scripts/run_sql_lab.py`](../../scripts/run_sql_lab.py) runner (view-based pattern for pure-SELECT exercises, `pragma_table_info`/`pragma_foreign_key_list` for schema-shape checks, a dedicated `test_cases.py` for the one lab needing real `EXPLAIN QUERY PLAN` inspection).
+- [x] All 6 `04-apis` labs written and verified using a new [`scripts/mock_http_server.py`](../../scripts/mock_http_server.py) helper (a real local `http.server`, never real internet). Verified the backoff lab's real (test-scaled) exponential sleeps stay fast, and the pagination lab's 20-request safety valve actually stops a deliberately broken infinite-loop solution rather than hanging.
+- [x] All 6 `05-pandas` labs written and verified with plain `unittest` against real `pandas` DataFrames. **Mission 2 is fully lab-covered (18/18 lessons).**
+- [x] All 6 `06-scikit-learn` labs written and verified with scikit-learn installed as a real dependency, using deterministic synthetic fixtures (perfectly linear/separable data) so ML labs stay exactly-checkable rather than flaky. `walk-forward`'s TimeSeriesSplit-vs-KFold distinction was verified both ways (correct solution passes, swapped-in KFold fails). See [`labs/README.md`](../../labs/README.md). Remaining: Missions 4–6, 8 (30 lessons — `07-pytorch` through `11-capstone-ai-energy-os`), which move into genuinely stochastic training (PyTorch) requiring tolerance-based, not exact-value, assertions.
+- [ ] `simulations/*` — every lesson references a named simulation, but none have been built
+- [ ] License decision (still explicitly deferred per the user's earlier choice)
 
 ## Phase 1 — Seed content + minimal runner
 

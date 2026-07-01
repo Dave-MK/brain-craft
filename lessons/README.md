@@ -44,4 +44,8 @@ variables → control-flow → lists → loops → functions → dictionaries
 
 `09-graph-algorithms/` is also complete: 6 lessons — `graphs-representation-traversal` (depends on `python.dictionaries`) → `graphs-shortest-path` → {`graphs-flow-algorithms`, `graphs-resilience-critical-nodes`} → `graphs-rl-combination` (depends on `rl.battery-scheduler` + both graph-algorithm branches — the actual convergence point of Mission 5's two parallel skill folders) → `graphs-grid-router` (boss battle — concrete numeric answers to both of the mission's founding example questions). 59 lessons total; combined graph re-checked — clean.
 
-**Missions 1-5 are fully authored.** None of `10-power-systems` onward has lessons yet.
+**Missions 1-5 are fully authored.** `10-power-systems/` is also complete: 6 lessons — `power-generation-transmission-distribution` (depends on `graphs.grid-router`) → `power-load-balancing` → {`power-renewable-intermittency`, `power-grid-stability-cascading-failures`} → `power-energy-markets-pricing` → `power-digital-twin-fidelity` (boss battle — upgrades the Digital Twin with real physics/economics and re-validates an earlier mission's result against it). 65 lessons total; combined graph re-checked — clean.
+
+`11-capstone-ai-energy-os/` is also complete: 6 lessons — `capstone-system-integration` (depends on `power.digital-twin-fidelity`, assembling all ten prior skill folders' artifacts) → {`capstone-carbon-optimisation`, `capstone-explainability-layer`} → {`capstone-dashboard`, `capstone-research-workspace`} → `capstone-ai-energy-os` (the final boss battle of the entire curriculum).
+
+**The entire BrainCraft curriculum is now fully authored: 71 lessons across 11 skill folders and 7 missions (M1–M6, M8). The combined dependency graph has been checked after every single addition throughout this build — zero missing edges, zero cycles, 11 boss battles (one per skill folder) culminating in `capstone-ai-energy-os`.**

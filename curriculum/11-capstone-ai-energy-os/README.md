@@ -33,4 +33,6 @@ Per the original scoping discussion, once the system demonstrates a consistent i
 
 ## Status
 
-Skeleton only — this folder stays empty of real content until the prerequisite skill folders have shipped real lessons and labs.
+Complete. All 6 lessons authored and schema-validated in [`lessons/11-capstone-ai-energy-os/`](../../lessons/11-capstone-ai-energy-os/): System Integration (assembles all ten prior skill folders' artifacts into one running codebase) → {Carbon Optimisation, Explainability Layer} → {Dashboard, Research Workspace} → The AI Energy OS (final boss battle — the mission's founding "reduce energy costs" claim, evaluated rigorously and honestly against a genuinely independent baseline).
+
+**The entire BrainCraft curriculum is now fully authored: 71 lessons across 11 skill folders and 7 missions (M1–M6, M8), one continuous knowledge graph, verified after every addition to have zero missing dependency edges and zero cycles.**

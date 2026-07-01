@@ -1,0 +1,137 @@
+{
+  "id": "capstone-carbon-optimisation",
+  "title": "Carbon Optimisation: Making Emissions a First-Class Objective",
+  "skillFolder": "11-capstone-ai-energy-os",
+  "missionId": "M8",
+  "concept": "Carbon/Emissions Optimisation Layer",
+  "knowledgeGraphNodeId": "capstone.carbon-optimisation",
+  "difficulty": "intermediate",
+  "dependencies": ["capstone.system-integration"],
+  "learningObjectives": [
+    "Explain why carbon intensity varies by time and by generation mix, not just by total demand",
+    "Compute the carbon intensity of a given moment's generation mix and use it as an optimisation signal",
+    "Extend the integrated RL agent's decision-making to explicitly minimize emissions, not just cost",
+    "Quantify the trade-off between cost-minimizing and emissions-minimizing behavior for a specific scenario"
+  ],
+  "whyItMatters": "The AI Energy OS's mission was never just 'minimize cost' — the original scoping conversation was explicit that emissions matter as much as cost, and Mission 5's reward design lesson already included an emissions term, but it's never been given the dedicated treatment or the real carbon-intensity data that would make it more than a token weight in a reward function.",
+  "capstoneContribution": "The Digital Twin's carbon-intensity signal and emissions-aware optimisation layer — the piece that makes 'reduce emissions' a real, quantified objective the integrated system can actually act on, not just a reward term with an arbitrary weight.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "The Mission 5 emissions reward term was never connected to real carbon-intensity data.",
+      "content": "Your Mission 5 reward function included an emissions term, but it was never connected to anything resembling real carbon-intensity data — it was a placeholder number, not a grounded signal reflecting that the grid's actual carbon intensity varies significantly depending on what's generating power at a given moment.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Carbon intensity is a moving target that depends on real-time generation mix.",
+      "content": "A grid drawing power mostly from solar and wind at noon has a very different carbon footprint than the same demand met mostly by gas peakers at 9pm — 'reduce emissions' isn't a fixed goal, it's a moving target that depends on real-time generation mix, and treating it as one flat number throughout the curriculum was a real simplification worth fixing now.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Time-varying carbon intensity creates a genuine trade-off with cost and stability.",
+      "content": "Carbon intensity (grams of CO2 per kWh) varies continuously based on the generation mix currently supplying the grid — much lower when renewable output is high, much higher when fossil fast-response generation is covering demand. A carbon-aware optimisation objective uses this time-varying intensity rather than a fixed emissions-per-kWh assumption: charging a battery when carbon intensity is low (high renewable output) and discharging when it's high (fossil-heavy periods) reduces total emissions even if the raw kWh charged/discharged stays the same. This creates a genuine three-way trade-off with cost (since low-carbon-intensity periods and low-price periods don't always coincide) and grid stability (since the safest balancing action isn't always the lowest-carbon one) — exactly the kind of multi-objective trade-off Mission 5's reward-design lesson introduced, now with a real, time-varying carbon signal instead of a placeholder.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "Carbon intensity and price fluctuate on different patterns, highlighting where they disagree.",
+      "content": "Carbon intensity fluctuates over a day (low at midday with high solar, high in the evening with gas peakers), overlaid with price fluctuating on a different pattern, highlighting the periods where cost-optimal and carbon-optimal battery actions actually disagree.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Adjust the cost/carbon weight and watch the recommended timing shift.",
+      "content": "Adjust the relative weight between cost and carbon-intensity objectives on a live battery-scheduling simulation and watch the recommended charge/discharge timing shift between the two competing signals.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: compute a mix-weighted carbon intensity.",
+      "content": "```python\ndef carbon_intensity_g_per_kwh(generation_mix):\n    intensity_by_source = {\"solar\": 40, \"wind\": 10, \"gas\": 450, \"coal\": 900, \"nuclear\": 15}\n    total_kwh = sum(generation_mix.values())\n    weighted_intensity = sum(\n        generation_mix[source] * intensity_by_source[source] for source in generation_mix\n    )\n    return weighted_intensity / total_kwh\n\ncurrent_intensity = carbon_intensity_g_per_kwh({\"solar\": 3000, \"gas\": 2000})\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Plot carbon intensity against price and find hours where they disagree.",
+      "content": "Compute carbon intensity across a full day's generation mix data, plot it alongside price, and identify at least two specific hours where the cheapest action and the lowest-carbon action would meaningfully disagree.",
+      "estimatedMinutes": 14
+    },
+    "debugging": {
+      "summary": "Fix a flat-average carbon intensity calculation instead of a mix-weighted one.",
+      "content": "A carbon-intensity calculation uses a flat average of the per-source intensities regardless of how much each source actually contributed, rather than a mix-weighted average, producing a misleading intensity value whenever the generation mix is lopsided. Identify and fix the weighting.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Cheapest and lowest-carbon can genuinely disagree.",
+      "content": "Why can 'cheapest' and 'lowest-carbon' genuinely disagree at a given moment, and what does that actually mean for a system that has to pick one action?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why carbon intensity is a moving target, not a fixed number.",
+      "content": "Explain to someone why carbon intensity is a moving target that depends on generation mix, not a fixed number per kWh, using your own computed intensity curve as the example.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Extend the integrated system with a carbon-aware option and quantify the trade-off.",
+      "content": "Extend the integrated AIEnergyOS's battery-scheduling recommendation to include a carbon-intensity-aware option alongside the cost-optimal one, and quantify the emissions-vs-cost trade-off for at least three real scenarios from your feature table.",
+      "estimatedMinutes": 18
+    },
+    "portfolioEvidence": {
+      "summary": "This delivers on a commitment from the original scoping conversation.",
+      "content": "This carbon-optimisation layer is what makes 'reduce emissions' a real, quantified capability of the AI Energy OS, delivering on a commitment from the mission's original scoping conversation that had only been partially addressed until now.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-capstone-carbon-optimisation-intensity-tradeoff",
+      "title": "Intensity Trade-off",
+      "description": "Sandboxed exercise computing mix-weighted carbon intensity and quantifying the cost-vs-emissions trade-off for battery scheduling, with a planted flat-average bug to fix.",
+      "starterCodePath": "labs/11-capstone-ai-energy-os/intensity-tradeoff/starter.py",
+      "testCasesPath": "labs/11-capstone-ai-energy-os/intensity-tradeoff/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "carbon-cost-tradeoff-visualizer",
+      "title": "Carbon/Cost Trade-off Visualizer",
+      "description": "Adjustable cost/carbon weight slider showing recommended battery timing shift between competing objectives."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-capstone-carbon-optimisation-1",
+      "front": "Why is carbon intensity a time-varying signal rather than a fixed value?",
+      "back": "It depends on the current generation mix — much lower when renewable output dominates, much higher when fossil fast-response generation is covering demand — so the same kWh of demand can carry very different carbon costs depending on when it's met.",
+      "conceptNodeId": "capstone.carbon-optimisation"
+    },
+    {
+      "id": "fc-capstone-carbon-optimisation-2",
+      "front": "Why must carbon intensity be computed as a mix-weighted average, not a flat average across sources?",
+      "back": "A flat average treats every source as contributing equally regardless of actual output, misrepresenting the true intensity whenever the generation mix is lopsided — the weighting must reflect how much each source actually contributed.",
+      "conceptNodeId": "capstone.carbon-optimisation"
+    }
+  ],
+  "assessment": {
+    "primaryType": "research",
+    "rubric": [
+      "Carbon intensity is computed as a genuinely mix-weighted average, verified against a hand-computed example",
+      "At least two specific hours are identified where cost-optimal and carbon-optimal actions disagree, with real data",
+      "The quantified cost-vs-emissions trade-off is reported with specific numbers, not just a qualitative description"
+    ]
+  },
+  "references": [
+    {
+      "title": "U.S. EIA — CO2 emissions and electricity",
+      "url": "https://www.eia.gov/environment/emissions/co2_vol_mass.php",
+      "type": "officialDocs",
+      "versionOrDate": "EIA, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "U.S. EPA — eGRID",
+      "url": "https://www.epa.gov/egrid",
+      "type": "officialDocs",
+      "versionOrDate": "EPA, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

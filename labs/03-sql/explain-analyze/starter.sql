@@ -1,0 +1,13 @@
+-- Lab: EXPLAIN ANALYZE
+-- Lesson: sql-indexing-performance
+--
+-- NOTE: this lab runs on SQLite, which doesn't have Postgres's
+-- EXPLAIN ANALYZE (with real execution timing). SQLite's EXPLAIN QUERY
+-- PLAN still shows whether a query does a full table SCAN or an index
+-- SEARCH, which is the core concept this lesson teaches, just without
+-- the timing numbers Postgres would give you.
+--
+-- TODO: add an index that speeds up filtering readings by source_id.
+-- test_cases.py runs the actual EXPLAIN QUERY PLAN before/after check.
+
+-- CREATE INDEX idx_readings_source_id ON readings (source_id);

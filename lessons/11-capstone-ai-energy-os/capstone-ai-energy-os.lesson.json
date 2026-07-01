@@ -1,0 +1,137 @@
+{
+  "id": "capstone-ai-energy-os",
+  "title": "The AI Energy OS: The Mission's Final Answer",
+  "skillFolder": "11-capstone-ai-energy-os",
+  "missionId": "M8",
+  "concept": "Final AI Energy Operating System Delivery (mission-wide capstone synthesis)",
+  "knowledgeGraphNodeId": "capstone.ai-energy-os",
+  "difficulty": "advanced",
+  "dependencies": ["capstone.dashboard", "capstone.research-workspace"],
+  "learningObjectives": [
+    "Assemble the Digital Twin, forecasting, RL optimisation, grid routing, carbon optimisation, explainability layer, dashboard, and research workspace into one complete, demonstrable AI Energy Operating System",
+    "Answer the mission's original 'how do I reduce energy costs by 12%' question concretely, with real evidence from your own system",
+    "Produce a complete, honest capability and limitations report covering the entire system, not any one component",
+    "Reflect on the full arc from the first Python variable to a working AI Energy OS, and identify the single most valuable skill gained along the way"
+  ],
+  "whyItMatters": "This is the actual, literal deliverable the entire curriculum — every mission, every skill folder, every lesson since 'Variables: Giving a Reading a Name' — was built toward. The mission's original scoping conversation asked for exactly this: a working platform, proven in simulation, that demonstrates a consistent, evidenced improvement, strong enough to bring to an actual utility, researcher, or investor conversation.",
+  "capstoneContribution": "The complete AI Energy Operating System — the full realization of the mission first scoped in a single conversation about AI and electricity generation, now an actual working system with real, checkable evidence behind every claim it makes.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Every piece exists, but none have answered the mission's founding cost-reduction question.",
+      "content": "You have every individual piece: a Digital Twin, forecasters, an RL optimiser, a router, a carbon layer, an explainability layer, a dashboard, and a research workspace — assembled in the system-integration lesson, but never yet used together to answer the single most concrete question this entire mission was founded on: can this system actually demonstrate a meaningful, evidenced reduction in energy costs?",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Every mission until now has been necessary preparation for this exact claim.",
+      "content": "Every mission until now has been necessary preparation. This is the lesson where preparation ends and the actual claim gets made and tested: not 'I built a lot of impressive components,' but 'here is a specific, evidenced percentage cost reduction this system achieves, and here is exactly how I know.'",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Run the full optimised system against a clear baseline and report the result with full rigor and honest limitations.",
+      "content": "Delivering the final claim means running the complete integrated system's optimisation (RL battery scheduling, routing, carbon-aware decisions) against your Digital Twin over a realistic evaluation period, comparing total cost against a clearly defined baseline (e.g. no optimisation, rule-based scheduling only), and reporting the resulting percentage improvement with the same rigor as every evaluation throughout the curriculum: a specific number, the methodology behind it, and its limitations. This mirrors, at the whole-system level, exactly the discipline established lesson by lesson since Mission 3's naive-baseline comparison — the difference is that this time the comparison is the mission's own founding claim, not an exercise. The final report should also honestly state what the Digital Twin still doesn't model perfectly (from Mission 6's fidelity-upgrade lesson) and what that means for how much confidence the claimed percentage improvement deserves outside simulation.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "The complete architecture converges on a final baseline-vs-optimised results panel.",
+      "content": "The complete AI Energy OS architecture — every component from every mission — appears as one integrated system diagram, with a final results panel showing the baseline-vs-optimised cost comparison and the resulting percentage improvement, directly answering the mission's founding question.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Run the complete system and watch baseline and optimised costs diverge to a final improvement figure.",
+      "content": "Run the complete assembled system against a full evaluation period on your own Digital Twin, watching the baseline and optimised scenarios' running costs diverge over time, converging on a final percentage improvement figure you can inspect and question.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: evaluate the full system against a baseline policy and compute the improvement.",
+      "content": "```python\ndef evaluate_full_system(ai_energy_os, evaluation_period, baseline_policy):\n    baseline_cost = ai_energy_os.simulate_with_policy(baseline_policy, evaluation_period)[\"total_cost\"]\n    optimised_cost = ai_energy_os.simulate_with_policy(ai_energy_os.full_policy, evaluation_period)[\"total_cost\"]\n\n    improvement_percent = (baseline_cost - optimised_cost) / baseline_cost * 100\n    return {\n        \"baseline_cost\": baseline_cost,\n        \"optimised_cost\": optimised_cost,\n        \"improvement_percent\": improvement_percent,\n    }\n```",
+      "estimatedMinutes": 10
+    },
+    "independentCoding": {
+      "summary": "Evaluate across multiple periods and assess consistency of the improvement claim.",
+      "content": "Run the full-system evaluation across at least three different evaluation periods (different seasons or demand conditions) and report whether the claimed improvement percentage is consistent or varies meaningfully, and hypothesize why.",
+      "estimatedMinutes": 18
+    },
+    "debugging": {
+      "summary": "Fix a baseline that secretly shares optimised components, inflating the improvement claim.",
+      "content": "A full-system evaluation's 'baseline' policy secretly still uses some of the optimised system's components (e.g. the fidelity-upgraded pricing model but not the RL scheduler), understating how much the actual optimisation contributes and inflating the claimed improvement artificially. Identify exactly which components leaked into the baseline and fix the comparison to be genuinely fair.",
+      "estimatedMinutes": 10
+    },
+    "reflection": {
+      "summary": "A baseline sharing components with the optimised system overstates the real contribution.",
+      "content": "Why would a baseline that accidentally shares components with the optimised system produce a claimed improvement percentage that looks real but actually overstates what the optimisation itself contributes?",
+      "estimatedMinutes": 5
+    },
+    "teachBack": {
+      "summary": "Walk through the entire curriculum's arc and name the single most valuable skill gained.",
+      "content": "As the absolute final synthesis of this entire curriculum: walk someone through the complete AI Energy OS, from the very first Python variable through every mission's contribution, to this final evidenced cost-improvement claim — and identify the single most valuable skill you gained along the way, with a specific reason why.",
+      "estimatedMinutes": 8
+    },
+    "miniProject": {
+      "summary": "Deliver the final AI Energy OS report: working system, evidenced claim, honest limitations, reflection.",
+      "content": "Deliver the AI Energy Operating System's final report: a working, integrated system; a rigorously evaluated, evidence-backed percentage cost improvement claim; an honest capability-and-limitations summary; and a reflection on the full curriculum arc that produced it.",
+      "estimatedMinutes": 30
+    },
+    "portfolioEvidence": {
+      "summary": "This is the literal fulfillment of the mission that began this entire repository.",
+      "content": "This is the literal fulfillment of the mission that began this entire repository: a working AI Energy Operating System with real, checkable evidence — strong enough, per the original scoping conversation, to bring to an actual utility, researcher, or investor conversation.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": true,
+  "labs": [
+    {
+      "id": "lab-capstone-ai-energy-os-final-delivery",
+      "title": "Final Delivery",
+      "description": "Sandboxed exercise running the complete AI Energy OS against a defined baseline across multiple evaluation periods, requiring a fix for a planted leaked-baseline-component bug and a final honest capability report.",
+      "starterCodePath": "labs/11-capstone-ai-energy-os/final-delivery/starter.py",
+      "testCasesPath": "labs/11-capstone-ai-energy-os/final-delivery/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "full-system-evaluation-dashboard",
+      "title": "Full System Evaluation Dashboard",
+      "description": "Live evaluation dashboard showing baseline and optimised scenario costs diverging over an evaluation period, converging on the final improvement percentage."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-capstone-ai-energy-os-1",
+      "front": "Why must a baseline policy be genuinely independent of the optimised system's components, not partially share them?",
+      "back": "If the baseline secretly benefits from some of the same upgrades as the optimised system, the measured 'improvement' understates or overstates what the actual optimisation contributes, making the final percentage claim misleading.",
+      "conceptNodeId": "capstone.ai-energy-os"
+    },
+    {
+      "id": "fc-capstone-ai-energy-os-2",
+      "front": "Why evaluate the full system across multiple different periods rather than just one?",
+      "back": "A single evaluation period could be unusually favorable or unfavorable; testing across multiple seasons/conditions reveals whether the claimed improvement is consistent and robust, or was partly a product of one lucky evaluation window.",
+      "conceptNodeId": "capstone.ai-energy-os"
+    }
+  ],
+  "assessment": {
+    "primaryType": "research",
+    "rubric": [
+      "Baseline policy is genuinely independent of the optimised system's components, correctly diagnosed and fixed if leaked",
+      "Improvement claim is evaluated across multiple periods with reported consistency, not a single cherry-picked result",
+      "Final report honestly states system limitations and what confidence the claim deserves outside simulation, plus a specific, reasoned reflection on the most valuable skill gained across the curriculum"
+    ]
+  },
+  "references": [
+    {
+      "title": "Martin Fowler — IntegrationTest",
+      "url": "https://martinfowler.com/bliki/IntegrationTest.html",
+      "type": "other",
+      "versionOrDate": "martinfowler.com, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "NIST — Design of Experiments",
+      "url": "https://www.nist.gov/itl/sed/topic-areas/design-experiments",
+      "type": "officialDocs",
+      "versionOrDate": "NIST, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

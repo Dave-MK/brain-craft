@@ -1,0 +1,137 @@
+{
+  "id": "power-renewable-intermittency",
+  "title": "Renewable Intermittency: Why Forecasting Matters So Much More Now",
+  "skillFolder": "10-power-systems",
+  "missionId": "M6",
+  "concept": "Renewable Generation Variability and Capacity Factor",
+  "knowledgeGraphNodeId": "power.renewable-intermittency",
+  "difficulty": "foundational",
+  "dependencies": ["power.load-balancing"],
+  "learningObjectives": [
+    "Explain why solar and wind output varies in ways fossil and nuclear generation doesn't",
+    "Compute and interpret capacity factor for a generation source",
+    "Explain why high renewable penetration increases the operational importance of accurate forecasting",
+    "Connect renewable intermittency directly back to why Mission 3/4's forecasting work matters more as renewable share grows"
+  ],
+  "whyItMatters": "This is the direct justification for why Mission 3 and 4 spent so much effort on forecasting rather than treating generation as a known, reliable quantity — solar and wind output isn't just 'generation with some noise,' it's fundamentally variable in a way that makes accurate, well-validated forecasting operationally essential rather than a nice-to-have.",
+  "capstoneContribution": "The Digital Twin's renewable-generation realism layer — grounding the solar/wind features used throughout Missions 3-4 in the actual physical variability those sources exhibit, rather than treating them as smoothly predictable inputs.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Solar and wind can't be dispatched on demand the way fossil generation can.",
+      "content": "A gas or coal plant can be dispatched close to on-demand; a solar farm produces electricity only when the sun is shining, at an output that varies continuously with cloud cover, and a wind farm's output depends on wind speed, which can change substantially within minutes.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "As renewable share grows, generation can no longer be treated as reliably available.",
+      "content": "This is the actual reason the mission's original scoping conversation emphasized renewable forecasting so heavily: as renewable share of generation grows, a grid operator can no longer treat generation as reliably available on demand, and needs increasingly accurate forecasts just to know how much dispatchable backup to keep ready.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Capacity factor quantifies real average output versus nameplate capacity; forecast error has direct operational cost.",
+      "content": "Capacity factor is the ratio of a generation source's actual average output to its theoretical maximum (nameplate) capacity over a period — a solar farm rated at 100MW might average only 20-25MW over a year (a ~20-25% capacity factor) because of night, clouds, and seasonal sun angle, while a nuclear plant might run at 90%+ capacity factor almost continuously. Wind capacity factors vary widely by location and typically fall in a similar range to solar, driven by wind speed variability rather than daylight. High renewable penetration means the gap between forecasted and actual renewable output translates directly into how much dispatchable backup generation (or storage) must be kept ready — an under-forecast risks a real shortfall, an over-forecast wastes backup capacity kept idle unnecessarily. This is precisely the operational stake behind the forecast accuracy metrics (MAE, RMSE) from Mission 3's evaluation lesson.",
+      "estimatedMinutes": 7
+    },
+    "visualExplanation": {
+      "summary": "A rising-and-falling solar curve contrasts with a flat nuclear curve; capacity factors are computed for each.",
+      "content": "A solar output curve over a day (rising, peaking, falling with the sun, with a cloud-cover dip) sits next to a flat, near-constant nuclear output curve over the same period, with each curve's capacity factor computed and labeled.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Adjust cloud cover, time of day, and wind speed and watch capacity factor recompute.",
+      "content": "Adjust cloud cover and time of day on a live solar output simulation and watch the resulting capacity factor recompute, then compare against a wind output simulation driven by an adjustable wind-speed input.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: compute a generation source's capacity factor.",
+      "content": "```python\ndef capacity_factor(actual_output_series_kw, nameplate_capacity_kw):\n    average_output = sum(actual_output_series_kw) / len(actual_output_series_kw)\n    return average_output / nameplate_capacity_kw\n\nsolar_capacity_factor = capacity_factor(solar_output_kw_series, nameplate_capacity_kw=100_000)\nprint(f\"Solar capacity factor: {solar_capacity_factor:.1%}\")\n```",
+      "estimatedMinutes": 8
+    },
+    "independentCoding": {
+      "summary": "Compute a wind capacity factor and compare it against solar.",
+      "content": "Compute the capacity factor for a provided wind generation dataset over a full month, and compare it against the solar capacity factor computed above, explaining what the difference (if any) suggests about each source's reliability profile.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a capacity factor computed against peak output instead of nameplate capacity.",
+      "content": "A capacity factor calculation divides by the peak observed output rather than the nameplate (theoretical maximum) capacity, producing an artificially inflated capacity factor. Identify and fix the denominator.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Using peak output instead of nameplate capacity is misleadingly optimistic.",
+      "content": "Why would using the peak observed output instead of nameplate capacity make a capacity factor number misleadingly optimistic?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why a low solar capacity factor doesn't mean the farm is 'broken'.",
+      "content": "Explain to someone why a 25% solar capacity factor doesn't mean 'the solar farm is broken 75% of the time,' but rather describes something fundamental about how solar generation actually works.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Compute seasonal capacity factors and connect the variability to forecasting stakes.",
+      "content": "Compute capacity factors for the solar and wind data in your feature table across different seasons, and write a short analysis connecting the variability you observe to why your Mission 3/4 forecasting models' accuracy actually matters operationally, not just academically.",
+      "estimatedMinutes": 16
+    },
+    "portfolioEvidence": {
+      "summary": "This is the concrete justification for two full missions invested in forecasting.",
+      "content": "This capacity-factor analysis is the concrete justification, grounded in real generation variability, for why this curriculum invested two full missions in forecasting before ever discussing power systems.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-power-renewable-intermittency-capacity-factor",
+      "title": "Capacity Factor",
+      "description": "Sandboxed exercise computing and comparing solar and wind capacity factors across seasons, with a planted peak-output-denominator bug to fix.",
+      "starterCodePath": "labs/10-power-systems/capacity-factor/starter.py",
+      "testCasesPath": "labs/10-power-systems/capacity-factor/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "solar-wind-output-visualizer",
+      "title": "Solar/Wind Output Visualizer",
+      "description": "Adjustable cloud-cover, time-of-day, and wind-speed inputs showing live recomputed generation output and capacity factor."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-power-renewable-intermittency-1",
+      "front": "What does a 25% capacity factor mean for a solar farm?",
+      "back": "Its average actual output over time is about 25% of its theoretical maximum (nameplate) capacity — driven by night, clouds, and seasonal sun angle, not by malfunction.",
+      "conceptNodeId": "power.renewable-intermittency"
+    },
+    {
+      "id": "fc-power-renewable-intermittency-2",
+      "front": "Why does high renewable penetration make forecast accuracy operationally critical, not just academically interesting?",
+      "back": "The gap between forecasted and actual renewable output directly determines how much dispatchable backup must be kept ready — an under-forecast risks a real shortfall, an over-forecast wastes backup capacity.",
+      "conceptNodeId": "power.renewable-intermittency"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly diagnoses and fixes the peak-output-vs-nameplate-capacity denominator bug",
+      "Correctly computes and compares solar and wind capacity factors across a real dataset",
+      "Explicitly connects capacity-factor variability to the operational stakes of Mission 3/4 forecast accuracy"
+    ]
+  },
+  "references": [
+    {
+      "title": "U.S. EIA — Renewable energy explained",
+      "url": "https://www.eia.gov/energyexplained/renewable-sources/",
+      "type": "officialDocs",
+      "versionOrDate": "EIA, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "U.S. EIA Glossary — Capacity factor",
+      "url": "https://www.eia.gov/tools/glossary/index.php?id=capacity%20factor",
+      "type": "officialDocs",
+      "versionOrDate": "EIA, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

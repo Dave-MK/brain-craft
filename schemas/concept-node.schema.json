@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://braincraft.dev/schemas/concept-node.schema.json",
+  "title": "BrainCraft Knowledge Graph Concept Node",
+  "description": "A single node in the static knowledge graph structure (docs/08-knowledge-graph/overview.md). This schema covers only structural, largely-static data — identity, prerequisites, mastery criteria, and links to teaching content. Per-learner state (mastery/confidence/retention scores) is deliberately NOT modeled here; per docs/12-database/overview.md that is high-write data that belongs in Postgres, keyed by (learner, nodeId), not duplicated into this static reference structure.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "title", "skillFolder", "missionId", "prerequisites", "masteryThreshold", "lessonId"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*)+$",
+      "description": "Namespaced concept identifier matching a lesson's knowledgeGraphNodeId, e.g. 'python.variables' or 'sklearn.demand-forecaster'."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3,
+      "description": "Human-readable concept name, e.g. 'Variables'."
+    },
+    "skillFolder": {
+      "type": "string",
+      "enum": [
+        "01-python",
+        "02-git",
+        "03-sql",
+        "04-apis",
+        "05-pandas",
+        "06-scikit-learn",
+        "07-pytorch",
+        "08-reinforcement-learning",
+        "09-graph-algorithms",
+        "10-power-systems",
+        "11-capstone-ai-energy-os"
+      ]
+    },
+    "missionId": {
+      "type": "string",
+      "enum": ["M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8"]
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "description": "IDs of concept nodes that must be at mastery threshold before this node is offered. Must never form a cycle across the full graph (checked by scripts/generate_knowledge_graph.py, not enforced by this schema alone since cycle-freedom is a whole-graph property, not a per-node one)."
+    },
+    "masteryThreshold": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minAssessmentScore", "requiresTeachBack", "requiresLabPass"],
+      "properties": {
+        "minAssessmentScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Minimum score (0-1) on the lesson's primary assessment required to count this node as mastered — mastery learning per docs/01-learning-science/overview.md, not a fixed time-in-lesson."
+        },
+        "requiresTeachBack": {
+          "type": "boolean",
+          "description": "Whether the lesson's teach-back step must be completed satisfactorily for mastery, not just the graded assessment."
+        },
+        "requiresLabPass": {
+          "type": "boolean",
+          "description": "Whether the associated lab's automated tests must pass for mastery."
+        }
+      }
+    },
+    "lessonId": {
+      "type": "string",
+      "description": "The id of the lesson (from schemas/lesson.schema.json) that teaches this node. One-to-one in the current curriculum; the field is singular because no node currently spans multiple lessons, not because the model forbids it — a future many-lessons-per-node case would need this promoted to an array."
+    },
+    "isBossBattle": {
+      "type": "boolean",
+      "default": false,
+      "description": "Mirrors the source lesson's isBossBattle flag."
+    },
+    "capstoneContribution": {
+      "type": "string",
+      "description": "Mirrors the source lesson's capstoneContribution field, denormalized here so the graph is browsable without joining back to the lesson file."
+    }
+  }
+}

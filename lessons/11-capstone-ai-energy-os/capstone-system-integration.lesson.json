@@ -1,0 +1,130 @@
+{
+  "id": "capstone-system-integration",
+  "title": "System Integration: One Codebase, Not Ten Missions",
+  "skillFolder": "11-capstone-ai-energy-os",
+  "missionId": "M8",
+  "concept": "Full AI Energy OS System Integration",
+  "knowledgeGraphNodeId": "capstone.system-integration",
+  "difficulty": "intermediate",
+  "dependencies": ["power.digital-twin-fidelity"],
+  "learningObjectives": [
+    "Assemble the digital_twin package, SQL storage, API ingestion client, feature-engineering pipeline, forecasting models, RL agent, and grid router into one coherent, runnable system",
+    "Define clear module boundaries and interfaces between components that were built in isolation across separate missions",
+    "Resolve at least one real integration conflict (mismatched data shapes, inconsistent assumptions) between two components built months apart in the curriculum",
+    "Produce a single entry point that can answer a real operational question using multiple components together"
+  ],
+  "whyItMatters": "Every mission built one genuinely working piece — a package, a model, an agent, a router — but never in the same running process as the others. The AI Energy OS the entire curriculum has been building toward doesn't exist yet as a single system; it exists as ten separate, excellent, disconnected exercises, and this lesson is where that finally changes.",
+  "capstoneContribution": "The actual AI Energy OS codebase — one integrated system where the Digital Twin, forecasters, RL agent, and router all run together and can answer a question that spans more than one of them.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "No two components have ever run together in the same process.",
+      "content": "Your grid router (Mission 5) doesn't know about your neural forecaster's predictions (Mission 4). Your battery scheduler (Mission 5) doesn't use the fidelity-upgraded pricing model (Mission 6). Every component works, individually, in its own mission's isolated environment — and none of them have ever been run in the same process together.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "This is the actual point of the entire curriculum.",
+      "content": "This is the actual point of the entire curriculum. Ten missions of excellent isolated work are still not an AI Energy Operating System until they're integrated into one system that can be asked a real question and use whichever components are actually needed to answer it.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "A thin orchestration layer connects components via explicit, documented conversions at each boundary.",
+      "content": "Integration means defining stable interfaces between components that were built with slightly different assumptions at different points in the curriculum — e.g. the forecaster expects a pandas DataFrame with specific column names, while the router expects a NetworkX graph with specific edge attributes, and a real integration layer has to translate between them explicitly rather than assuming they already agree. A common and practical integration pattern is a thin orchestration layer (not a rewrite of any component) that calls each subsystem in the right order, passing data through explicit, documented conversions at each boundary — the digital_twin package's data becomes the forecaster's input, the forecaster's predictions become part of the RL agent's state, the RL agent's chosen action feeds the router's contingency check. Integration conflicts (a column renamed in one mission but not updated in another, a units mismatch between kW and MW) are found by actually running components together, not by inspecting them individually — exactly the kind of bug that individual mission testing structurally cannot catch.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "Ten separate boxes with unclear connections become one diagram with documented data-flow arrows.",
+      "content": "All ten prior skill folders' key artifacts (package, tables, models, agent, router) appear as separate boxes with question marks on the connections between them, transforming into one diagram with labeled, documented data-flow arrows connecting every box into a single pipeline.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Trace a question through the integrated system's call graph and watch data transform at each boundary.",
+      "content": "Trace a single operational question through the integrated system's call graph step by step, watching data transform at each component boundary and seeing exactly where a mismatched assumption between two missions' components would surface.",
+      "estimatedMinutes": 6
+    },
+    "guidedCoding": {
+      "summary": "Follow along: assemble a first integration class wiring the forecaster into the RL agent.",
+      "content": "```python\nclass AIEnergyOS:\n    def __init__(self, digital_twin, forecaster, neural_forecaster, rl_agent, router):\n        self.digital_twin = digital_twin\n        self.forecaster = forecaster\n        self.rl_agent = rl_agent\n        self.router = router\n\n    def recommend_battery_action(self, current_state):\n        demand_forecast = self.forecaster.predict(self.digital_twin.get_features(current_state))\n        action = self.rl_agent.choose_action({**current_state, \"forecast\": demand_forecast})\n        return action\n\nos_instance = AIEnergyOS(digital_twin, forecaster, neural_forecaster, rl_agent, router)\nprint(os_instance.recommend_battery_action(current_state))\n```",
+      "estimatedMinutes": 10
+    },
+    "independentCoding": {
+      "summary": "Wire the grid router into the integration class and resolve a real mismatch.",
+      "content": "Wire your Mission 5 grid router into the `AIEnergyOS` class above so a battery-scheduling recommendation also triggers a routing/resilience check using the router, and resolve at least one real shape/unit mismatch you discover between the two components in the process.",
+      "estimatedMinutes": 16
+    },
+    "debugging": {
+      "summary": "Fix a silent kW-vs-MW unit mismatch at an integration boundary.",
+      "content": "The forecaster's output units (kW) are passed directly into the RL agent's state, which was trained and validated expecting MW, silently making every downstream decision wrong by a factor of 1000. Identify the unit mismatch and fix the conversion at the integration boundary.",
+      "estimatedMinutes": 8
+    },
+    "reflection": {
+      "summary": "This exact mismatch never surfaced during isolated testing.",
+      "content": "Why did this exact unit mismatch never surface during any individual mission's testing, and what does that tell you about the limits of testing components in isolation?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why individually-working components isn't the same claim as a working system.",
+      "content": "Explain to someone why 'each component works when tested alone' is not the same claim as 'the system works,' using your own discovered integration bug as the concrete proof.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Build the first AIEnergyOS integration answering one real question end to end.",
+      "content": "Build the first version of the `AIEnergyOS` integration class combining at least four components from different missions, and demonstrate it answering one real operational question end to end, with every data-flow boundary explicitly documented.",
+      "estimatedMinutes": 25
+    },
+    "portfolioEvidence": {
+      "summary": "This is the AI Energy Operating System beginning to exist as one system.",
+      "content": "This is the actual AI Energy Operating System codebase beginning to exist as one system — everything from here to the end of the curriculum builds directly on this integration layer.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-capstone-system-integration-unified-pipeline",
+      "title": "Unified Pipeline",
+      "description": "Sandboxed exercise wiring at least four cross-mission components into one integration class, requiring resolution of a planted unit-mismatch bug at a component boundary.",
+      "starterCodePath": "labs/11-capstone-ai-energy-os/unified-pipeline/starter.py",
+      "testCasesPath": "labs/11-capstone-ai-energy-os/unified-pipeline/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "system-integration-dataflow-visualizer",
+      "title": "System Integration Dataflow Visualizer",
+      "description": "Shows all ten skill folders' key artifacts connecting into one documented data-flow pipeline, tracing a question through the full call graph."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-capstone-system-integration-1",
+      "front": "Why can two components that each pass their own mission's tests still fail when run together?",
+      "back": "Each mission's tests only validate the component against the assumptions made within that mission; integration conflicts (mismatched units, renamed columns, differing data shapes) only surface when the components actually exchange data with each other.",
+      "conceptNodeId": "capstone.system-integration"
+    },
+    {
+      "id": "fc-capstone-system-integration-2",
+      "front": "What is a 'thin orchestration layer' in the context of system integration?",
+      "back": "A layer that calls each existing subsystem in the right order and translates data explicitly at each boundary, without rewriting any subsystem's internal logic — integration by connection, not by reimplementation.",
+      "conceptNodeId": "capstone.system-integration"
+    }
+  ],
+  "assessment": {
+    "primaryType": "architectureDesign",
+    "rubric": [
+      "Integration class correctly wires at least four components from different missions with documented data-flow boundaries",
+      "At least one genuine integration conflict (unit, shape, or naming mismatch) is discovered and fixed, not merely hypothesized",
+      "The integrated system answers a real operational question using more than one subsystem together"
+    ]
+  },
+  "references": [
+    {
+      "title": "Martin Fowler — IntegrationTest",
+      "url": "https://martinfowler.com/bliki/IntegrationTest.html",
+      "type": "other",
+      "versionOrDate": "martinfowler.com, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}

@@ -1,0 +1,137 @@
+{
+  "id": "power-energy-markets-pricing",
+  "title": "Energy Markets: Where That Price Number Actually Comes From",
+  "skillFolder": "10-power-systems",
+  "missionId": "M6",
+  "concept": "Energy Markets and Pricing (wholesale markets, marginal pricing, time-of-use)",
+  "knowledgeGraphNodeId": "power.energy-markets-pricing",
+  "difficulty": "foundational",
+  "dependencies": ["power.renewable-intermittency"],
+  "learningObjectives": [
+    "Explain how wholesale electricity prices are set via marginal pricing in a typical market",
+    "Explain why electricity prices vary by time of day and can spike sharply during high demand or low supply",
+    "Explain how high renewable penetration affects price volatility and can occasionally push prices negative",
+    "Reassess whether your curriculum-long price_per_kwh feature was modeled realistically given what you now know"
+  ],
+  "whyItMatters": "Every reward function, every cost calculation, every feature table column labeled price_per_kwh throughout this entire curriculum has treated price as an external, given number — this lesson is where you finally learn where that number actually comes from and why it behaves the way it does.",
+  "capstoneContribution": "A physically and economically grounded price model for the Digital Twin — replacing the flat or simplistically time-varying price assumptions used since Mission 1 with a marginal-pricing model that responds to actual supply/demand/renewable conditions.",
+  "lessonFlow": {
+    "problem": {
+      "summary": "Price has always been treated as an external input, never explained.",
+      "content": "Every price value used since the very first Mission 1 lessons has been treated as an external input — a number that arrives from an API or a CSV, never something the Digital Twin itself understands the origin of.",
+      "estimatedMinutes": 3
+    },
+    "motivation": {
+      "summary": "Understanding price origin lets the twin simulate realistic scenarios, not just replay history.",
+      "content": "Understanding where the price signal actually comes from lets the Digital Twin eventually simulate realistic price scenarios instead of only replaying historical ones, and it directly explains patterns your Mission 3/4 forecasting models were implicitly learning without ever being told why they existed.",
+      "estimatedMinutes": 2
+    },
+    "theory": {
+      "summary": "Markets clear at the marginal bid; high renewable output can push prices toward zero or negative.",
+      "content": "In a typical wholesale electricity market, generators bid the price at which they're willing to supply power, and the market clears at the marginal price — the bid of the most expensive generator actually needed to meet demand at that moment; every generator dispatched gets paid that same marginal price, not their own bid. Prices rise sharply when demand is high and only expensive, fast-response generation (e.g. gas peaker plants) is left to bid, and fall when abundant cheap generation (renewables, baseload) can cover demand. High renewable penetration can occasionally push marginal prices to zero or even negative, because renewable generators have near-zero marginal cost and, at times of high renewable output and low demand, may bid low or negative rather than shut down, since some renewable subsidies are tied to output. Time-of-use pricing structures (higher rates during peak demand hours) are a simplified, predictable approximation of this underlying marginal-price volatility, designed to give consumers a signal to shift usage without needing real-time market data.",
+      "estimatedMinutes": 8
+    },
+    "visualExplanation": {
+      "summary": "A supply curve intersects demand at the marginal price, shifting with demand and renewable supply.",
+      "content": "A supply curve (generators ordered cheapest to most expensive) intersects a demand line, with the marginal price marked at the intersection point, and a second panel shows that intersection point shifting right (higher price) as demand increases or left (lower, even negative price) as renewable supply floods in.",
+      "estimatedMinutes": 4
+    },
+    "interactiveDemo": {
+      "summary": "Adjust demand and renewable output and watch the marginal clearing price move.",
+      "content": "Adjust demand and renewable generation levels on a live supply-and-demand curve and watch the marginal clearing price move accordingly, including into negative territory under high-renewable, low-demand conditions.",
+      "estimatedMinutes": 5
+    },
+    "guidedCoding": {
+      "summary": "Follow along: compute the marginal clearing price from a supply-bid stack.",
+      "content": "```python\ndef marginal_price(supply_bids_sorted, demand_kw):\n    cumulative_supply = 0\n    for bid_price, bid_quantity_kw in supply_bids_sorted:\n        cumulative_supply += bid_quantity_kw\n        if cumulative_supply >= demand_kw:\n            return bid_price\n    return supply_bids_sorted[-1][0]\n\nprice = marginal_price(\n    supply_bids_sorted=[(0.02, 2000), (0.08, 1500), (0.15, 1000), (0.35, 800)],\n    demand_kw=4200,\n)\nprint(price)\n```",
+      "estimatedMinutes": 9
+    },
+    "independentCoding": {
+      "summary": "Plot marginal price against demand and identify the tier-jump point.",
+      "content": "Compute the marginal price across a range of demand levels using the supply-bid stack above, plot price against demand, and identify at what demand level the price jumps to the most expensive bid tier.",
+      "estimatedMinutes": 12
+    },
+    "debugging": {
+      "summary": "Fix a pricing function that averages bids instead of using the marginal bid.",
+      "content": "A marginal price function returns the average of all dispatched bids instead of the single marginal (most expensive dispatched) bid, misrepresenting how real markets actually clear. Identify and fix the pricing logic.",
+      "estimatedMinutes": 6
+    },
+    "reflection": {
+      "summary": "Every generator paid the marginal price, not their own bid, is a deliberate incentive design.",
+      "content": "Why does every dispatched generator get paid the marginal price rather than their own bid, and what would go wrong (from an incentive standpoint) if they were instead paid exactly what they bid?",
+      "estimatedMinutes": 4
+    },
+    "teachBack": {
+      "summary": "Explain why electricity prices can go negative.",
+      "content": "Explain to someone why electricity prices can occasionally go negative, using the high-renewable-low-demand scenario as your concrete example.",
+      "estimatedMinutes": 5
+    },
+    "miniProject": {
+      "summary": "Build a marginal-pricing model and compare it against real historical price data.",
+      "content": "Build a simplified marginal-pricing model using a realistic supply-bid stack (including renewable, baseload, and peaker generation types) and your feature table's actual demand values, and compare the resulting simulated prices against the real price data used throughout the curriculum.",
+      "estimatedMinutes": 18
+    },
+    "portfolioEvidence": {
+      "summary": "This is the first economically grounded price signal, letting future missions simulate realistic scenarios.",
+      "content": "This marginal-pricing model is the Digital Twin's first economically grounded price signal — letting future missions simulate realistic price scenarios rather than only replaying historical data.",
+      "estimatedMinutes": 1
+    }
+  },
+  "isBossBattle": false,
+  "labs": [
+    {
+      "id": "lab-power-energy-markets-pricing-marginal-price-model",
+      "title": "Marginal Price Model",
+      "description": "Sandboxed exercise implementing and validating a marginal-pricing model against a realistic supply-bid stack, with a planted average-instead-of-marginal bug to fix.",
+      "starterCodePath": "labs/10-power-systems/marginal-price-model/starter.py",
+      "testCasesPath": "labs/10-power-systems/marginal-price-model/test_cases.py"
+    }
+  ],
+  "simulations": [
+    {
+      "id": "supply-demand-marginal-price-visualizer",
+      "title": "Supply/Demand Marginal Price Visualizer",
+      "description": "Live supply-and-demand curve with adjustable demand and renewable output, showing the marginal clearing price move, including into negative territory."
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc-power-energy-markets-pricing-1",
+      "front": "What is the 'marginal price' in a wholesale electricity market?",
+      "back": "The bid of the most expensive generator actually needed to meet demand at that moment — every dispatched generator gets paid this same price, regardless of their own individual bid.",
+      "conceptNodeId": "power.energy-markets-pricing"
+    },
+    {
+      "id": "fc-power-energy-markets-pricing-2",
+      "front": "Why can wholesale electricity prices occasionally go negative?",
+      "back": "Renewable generators have near-zero marginal cost, and during high renewable output combined with low demand, some may bid low or negative rather than shut down (partly due to subsidies tied to output), pushing the market-clearing price below zero.",
+      "conceptNodeId": "power.energy-markets-pricing"
+    }
+  ],
+  "assessment": {
+    "primaryType": "debugging",
+    "rubric": [
+      "Correctly diagnoses and fixes the averaged-bid-instead-of-marginal-bid pricing bug",
+      "Marginal-pricing model correctly reflects supply-bid ordering and demand-driven tier selection",
+      "Comparison against real historical price data is honest about where the simplified model diverges and why"
+    ]
+  },
+  "references": [
+    {
+      "title": "U.S. EIA — Factors affecting electricity prices",
+      "url": "https://www.eia.gov/energyexplained/electricity/prices-and-factors-affecting-prices.php",
+      "type": "officialDocs",
+      "versionOrDate": "EIA, 2026",
+      "accessedOn": "2026-07-01"
+    },
+    {
+      "title": "FERC — Electric Power Markets",
+      "url": "https://www.ferc.gov/electric-power-markets",
+      "type": "officialDocs",
+      "versionOrDate": "FERC, 2026",
+      "accessedOn": "2026-07-01"
+    }
+  ],
+  "version": 1,
+  "status": "draft"
+}
