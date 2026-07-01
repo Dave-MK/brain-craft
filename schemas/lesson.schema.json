@@ -1,0 +1,276 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://braincraft.dev/schemas/lesson.schema.json",
+  "title": "BrainCraft Lesson",
+  "description": "A single lesson in the BrainCraft curriculum. Lessons are structured data first, prose second (see docs/09-content-engine/overview.md) — the rendered lesson page is derived from this object, never authored independently of it. A lesson that fails this schema must not ship (see CLAUDE.md and docs/18-testing/overview.md).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "skillFolder",
+    "missionId",
+    "concept",
+    "difficulty",
+    "dependencies",
+    "learningObjectives",
+    "whyItMatters",
+    "capstoneContribution",
+    "lessonFlow",
+    "flashcards",
+    "assessment",
+    "references",
+    "version",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "Stable unique slug, e.g. 'python-dictionaries'. Never reused, even if a lesson is deprecated."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3
+    },
+    "skillFolder": {
+      "type": "string",
+      "enum": [
+        "01-python",
+        "02-git",
+        "03-sql",
+        "04-apis",
+        "05-pandas",
+        "06-scikit-learn",
+        "07-pytorch",
+        "08-reinforcement-learning",
+        "09-graph-algorithms",
+        "10-power-systems",
+        "11-capstone-ai-energy-os"
+      ],
+      "description": "Must match a curriculum/ folder name exactly (docs/02-curriculum/overview.md)."
+    },
+    "missionId": {
+      "type": "string",
+      "enum": ["M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8"],
+      "description": "M1 Learn Programming, M2 Manipulate Data, M3 Predict the Future, M4 Teach Machines, M5 Optimise Decisions, M6 Understand Energy, M7 Simulate a Grid, M8 Build the AI Energy OS (docs/02-curriculum/overview.md)."
+    },
+    "concept": {
+      "type": "string",
+      "minLength": 2,
+      "description": "Human-readable concept name, e.g. 'Dictionaries'. Should correspond to a knowledge graph node id once schemas/concept-node.schema.json exists."
+    },
+    "knowledgeGraphNodeId": {
+      "type": "string",
+      "description": "Optional forward reference to this concept's node id in the knowledge graph (docs/08-knowledge-graph/overview.md), once that data exists."
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": ["introductory", "foundational", "intermediate", "advanced", "research"]
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "description": "Concept/knowledge-graph-node ids that must be at mastery threshold before this lesson is offered. May be empty only for true entry-point lessons."
+    },
+    "learningObjectives": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 5 },
+      "minItems": 1
+    },
+    "whyItMatters": {
+      "type": "string",
+      "minLength": 40,
+      "description": "Explicit statement of why this concept matters for the AI Energy OS mission, shown near the top of the lesson (CLAUDE.md content standards). Must not be generic filler."
+    },
+    "capstoneContribution": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Which piece of the AI Energy OS this lesson's work feeds (docs/07-capstones/overview.md), e.g. 'Digital Twin data ingestion' or 'Reinforcement Learning Optimiser reward shaping'."
+    },
+    "lessonFlow": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The canonical 14-step lesson flow (docs/00-foundations/DESIGN_PRINCIPLES.md). flashcards, miniProject content, and assessment are modeled as their own top-level fields below rather than nested here, since they carry structured (not narrative) data.",
+      "required": [
+        "problem",
+        "motivation",
+        "theory",
+        "visualExplanation",
+        "interactiveDemo",
+        "guidedCoding",
+        "independentCoding",
+        "debugging",
+        "reflection",
+        "teachBack",
+        "portfolioEvidence"
+      ],
+      "properties": {
+        "problem": { "$ref": "#/$defs/flowStep" },
+        "motivation": { "$ref": "#/$defs/flowStep" },
+        "theory": { "$ref": "#/$defs/flowStep" },
+        "visualExplanation": { "$ref": "#/$defs/flowStep" },
+        "interactiveDemo": { "$ref": "#/$defs/flowStep" },
+        "guidedCoding": { "$ref": "#/$defs/flowStep" },
+        "independentCoding": { "$ref": "#/$defs/flowStep" },
+        "debugging": { "$ref": "#/$defs/flowStep" },
+        "reflection": { "$ref": "#/$defs/flowStep" },
+        "teachBack": { "$ref": "#/$defs/flowStep" },
+        "miniProject": { "$ref": "#/$defs/flowStep" },
+        "portfolioEvidence": { "$ref": "#/$defs/flowStep" }
+      }
+    },
+    "isBossBattle": {
+      "type": "boolean",
+      "default": false,
+      "description": "True only for the less-scaffolded, synthesis-level assessment at the end of a skill folder or mission (docs/00-foundations/PROJECT_GLOSSARY.md)."
+    },
+    "labs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/labRef" },
+      "description": "Optional — not every concept needs a hands-on lab (docs/00-foundations/DESIGN_PRINCIPLES.md on avoiding manufactured interactivity)."
+    },
+    "simulations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/simulationRef" },
+      "description": "Optional interactive/visual simulators this lesson embeds or links to (docs/simulations/README.md)."
+    },
+    "flashcards": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/flashcard" },
+      "minItems": 1,
+      "description": "Required — every lesson must produce at least one spaced-repetition flashcard (docs/01-learning-science/overview.md). A lesson with zero flashcards fails validation."
+    },
+    "assessment": {
+      "$ref": "#/$defs/assessment"
+    },
+    "references": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/reference" },
+      "minItems": 1,
+      "description": "Required — every factual/technical claim traces to a dated, versioned source, so the Living Curriculum can detect staleness (docs/09-content-engine/overview.md). A lesson with zero references fails validation."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Incremented on every content regeneration. Learners mid-progress on an earlier version finish that version rather than being silently migrated (docs/09-content-engine/overview.md)."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "review", "published", "deprecated"]
+    },
+    "supersededBy": {
+      "type": "string",
+      "description": "Lesson id that replaces this one, set when status is 'deprecated'."
+    },
+    "lastValidatedAgainstReferences": {
+      "type": "string",
+      "format": "date",
+      "description": "Last date the living-curriculum staleness check confirmed all references are still current."
+    }
+  },
+  "$defs": {
+    "flowStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "content"],
+      "properties": {
+        "summary": { "type": "string", "minLength": 5 },
+        "content": { "type": "string", "minLength": 1, "description": "Markdown/MDX body for this step." },
+        "estimatedMinutes": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "labRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "description"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "starterCodePath": { "type": "string" },
+        "testCasesPath": { "type": "string" }
+      }
+    },
+    "simulationRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "flashcard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "front", "back"],
+      "properties": {
+        "id": { "type": "string" },
+        "front": { "type": "string", "minLength": 3 },
+        "back": { "type": "string", "minLength": 1 },
+        "conceptNodeId": { "type": "string" }
+      }
+    },
+    "assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primaryType", "rubric"],
+      "properties": {
+        "primaryType": {
+          "type": "string",
+          "enum": [
+            "codeReview",
+            "debugging",
+            "architectureDesign",
+            "teachBack",
+            "oralExplanation",
+            "projectWork",
+            "research",
+            "simulationBased",
+            "reflection"
+          ],
+          "description": "Multiple-choice is intentionally excluded from primary assessment types (docs/05-assessments/overview.md: 'banned as a primary evaluation method')."
+        },
+        "rubric": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 5 },
+          "minItems": 1
+        },
+        "supplementaryQuiz": {
+          "type": "array",
+          "description": "Optional low-stakes multiple-choice comprehension checks — never the primary assessment.",
+          "items": {
+            "type": "object",
+            "required": ["question", "options", "correctIndex"],
+            "properties": {
+              "question": { "type": "string" },
+              "options": { "type": "array", "items": { "type": "string" }, "minItems": 2 },
+              "correctIndex": { "type": "integer", "minimum": 0 }
+            }
+          }
+        }
+      }
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "url", "type", "accessedOn"],
+      "properties": {
+        "title": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "type": {
+          "type": "string",
+          "enum": ["officialDocs", "paper", "standard", "libraryVersion", "other"]
+        },
+        "versionOrDate": {
+          "type": "string",
+          "description": "Library version (e.g. 'pandas 2.2') or publication date this reference pins to."
+        },
+        "accessedOn": { "type": "string", "format": "date" }
+      }
+    }
+  }
+}
