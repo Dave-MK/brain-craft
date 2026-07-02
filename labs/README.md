@@ -44,4 +44,43 @@ All 6 `06-scikit-learn` labs are also written and verified (scikit-learn install
 - **`walk-forward`** tests the actual defining property of `TimeSeriesSplit` structurally (every fold's train indices precede its test indices; the training set grows across folds) rather than trying to infer it from a score. I verified this two ways: a correct `TimeSeriesSplit` solution passes, and a deliberately swapped-in `KFold(shuffle=True)` solution — the exact bug the lesson's debugging exercise targets — fails both checks.
 - **`final-model`** compares candidates against a `DummyRegressor(strategy="mean")` baseline (a real, honest floor) rather than a hand-rolled naive predictor, on data with a strong trend, so "a real model should beat a dummy" is a safe, non-flaky assertion.
 
-Remaining: Missions 4–6 and 8 (30 lessons: `07-pytorch`, `08-reinforcement-learning`, `09-graph-algorithms`, `10-power-systems`, `11-capstone-ai-energy-os`). PyTorch labs will need genuinely tolerance-based assertions ("loss decreased over training," not exact values) since neural network training has real stochasticity even with fixed seeds across some operations.
+All 6 `07-pytorch` labs are also written and verified (CPU-only PyTorch installed — `pip install torch --index-url https://download.pytorch.org/whl/cpu` — much smaller than the CUDA build and sufficient for every lab). **Mission 4 is fully lab-covered.** The stochastic-training testing patterns established here:
+
+- **Exact where math allows it**: autograd gradients of known expressions (`manual-gradient-descent`) are pure calculus, checked to 4 decimal places; convergence targets on convex problems are checked to 2 places.
+- **Structural/mathematical property checks instead of score-sniffing**: `architecture-definition` detects a missing ReLU by testing actual linearity (`f(a)+f(b) == f(a+b)+f(0)` holds only for a purely linear network) — verified to catch the no-activation bug directly. Gradient-flow-to-every-parameter catches layers defined but not wired into `forward()`.
+- **Relational assertions for training**: "final loss < 5% of initial loss," "prediction within delta of the known answer" — never exact loss values. `loss-curve`'s missing-`zero_grad` detection was verified against a deliberately broken loop.
+- **Empirically calibrated thresholds**: `loss-curves`' eval-mode check originally used a guessed 0.05 threshold that a *correct* solution failed (scored 0.069); measuring both correct (~0.07) and broken (~0.8, dropout active at validation) runs gave a 0.3 threshold with wide margins both ways — the threshold is documented in the test with its measurement basis.
+- **Harness-under-test via recording stubs**: `honest-comparison` (boss battle) tests the fairness harness itself — stub candidates record exactly what train/test data they received, so "every candidate saw the identical chronological split" is asserted directly rather than inferred.
+
+One wrong test assumption caught and fixed during verification: `nn.LSTM` legitimately accepts 2-D `(seq_len, features)` input as an unbatched sequence, so my original "rejects missing batch dimension" test asserted behavior PyTorch doesn't have — replaced with the feature-count mismatch check PyTorch actually enforces.
+
+All 6 `08-reinforcement-learning` labs are also written and verified. The central design problem — RL training is stochastic and convergence isn't guaranteed — was solved two ways:
+
+- **A deterministic environment with a provably unique optimum** ([`q-learning-battery/battery_env.py`](08-reinforcement-learning/q-learning-battery/battery_env.py)): all randomness comes from a seeded exploration RNG, so training is bit-reproducible and tests can assert the *exact* learned policy. This was hard-won: the first env design (4-phase price cycle, capacity 2) let Q-learning reliably converge to a locally-stable one-unit strategy (profit 12) instead of the true optimum (24) at the lab's default hyperparameters — discovered by dumping the trained Q-table, not by assumption. The redesigned 2-phase/capacity-1 env has a wide value gap around a unique optimum; verified to reach exactly 24.0 across 5 different seeds. The design note is documented in the env file itself.
+- **Pure-function decomposition everywhere else**: reward computation, safety wrapping, and explanation building are deterministic functions with hand-computable expected values, so the RL *concepts* (reward hacking closure, post-action-state safety checks, checkable explanations) get exact tests without training anything.
+
+Planted-bug scenarios verified to fail correctly: stale-state reward computation (`battery-mdp-definition`), unweighted policy-gradient loss (`continuous-battery` — zero rewards must give zero loss), and the stale-state safety check (`safety-harness` — discharge at soc 0.15 with floor 0.1 must be blocked because the *resulting* 0.05 violates the floor, even though the current soc doesn't).
+
+All 6 `09-graph-algorithms` labs are also written and verified (`networkx` installed). **Mission 5 is fully lab-covered.** Graph labs are fully deterministic, so tests use exact hand-computed fixtures throughout:
+
+- **`dijkstra-routing`'s fixture is built so fewest-hops ≠ minimum-loss** (a 2-hop path costing 10 vs. a 3-hop path costing 3) — the defining distinction of the lesson, asserted directly.
+- **`contingency-analysis` uses a diamond topology** where two individually non-critical nodes disconnect the grid together — the mission's founding "two substations fail" scenario as an exact test case.
+- **`max-flow-capacity` asserts the max-flow min-cut theorem directly** on the learner's own two answers (cut capacity must equal max flow).
+- **Planted bugs verified to fail**: the k=1 candidate generator (policy left with nothing to choose), and `final-system`'s missing contingency check (recommending the raw cheapest route that dies in the stated scenario).
+- One deliberate test-design call: `grid-connectivity`'s visited-check test fails the *genuinely wrong* variant (duplicate visits in the output) but passes the wasteful-but-functionally-correct `continue`-on-pop style — tests punish wrong results, not style choices.
+
+All 6 `10-power-systems` labs are also written and verified — pure physics/economics functions with hand-computed expected values throughout. **Mission 6 is fully lab-covered.** Highlights:
+
+- **`real-loss` asserts the physical relationships, not just values**: doubling voltage quarters the loss, doubling power quadruples it — directly disproving Mission 5's flat-loss-percentage assumption inside the test itself.
+- **`cascade-simulation` documents its own simplification**: equal-split rerouting (with the lesson's realism caveat quoted in the module docstring) keeps the cascade loop mechanics hand-traceable — the fragile-grid fixture cascades A→B→C in exactly the hand-computed order.
+- **Planted bugs verified to fail**: peak-observed-instead-of-nameplate capacity-factor denominator, averaged-bids-instead-of-marginal pricing, and the boss battle's disconnected fidelity toggle (implemented but never wired — caught by tests that flip each flag and assert the output actually changes).
+
+All 6 `11-capstone-ai-energy-os` labs are also written and verified — integration-harness territory, tested with recording stubs standing in for cross-mission components:
+
+- **`unified-pipeline`'s planted bug is the lesson's exact kW/MW mismatch**: a recording-stub agent captures the state it receives, so "the agent saw 4.821 MW, not 4821" is asserted directly; verified to fail when the conversion is removed.
+- **`controlled-experiment` and `final-delivery` both REFUSE bad science rather than compute it**: a confounded config (two variables changed) and a contaminated baseline (shared component with the optimised system) each return an error instead of a subtly-wrong number — the refusal itself is what's tested.
+- **`final-delivery`** — the last lab of the entire curriculum — evaluates the mission's founding cost-reduction claim across multiple periods with a consistency flag, hand-checkable stub economics, and the leaked-baseline detection the boss-battle lesson is built around.
+
+## Coverage: complete
+
+**All 71 lessons across all 11 skill folders now have verified lab starter code and test suites.** Every lab was validated three ways where a planted bug exists (pre-implementation fails cleanly, reference solution passes, the lesson's planted bug fails the discriminating test), and two ways otherwise. Dependencies used: Python stdlib, `jsonschema`, `requests`, `pandas`, `scikit-learn`, CPU-only `torch`, `networkx`, and SQLite via stdlib — no services, no network, no GPU.
